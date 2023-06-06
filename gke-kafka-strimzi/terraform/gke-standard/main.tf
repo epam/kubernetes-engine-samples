@@ -41,15 +41,7 @@ module "kafka_cluster" {
   logging_enabled_components = ["SYSTEM_COMPONENTS","WORKLOADS"]
   monitoring_enabled_components = ["SYSTEM_COMPONENTS"]
   enable_cost_allocation = true
-  cluster_autoscaling = {
-    "autoscaling_profile": "OPTIMIZE_UTILIZATION",
-    "enabled" : true,
-    "gpu_resources" : [],
-    "min_cpu_cores" : 15,
-    "min_memory_gb" : 60,
-    "max_cpu_cores" : 30,
-    "max_memory_gb" : 120,
-  }
+
   monitoring_enable_managed_prometheus = true
   gke_backup_agent_config = true
 
@@ -125,7 +117,7 @@ output "kubernetes_cluster_host" {
 }
 
 output "kubectl_connection_command" {
-  value       = "gcloud container clusters get-credentials ${var.project_id}-kafka-cluster --region ${var.region}"
+  value       = "gcloud container clusters get-credentials ${var.cluster_prefix}-cluster --region ${var.region}"
   description = "Connection command"
 }
 # [END gke_standard_private_regional_backup_cluster]
