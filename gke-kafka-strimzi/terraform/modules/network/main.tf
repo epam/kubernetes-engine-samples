@@ -51,5 +51,18 @@ output "network_name" {
 output "subnet_name" {
   value = module.gcp-network.subnets_names[0]
 }
-
 // [END vpc_multi_region_network]
+
+# [START cloudnat_simple_create]
+module "cloud_router" {
+  source  = "terraform-google-modules/cloud-router/google"
+  version = "~> 5.0"
+  project = var.project_id 
+  name    = "${var.cluster_prefix}-nat-router"
+  network = module.gcp-network.network_name
+  region  = var.region
+  nats = [{
+    name = "${var.cluster_prefix}-nat"
+  }]
+}
+# [END cloudnat_simple_create]
