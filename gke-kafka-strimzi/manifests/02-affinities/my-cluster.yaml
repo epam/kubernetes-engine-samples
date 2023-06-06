@@ -22,6 +22,16 @@ spec:
                   operator: In
                   values:
                   - "kafka-broker"
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: kafka
+                    strimzi.io/cluster: my-cluster
+                    strimzi.io/component-type: kafka
+                topologyKey: "kubernetes.io/hostname"
     listeners:
       - name: plain
         port: 9092
@@ -62,6 +72,17 @@ spec:
                   operator: In
                   values:
                   - "zookeeper"
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100  
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: zookeeper
+                    strimzi.io/cluster: my-cluster
+                    strimzi.io/component-type: zookeeper
+                topologyKey: "kubernetes.io/hostname"
+
     replicas: 3
     storage:
       type: persistent-claim
