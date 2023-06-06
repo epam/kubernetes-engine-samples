@@ -13,6 +13,15 @@ spec:
           operator: "Equal"
           value: "kafka-broker"
           effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: "app.stateful/component"
+                  operator: In
+                  values:
+                  - "kafka-broker"
     listeners:
       - name: plain
         port: 9092
@@ -44,6 +53,15 @@ spec:
           operator: "Equal"
           value: "zookeeper"
           effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: "app.stateful/component"
+                  operator: In
+                  values:
+                  - "zookeeper"
     replicas: 3
     storage:
       type: persistent-claim
