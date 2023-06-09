@@ -110,12 +110,6 @@ module "kafka_cluster" {
  gce_pd_csi_driver = true
 }
 
-output "kubernetes_cluster_host" {
-  value       = module.kafka_cluster.endpoint
-  sensitive   = true
-  description = "GKE Cluster Host"
-}
-
 output "kubectl_connection_command" {
   value       = "gcloud container clusters get-credentials ${var.cluster_prefix}-cluster --region ${var.region}"
   description = "Connection command"
