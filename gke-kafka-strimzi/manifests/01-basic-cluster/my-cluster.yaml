@@ -13,6 +13,35 @@ spec:
           operator: "Equal"
           value: "kafka-broker"
           effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: "app.stateful/component"
+                  operator: In
+                  values:
+                  - "kafka-broker"
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: kafka
+                    strimzi.io/cluster: my-cluster
+                    strimzi.io/component-type: kafka
+                topologyKey: "kubernetes.io/hostname"
+    resources:
+      requests:
+        memory: 6Gi
+        cpu: "2"
+      limits:
+        memory: 6Gi
+        cpu: "2"
+    jvmOptions:
+      -Xms: 4096m
+      -Xmx: 4096m
     listeners:
       - name: plain
         port: 9092
@@ -44,7 +73,37 @@ spec:
           operator: "Equal"
           value: "zookeeper"
           effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: "app.stateful/component"
+                  operator: In
+                  values:
+                  - "zookeeper"
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100  
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: zookeeper
+                    strimzi.io/cluster: my-cluster
+                    strimzi.io/component-type: zookeeper
+                topologyKey: "kubernetes.io/hostname"
+
     replicas: 3
+    resources:
+      requests:
+        memory: 6Gi
+        cpu: "2"
+      limits:
+        memory: 6Gi
+        cpu: "2"
+    jvmOptions:
+      -Xms: 4096m
+      -Xmx: 4096m
     storage:
       type: persistent-claim
       size: 100Gi

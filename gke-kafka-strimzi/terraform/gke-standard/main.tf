@@ -22,28 +22,14 @@ module "network" {
   cluster_prefix = var.cluster_prefix
 }
 
-# [START gke_standard_private_regional_primary_cluster]
+# [START gke_standard_private_regional_cluster]
 module "kafka_cluster" {
-  source                   = "../modules/beta-private-cluster"
+  source                   = "../modules/cluster"
   project_id               = var.project_id
-  name                     = "${var.cluster_prefix}-cluster"
-  regional                 = true
   region                   = var.region
+  cluster_prefix           = var.cluster_prefix
   network                  = module.network.network_name
   subnetwork               = module.network.subnet_name
-  ip_range_pods            = "k8s-pod-range"
-  ip_range_services        = "k8s-service-range"
-  create_service_account   = false
-  enable_private_endpoint  = false
-  enable_private_nodes     = true
-  master_ipv4_cidr_block   = "172.16.0.0/28"
-  network_policy           = true
-  logging_enabled_components = ["SYSTEM_COMPONENTS","WORKLOADS"]
-  monitoring_enabled_components = ["SYSTEM_COMPONENTS"]
-  enable_cost_allocation = true
-
-  monitoring_enable_managed_prometheus = true
-  gke_backup_agent_config = true
 
   node_pools = [
     {
@@ -107,12 +93,11 @@ module "kafka_cluster" {
       },
     ],
   }
- gce_pd_csi_driver = true
 }
 
 output "kubectl_connection_command" {
   value       = "gcloud container clusters get-credentials ${var.cluster_prefix}-cluster --region ${var.region}"
   description = "Connection command"
 }
-# [END gke_standard_private_regional_backup_cluster]
+# [END gke_standard_private_regional_cluster]
 
