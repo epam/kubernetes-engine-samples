@@ -35,7 +35,7 @@ spec:
     resources:
       requests:
         memory: 6Gi
-        cpu: "2"
+        cpu: "1"
       limits:
         memory: 6Gi
         cpu: "2"
@@ -98,7 +98,7 @@ spec:
     resources:
       requests:
         memory: 6Gi
-        cpu: "2"
+        cpu: "1"
       limits:
         memory: 6Gi
         cpu: "2"
