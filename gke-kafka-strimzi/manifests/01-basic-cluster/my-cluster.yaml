@@ -34,10 +34,10 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
     resources:
       requests:
-        memory: 6Gi
+        memory: 5Gi
         cpu: "1"
       limits:
-        memory: 6Gi
+        memory: 5Gi
         cpu: "2"
     jvmOptions:
       -Xms: 4096m
@@ -97,10 +97,10 @@ spec:
     replicas: 3
     resources:
       requests:
-        memory: 6Gi
+        memory: 5Gi
         cpu: "1"
       limits:
-        memory: 6Gi
+        memory: 5Gi
         cpu: "2"
     jvmOptions:
       -Xms: 4096m
