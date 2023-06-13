@@ -24,7 +24,7 @@ data:
       labels:
        clientId: "$3"
        broker: "$4:$5"
-   - pattern: kafka.server<type=(.+), cipher=(.+), protocol=(.+), listener=(.+), networkProcessor=(.+)><>connections
+    - pattern: kafka.server<type=(.+), cipher=(.+), protocol=(.+), listener=(.+), networkProcessor=(.+)><>connections
       name: kafka_server_$1_connections_tls_info
       type: GAUGE
       labels:
