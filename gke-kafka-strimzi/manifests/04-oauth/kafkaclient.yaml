@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafkaclient
+spec:
+  containers:
+  - name: kafkaclient
+    image: quay.io/strimzi/kafka:0.35.0-kafka-3.4.0 
+    command: ["sh", "-c", "exec tail -f /dev/null"]
+    env:
+    - name: OAUTH_ACCESS_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: oauth-access-token
+          key: accesstoken
+    volumeMounts:
+    - name: config-volume
+      mountPath: /tmp/oauth
+  volumes:
+  - name: config-volume
+    configMap:
+      name: oauth-client-properties
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth-client-properties
+data:
+  client.properties: |
+   security.protocol=SASL_PLAINTEXT
+   sasl.mechanism=OAUTHBEARER
+   sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required oauth.token.endpoint.uri="https://oauth2.googleapis.com/token" oauth.username.claim="email";
+   sasl.login.callback.handler.class=io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler
+ 
