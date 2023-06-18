@@ -40,4 +40,5 @@ module "kafka_cluster" {
   node_pools_taints = var.node_pools_taints
   gce_pd_csi_driver = true
 }
+# [END gke_standard_private_regional_cluster]
 
