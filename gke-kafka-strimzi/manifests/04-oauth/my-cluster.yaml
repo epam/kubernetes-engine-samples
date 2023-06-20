@@ -57,7 +57,7 @@ spec:
           jwksEndpointUri: "https://www.googleapis.com/oauth2/v3/certs"
           userNameClaim: email
           checkAccessTokenType: false
-          customClaimCheck: "@.hd == 'epam.com'"
+          customClaimCheck: "@.aud == 'my-cluster'"
     config:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3
