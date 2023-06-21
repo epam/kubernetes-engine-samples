@@ -76,11 +76,6 @@ spec:
   zookeeper:
     template:
       pod:
-        tolerations:
-        - key: "app.stateful/component"
-          operator: "Equal"
-          value: "zookeeper"
-          effect: NoSchedule
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:

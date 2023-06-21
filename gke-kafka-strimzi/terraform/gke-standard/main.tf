@@ -74,14 +74,7 @@ module "kafka_cluster" {
         value  = "kafka-broker"
         effect = "NO_SCHEDULE"
       },
-    ],
-    pool-zookeeper = [
-      {
-        key    = "app.stateful/component"
-        value  = "zookeeper"
-        effect = "NO_SCHEDULE"
-      },
-    ],
+    ]
   }
 }
 
