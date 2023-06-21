@@ -51,6 +51,15 @@ spec:
         port: 9093
         type: internal
         tls: true
+      - name: external
+        port: 9095
+        type: loadbalancer
+        tls: true
+        configuration:
+           brokerCertChainAndKey:
+           secretName: listener-secret
+           certificate: listener.crt
+           key: listener.key
     authorization:
       type: simple
     config:
