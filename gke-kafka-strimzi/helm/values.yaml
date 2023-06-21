@@ -1,0 +1,15 @@
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "app.stateful/component"
+          operator: In
+          values:
+          - "zookeeper"
+tolerations:
+- key: "app.stateful/component"
+  operator: "Equal"
+  value: "zookeeper"
+  effect: NoSchedule
+

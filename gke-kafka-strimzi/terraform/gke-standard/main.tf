@@ -33,16 +33,6 @@ module "kafka_cluster" {
 
   node_pools = [
     {
-      name            = "pool-system"
-      disk_size_gb    = 20
-      disk_type       = "pd-standard"
-      autoscaling     = false
-      max_surge       = 1
-      max_unavailable = 0
-      machine_type    = "e2-standard-2"
-      auto_repair     = true
-    },
-    {
       name            = "pool-kafka"
       disk_size_gb    = 20
       disk_type       = "pd-standard"
