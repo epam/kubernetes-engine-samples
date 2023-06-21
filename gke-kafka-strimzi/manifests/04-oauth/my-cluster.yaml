@@ -95,7 +95,6 @@ spec:
                     strimzi.io/cluster: my-cluster
                     strimzi.io/component-type: zookeeper
                 topologyKey: "kubernetes.io/hostname"
-
     replicas: 3
     resources:
       requests:
