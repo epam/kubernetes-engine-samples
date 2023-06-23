@@ -53,20 +53,18 @@ spec:
         tls: true
         configuration:
            brokerCertChainAndKey:
-           secretName: listener-secret
-           certificate: listener.crt
-           key: listener.key
+             secretName: listener-secret
+             certificate: listener.crt
+             key: listener.key
       - name: external
         port: 9095
         type: loadbalancer
         tls: true
         configuration:
            brokerCertChainAndKey:
-           secretName: listener-secret
-           certificate: listener.crt
-           key: listener.key
-    authorization:
-      type: simple
+             secretName: listener-secret
+             certificate: listener.crt
+             key: listener.key
     config:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3
@@ -85,11 +83,6 @@ spec:
   zookeeper:
     template:
       pod:
-        tolerations:
-        - key: "app.stateful/component"
-          operator: "Equal"
-          value: "zookeeper"
-          effect: NoSchedule
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -109,18 +102,17 @@ spec:
                     strimzi.io/cluster: my-cluster
                     strimzi.io/component-type: zookeeper
                 topologyKey: "kubernetes.io/hostname"
-
     replicas: 3
     resources:
       requests:
-        memory: 5Gi
+        memory: 3Gi
         cpu: "1"
       limits:
-        memory: 5Gi
+        memory: 3Gi
         cpu: "2"
     jvmOptions:
-      -Xms: 4096m
-      -Xmx: 4096m
+      -Xms: 2048m
+      -Xmx: 2048m
     storage:
       type: persistent-claim
       size: 100Gi
@@ -128,4 +120,4 @@ spec:
       deleteClaim: false
   entityOperator:
     topicOperator: {}
-    userOperator: {}
+    userOperator: {} 
