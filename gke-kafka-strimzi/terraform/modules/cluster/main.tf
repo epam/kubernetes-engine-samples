@@ -32,6 +32,11 @@ module "kafka_cluster" {
   monitoring_enabled_components = ["SYSTEM_COMPONENTS"]
   enable_cost_allocation = true
 
+  cluster_resource_labels = {
+    name      = "${var.cluster_prefix}-cluster"
+    component = "strimzi-operator"
+  }
+
   monitoring_enable_managed_prometheus = true
   gke_backup_agent_config = true
  
