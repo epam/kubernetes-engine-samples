@@ -96,7 +96,7 @@ spec:
                   - "zookeeper"
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1 
+            - weight: 1
               podAffinityTerm:
                 labelSelector:
                   matchLabels:
@@ -122,4 +122,4 @@ spec:
       deleteClaim: false
   entityOperator:
     topicOperator: {}
-    userOperator: {} 
+    userOperator: {}
