@@ -15,16 +15,17 @@ spec:
           effect: NoSchedule
         affinity:
           nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
                 - key: "app.stateful/component"
                   operator: In
                   values:
                   - "kafka-broker"
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
+            - weight: 1
               podAffinityTerm:
                 labelSelector:
                   matchLabels:
@@ -71,16 +72,17 @@ spec:
       pod:
         affinity:
           nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
                 - key: "app.stateful/component"
                   operator: In
                   values:
                   - "zookeeper"
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100  
+            - weight: 1 
               podAffinityTerm:
                 labelSelector:
                   matchLabels:
