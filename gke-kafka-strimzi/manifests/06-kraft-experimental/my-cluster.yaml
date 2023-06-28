@@ -52,6 +52,10 @@ spec:
         port: 9093
         type: internal
         tls: true
+        authentication:
+          type: tls
+    authorization:
+      type: simple
     config:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3
@@ -59,6 +63,7 @@ spec:
       default.replication.factor: 3
       min.insync.replicas: 2
       inter.broker.protocol.version: "3.4"
+      auto.create.topics.enable: true
     storage:
       deleteClaim: true
       size: 100Gi
@@ -67,4 +72,6 @@ spec:
     replicas: 3
     storage:
       type: ephemeral
+  entityOperator:
+    userOperator: {} 
 
