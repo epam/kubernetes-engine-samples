@@ -1,0 +1,41 @@
+apiVersion: "zookeeper.pravega.io/v1beta1"
+kind: "ZookeeperCluster"
+metadata:
+  name: "zookeeper"
+spec:
+  replicas: 3
+  storageType: persistence
+  persistence:
+    spec:
+      storageClassName: premium-rwo 
+      resources:
+        requests:
+          storage: 100Gi
+  pod:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: "app.stateful/component"
+              operator: In
+              values:
+              - "zookeeper"
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1 
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: zookeeper
+                strimzi.io/cluster: my-cluster
+                strimzi.io/component-type: zookeeper
+            topologyKey: "kubernetes.io/hostname"
+    resources:
+      requests:
+        cpu: 1
+        memory: 3Gi
+      limits:
+        cpu: 2
+        memory: 3Gi
