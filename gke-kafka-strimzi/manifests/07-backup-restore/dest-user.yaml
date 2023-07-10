@@ -1,0 +1,83 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: my-target-user
+  labels:
+    strimzi.io/cluster: my-target-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      # Underlying Kafka Connect internal topics to store configuration, offsets, or status
+      - resource:
+          type: group
+          name: mirrormaker2-cluster
+        operations:
+          - Read
+      - resource:
+          type: topic
+          name: mirrormaker2-cluster-configs
+        operations:
+          - Create
+          - Describe
+          - DescribeConfigs
+          - Read
+          - Write
+      - resource:
+          type: topic
+          name: mirrormaker2-cluster-status
+        operations:
+          - Create
+          - Describe
+          - DescribeConfigs
+          - Read
+          - Write
+      - resource:
+          type: topic
+          name: mirrormaker2-cluster-offsets
+        operations:
+          - Create
+          - Describe
+          - DescribeConfigs
+          - Read
+          - Write
+      # MirrorSourceConnector
+      - resource: # Needed for every topic which is mirrored
+          type: topic
+          name: "*"
+        operations:
+          - Create
+          - Alter
+          - AlterConfigs
+          - Write
+          - Read
+          - DescribeConfigs
+      # MirrorCheckpointConnector
+      - resource:
+          type: cluster
+        operations:
+          - Describe
+      - resource:
+          type: topic
+          name: my-source-cluster.checkpoints.internal
+        operations:
+          - Create
+          - Describe
+          - Read
+          - Write
+      - resource: # Needed for every group for which the offset is synced
+          type: group
+          name: "*"
+        operations:
+          - Read
+          - Describe
+      # MirrorHeartbeatConnector
+      - resource:
+          type: topic
+          name: heartbeats
+        operations:
+          - Create
+          - Describe
+          - Write
