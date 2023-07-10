@@ -73,5 +73,21 @@ spec:
     storage:
       type: ephemeral
   entityOperator:
-    userOperator: {} 
+    tlsSidecar:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+    userOperator:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          cpu: 500m
+          memory: 2Gi
+
 

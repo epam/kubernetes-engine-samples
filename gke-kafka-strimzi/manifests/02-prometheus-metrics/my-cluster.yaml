@@ -119,5 +119,27 @@ spec:
           name: metrics-config
           key: zookeeper-metrics-config.yml
   entityOperator:
-    topicOperator: {}
-    userOperator: {} 
+    tlsSidecar:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+    topicOperator:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+    userOperator:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          cpu: 500m
+          memory: 2Gi
