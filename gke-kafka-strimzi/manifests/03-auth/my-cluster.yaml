@@ -120,7 +120,7 @@ spec:
     tlsSidecar:
       resources:
         requests:
-          cpu: 500m
+          cpu: 200m
           memory: 128Mi
         limits:
           cpu: 500m
@@ -128,7 +128,7 @@ spec:
     topicOperator:
       resources:
         requests:
-          cpu: 500m
+          cpu: 200m
           memory: 512Mi
         limits:
           cpu: 500m
@@ -136,7 +136,7 @@ spec:
     userOperator:
       resources:
         requests:
-          cpu: 500m
+          cpu: 200m
           memory: 2Gi
         limits:
           cpu: 500m
