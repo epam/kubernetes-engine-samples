@@ -97,11 +97,11 @@ spec:
     replicas: 3
     resources:
       requests:
-        memory: 3Gi
-        cpu: "1"
+        memory: 2560Mi
+        cpu: 500m
       limits:
-        memory: 3Gi
-        cpu: "2"
+        memory: 2560Mi
+        cpu: 2000m
     jvmOptions:
       -Xms: 2048m
       -Xmx: 2048m
@@ -111,6 +111,27 @@ spec:
       class: premium-rwo-retain
       deleteClaim: false
   entityOperator:
-    topicOperator: {}
-    userOperator: {}
-
+    tlsSidecar:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+    topicOperator:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+    userOperator:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 2Gi
+        limits:
+          cpu: 500m
+          memory: 2Gi
