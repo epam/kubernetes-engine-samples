@@ -31,6 +31,7 @@ module "kafka_cluster" {
   logging_enabled_components = ["SYSTEM_COMPONENTS","WORKLOADS"]
   monitoring_enabled_components = ["SYSTEM_COMPONENTS"]
   enable_cost_allocation = true
+  remove_default_node_pool = true
 
   cluster_resource_labels = {
     name      = "${var.cluster_prefix}-cluster"
