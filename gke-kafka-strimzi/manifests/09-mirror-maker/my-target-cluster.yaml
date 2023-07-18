@@ -1,0 +1,204 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: my-target-cluster
+spec:
+  kafka:
+    version: 3.4.0
+    replicas: 1
+    template:
+      pod:
+        tolerations:
+        - key: "app.stateful/component"
+          operator: "Equal"
+          value: "kafka-broker"
+          effect: NoSchedule
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: "app.stateful/component"
+                  operator: In
+                  values:
+                  - "kafka-broker"
+    resources:
+      requests:
+        memory: 5Gi
+        cpu: "1"
+      limits:
+        memory: 5Gi
+        cpu: "2"
+    jvmOptions:
+      -Xms: 4096m
+      -Xmx: 4096m
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+    authorization:
+      type: simple
+    config:
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 1
+      min.insync.replicas: 1
+      inter.broker.protocol.version: "3.4"
+    storage:
+      type: jbod
+      volumes:
+      - id: 0
+        type: persistent-claim
+        size: 100Gi
+        class: premium-rwo
+        deleteClaim: false
+  zookeeper:
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: "app.stateful/component"
+                  operator: In
+                  values:
+                  - "zookeeper"
+    replicas: 1
+    resources:
+      requests:
+        memory: 2560Mi
+        cpu: 500m
+      limits:
+        memory: 2560Mi
+        cpu: 2000m
+    jvmOptions:
+      -Xms: 2048m
+      -Xmx: 2048m
+    storage:
+      type: persistent-claim
+      size: 100Gi
+      class: premium-rwo
+      deleteClaim: false
+  entityOperator:
+    tlsSidecar:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+    topicOperator:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+    userOperator:
+      resources:
+        limits:
+          cpu: 500m
+          ephemeral-storage: 1Gi
+          memory: 2Gi
+        requests:
+          cpu: 500m
+          ephemeral-storage: 1Gi
+          memory: 2Gi
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: target-user
+  labels:
+    strimzi.io/cluster: my-target-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      # Underlying Kafka Connects internal topics used to store configuration, offsets or status
+      - resource:
+          type: group
+          name: mirrormaker2-cluster
+        operations:
+          - Read
+      - resource:
+          type: topic
+          name: mirrormaker2-cluster-configs
+        operations:
+          - Read
+          - Describe
+          - DescribeConfigs
+          - Write
+          - Create
+      - resource:
+          type: topic
+          name: mirrormaker2-cluster-status
+        operations:
+          - Read
+          - Describe
+          - DescribeConfigs
+          - Write
+          - Create
+      - resource:
+          type: topic
+          name: mirrormaker2-cluster-offsets
+        operations:
+          - Read
+          - Describe
+          - DescribeConfigs
+          - Write
+          - Create
+      - resource:
+          type: topic
+          name: my-topic
+          patternType: literal
+        operations:
+          - Create
+          - Describe
+          - Write
+          - Read
+        host: "*"
+      # MirrorSourceConnector
+      - resource: # Needed for every topic which is mirrored
+          type: topic
+          name: "*"
+        operations:
+          - Read
+          - Write
+          - AlterConfigs
+          - Alter
+          - Create
+      # MirrorCheckpointConnector
+      - resource:
+          type: cluster
+        operations:
+          - Describe
+      - resource:
+          type: topic
+          name: cluster-a.checkpoints.internal
+        operations:
+          - Describe
+          - Write
+          - Create
+      - resource: # Needed for every group for which the offset is synced
+          type: group
+          name: "*"
+        operations:
+          - Read
+          - Describe 
