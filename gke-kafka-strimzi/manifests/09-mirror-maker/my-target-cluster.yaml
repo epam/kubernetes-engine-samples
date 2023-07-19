@@ -164,22 +164,13 @@ spec:
           - DescribeConfigs
           - Write
           - Create
-      - resource:
-          type: topic
-          name: my-topic
-          patternType: literal
-        operations:
-          - Create
-          - Describe
-          - Write
-          - Read
-        host: "*"
       # MirrorSourceConnector
       - resource: # Needed for every topic which is mirrored
           type: topic
           name: "*"
         operations:
           - Read
+          - Describe
           - Write
           - AlterConfigs
           - Alter
@@ -191,7 +182,7 @@ spec:
           - Describe
       - resource:
           type: topic
-          name: cluster-a.checkpoints.internal
+          name: my-source-cluster.checkpoints.internal
         operations:
           - Describe
           - Write

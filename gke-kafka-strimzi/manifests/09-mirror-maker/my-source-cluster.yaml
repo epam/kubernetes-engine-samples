@@ -134,7 +134,7 @@ spec:
       # MirrorSourceConnector
       - resource: # Not needed if offset-syncs.topic.location=target
           type: topic
-          name: mm2-offset-syncs.cluster-b.internal
+          name: mm2-offset-syncs.my-target-cluster.internal
         operations:
           - Read
           - DescribeConfigs
