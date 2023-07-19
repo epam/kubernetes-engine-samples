@@ -96,7 +96,7 @@ spec:
     resources:
       requests:
         memory: 2560Mi
-        cpu: 500m
+        cpu: 1000m
       limits:
         memory: 2560Mi
         cpu: 2000m
@@ -128,8 +128,10 @@ spec:
     userOperator:
       resources:
         requests:
-          cpu: 100m
+          cpu: 500m
+          ephemeral-storage: 1Gi
           memory: 2Gi
         limits:
           cpu: 500m
+          ephemeral-storage: 1Gi
           memory: 2Gi
