@@ -5,9 +5,9 @@ metadata:
 spec:
   version: 3.4.0
   replicas: 1
-  connectCluster: "my-target-cluster" # Must be the target custer
+  connectCluster: "my-target-cluster"
   clusters:
-  - alias: "my-source-cluster" # Source cluster
+  - alias: "my-source-cluster"
     bootstrapServers: my-source-cluster-kafka-bootstrap.kafka-source.svc.cluster.local:9093
     tls:
       trustedCertificates:
@@ -19,7 +19,7 @@ spec:
           secretName: source-user
           certificate: user.crt
           key: user.key
-  - alias: "my-target-cluster" # Target cluster
+  - alias: "my-target-cluster"
     bootstrapServers: my-target-cluster-kafka-bootstrap.kafka-target.svc.cluster.local:9093
     tls:
       trustedCertificates:
@@ -32,7 +32,6 @@ spec:
           certificate: user.crt
           key: user.key
     config:
-      # -1 means it will use the default replication factor configured in the broker
       config.storage.replication.factor: -1
       offset.storage.replication.factor: -1
       status.storage.replication.factor: -1
