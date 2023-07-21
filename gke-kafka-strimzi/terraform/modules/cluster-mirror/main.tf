@@ -11,26 +11,40 @@
 #WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #See the License for the specific language governing permissions and
 #limitations under the License.
-# google_client_config and kubernetes provider must be explicitly specified like the following.
-data "google_client_config" "default" {}
-
-# create private subnet
-module "network" {
-  source         = "../modules/network"
-  project_id     = var.project_id
-  region         = var.region
-  cluster_prefix = var.cluster_prefix
-}
 
 # [START gke_standard_private_regional_cluster]
 module "kafka_cluster" {
-  source                   = "../modules/cluster"
+  source                   = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
   project_id               = var.project_id
+  name                     = "${var.cluster_prefix}-cluster"
+  regional                 = true
   region                   = var.region
-  cluster_prefix           = var.cluster_prefix
-  network                  = module.network.network_name
-  subnetwork               = module.network.subnet_name
+  network                  = var.network
+  subnetwork               = var.subnetwork
+  ip_range_pods            = "k8s-pod-range"
+  ip_range_services        = "k8s-service-range"
+  create_service_account   = true
+  enable_private_endpoint  = false
+  enable_private_nodes     = true
+  master_ipv4_cidr_block   = "172.16.0.0/28"
+  network_policy           = true
+  logging_enabled_components = ["SYSTEM_COMPONENTS","WORKLOADS"]
+  monitoring_enabled_components = ["SYSTEM_COMPONENTS"]
+  enable_cost_allocation = true
+  remove_default_node_pool = true
 
+  cluster_dns_domain   = "${var.cluster_prefix}.local"
+  cluster_dns_provider = "CLOUD_DNS"
+  cluster_dns_scope    = "VPC_SCOPE"
+
+  cluster_resource_labels = {
+    name      = "${var.cluster_prefix}-cluster"
+    component = "strimzi-operator"
+  }
+
+  monitoring_enable_managed_prometheus = true
+  gke_backup_agent_config = true
+ 
   node_pools = [
     {
       name            = "pool-zookeeper"
@@ -61,7 +75,7 @@ module "kafka_cluster" {
     all = {}
     pool-kafka = {
       "app.stateful/component" = "kafka-broker"
-    }
+    } 
     pool-zookeeper = {
       "app.stateful/component" = "zookeeper"
     }
@@ -76,11 +90,7 @@ module "kafka_cluster" {
       }
     ]
   }
-}
-
-output "kubectl_connection_command" {
-  value       = "gcloud container clusters get-credentials ${var.cluster_prefix}-cluster --region ${var.region}"
-  description = "Connection command"
+  gce_pd_csi_driver = true
 }
 # [END gke_standard_private_regional_cluster]
 
