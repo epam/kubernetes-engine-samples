@@ -66,11 +66,10 @@ module "firewall_rules" {
   project_id   = var.project_id
   network_name = module.gcp-network.network_name
 
-  rules = [{
+  ingress_rules = [{
     name                    = "allow-kafka-ingress"
-    description             = "Interconnection between Kafka clusters with TLS auth"
-    direction               = "INGRESS"
-    destination_ranges      = ["10.52.0.0/20","10.56.0.0/20"]
+    description             = "connection between Kafka clusters with TLS auth"
+    ranges                  = ["10.52.0.0/20","10.56.0.0/20"]
     source_ranges           = ["10.48.0.0/20","10.54.0.0/20"]
     allow = [{
       protocol = "tcp"

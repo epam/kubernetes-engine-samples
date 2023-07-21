@@ -26,7 +26,7 @@ module "kafka_cluster" {
   create_service_account   = true
   enable_private_endpoint  = false
   enable_private_nodes     = true
-  master_ipv4_cidr_block   = "172.16.0.0/28"
+  master_ipv4_cidr_block   = var.master_ipv4_cidr_block
   network_policy           = true
   logging_enabled_components = ["SYSTEM_COMPONENTS","WORKLOADS"]
   monitoring_enabled_components = ["SYSTEM_COMPONENTS"]

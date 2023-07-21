@@ -18,3 +18,7 @@ variable "cluster_prefix" {
   description = "The prefix for all cluster resources"
 }
 
+variable "master_ipv4_cidr_block" {
+  description = "The IP range in CIDR notation used for the hosted master network"
+}
+

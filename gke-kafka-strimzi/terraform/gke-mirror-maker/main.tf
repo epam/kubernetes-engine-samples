@@ -29,6 +29,7 @@ module "source_kafka_cluster" {
   cluster_prefix           = "${var.cluster_prefix}-source"
   network                  = module.network.network_name
   subnetwork               = module.network.source_subnet_name
+  master_ipv4_cidr_block   = "172.16.0.0/28"
 }
 
 module "target_kafka_cluster" {
@@ -38,6 +39,7 @@ module "target_kafka_cluster" {
   cluster_prefix           = "${var.cluster_prefix}-target"
   network                  = module.network.network_name
   subnetwork               = module.network.target_subnet_name
+  master_ipv4_cidr_block   = "172.17.0.0/28"
 }
 
 output "kubectl_connection_command_source" {
