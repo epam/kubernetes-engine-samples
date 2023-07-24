@@ -14,3 +14,4 @@
 /ai-ml/ @rbarberop @alizaidis
 /batch/ @rbarberop @alizaidis
 /databases/hello-app-cloud-spanner @thiagotnunes
+/gke-kafka-strimzi/ @aburhan
