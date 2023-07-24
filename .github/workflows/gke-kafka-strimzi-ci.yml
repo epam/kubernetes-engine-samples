@@ -1,0 +1,34 @@
+name: gke-kafka-strimzi-ci
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/gke-kafka-strimzi-ci.yml'
+      - 'gke-kafka-strimzi/**'
+  pull_request:
+    paths:
+      - '.github/workflows/gke-kafka-strimzi-ci.yml'
+      - 'gke-kafka-strimzi/**'
+jobs:
+  job:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Validate GKE Autopilot TF
+        run: |
+          cd gke-kafka-strimzi/terraform/gke-autopilot
+          terraform init
+          terraform validate
+      - name: Validate GKE Standard TF
+        run: |
+          cd gke-kafka-strimzi/terraform/gke-standard
+          terraform init
+          terraform validate
+      - name: Validate Mirror-maker TF
+        run: |
+          cd gke-kafka-strimzi/terraform/gke-mirror-maker
+          terraform init
+          terraform validate
+      
+      
