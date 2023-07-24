@@ -8,7 +8,7 @@ spec:
   connectCluster: "my-target-cluster"
   clusters:
   - alias: "my-source-cluster"
-    bootstrapServers: my-source-cluster-kafka-bootstrap.kafka-source.svc.cluster.local:9093
+    bootstrapServers: my-source-cluster-kafka-bootstrap.kafka.svc.strimzi-source.local:9093
     tls:
       trustedCertificates:
         - secretName: my-source-cluster-cluster-ca-cert
@@ -20,7 +20,7 @@ spec:
           certificate: user.crt
           key: user.key
   - alias: "my-target-cluster"
-    bootstrapServers: my-target-cluster-kafka-bootstrap.kafka-target.svc.cluster.local:9093
+    bootstrapServers: my-target-cluster-kafka-bootstrap.kafka.svc.strimzi-target.local:9093
     tls:
       trustedCertificates:
         - secretName: my-target-cluster-cluster-ca-cert
@@ -41,13 +41,13 @@ spec:
     sourceConnector:
       tasksMax: 1
       config:
-        replication.factor: 1
-        offset-syncs.topic.replication.factor: 1
+        replication.factor: 3
+        offset-syncs.topic.replication.factor: 3
         sync.topic.acls.enabled: "false"
     checkpointConnector:
       tasksMax: 1
       config:
-        checkpoints.topic.replication.factor: 1
+        checkpoints.topic.replication.factor: 3
         sync.group.offsets.enabled: "true"
     topicsPattern: ".*"
     groupsPattern: ".*"
