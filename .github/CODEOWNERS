@@ -15,3 +15,4 @@
 /batch/ @rbarberop @alizaidis @yoshi-approver @GoogleCloudPlatform/anthos-dpe
 /databases/hello-app-cloud-spanner @thiagotnunes @yoshi-approver @GoogleCloudPlatform/anthos-dpe
 /security/language-vulns @thompsonmax @yoshi-approver @GoogleCloudPlatform/anthos-dpe
+/streaming/kafka-strimzi/ @aburhan
