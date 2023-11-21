@@ -1,0 +1,49 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: gke-pg-cluster
+spec:
+  description: "Standard GKE PostgreSQL cluster"
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.0
+  instances: 3
+  startDelay: 300
+  primaryUpdateStrategy: unsupervised
+  certificates:
+    serverCASecret: my-postgres-server-ca
+    serverTLSSecret: my-postgres-server-cert
+  postgresql:
+    pg_hba:
+      - hostssl app all all md5
+  bootstrap:
+    initdb:
+      database: app
+  storage:
+    storageClass: premium-rwo
+    size: 2Gi
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
+  affinity:
+    enablePodAntiAffinity: true  
+    tolerations:
+    - key: cnpg.io/cluster
+      effect: NoSchedule
+      value: gke-pg-cluster
+      operator: Equal
+    additionalPodAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.component
+              operator: In
+              values:
+              - "pg-cluster"
+          topologyKey: topology.kubernetes.io/zone
+  monitoring:
+    enablePodMonitor: true
