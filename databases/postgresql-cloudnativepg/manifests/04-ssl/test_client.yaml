@@ -1,0 +1,65 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# [START gke_databases_postgresql_cloudnativepg_test_client]
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webtest
+  template:
+    metadata:
+      labels:
+        app: webtest
+    spec:
+      containers:
+        - image: ghcr.io/cloudnative-pg/webtest:1.6.0
+          name: cert-test
+          volumeMounts:
+            - name: secret-volume-root-ca
+              mountPath: /etc/secrets/ca
+            - name: secret-volume-app
+              mountPath: /etc/secrets/app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              value: >
+                sslkey=/etc/secrets/app/tls.key
+                sslcert=/etc/secrets/app/tls.crt
+                sslrootcert=/etc/secrets/ca/ca.crt
+                host=gke-pg-cluster-rw.pg-ns.svc
+                dbname=app
+                user=app
+                sslmode=verify-full
+            - name: SQL_QUERY
+              value: SELECT 1
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /tx
+      volumes:
+        - name: secret-volume-root-ca
+          secret:
+            secretName: my-postgres-server-cert
+            defaultMode: 0600
+        - name: secret-volume-app
+          secret:
+            secretName: cluster-app
+            defaultMode: 0600
+# [END gke_databases_postgresql_cloudnativepg_test_client]
