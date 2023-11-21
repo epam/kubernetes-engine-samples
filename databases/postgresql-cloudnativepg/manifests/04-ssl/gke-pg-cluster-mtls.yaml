@@ -2,6 +2,8 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: gke-pg-cluster
+  labels:
+    cnpg.io/reload: ""
 spec:
   description: "Standard GKE PostgreSQL cluster"
   imageName: ghcr.io/cloudnative-pg/postgresql:16.0
@@ -11,6 +13,8 @@ spec:
   certificates:
     serverCASecret: my-postgres-server-ca
     serverTLSSecret: my-postgres-server-cert
+    clientCASecret: my-postgres-server-ca
+    replicationTLSSecret: streaming-replica-cert
   postgresql:
     pg_hba:
       - hostssl app all all md5 clientcert=verify-full
