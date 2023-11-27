@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_databases_postgresql_cloudnativepg_pg_client]
+# [START gke_databases_postgresql_cloudnativepg_04_pg_client_mtls]
 apiVersion: v1
 kind: Pod
 metadata:
@@ -45,4 +45,4 @@ spec:
       secret:
         secretName: pg-client-cert
         defaultMode: 0600
-# [END gke_databases_postgresql_cloudnativepg_pg_client]
+# [END gke_databases_postgresql_cloudnativepg_04_pg_client_mtls]
