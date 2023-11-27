@@ -16,7 +16,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pg-client
+  name: pg-client-mtls
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
 
@@ -38,17 +38,11 @@ spec:
           name: gke-pg-cluster-app
           key: username
     volumeMounts:
-      - name: secret-volume-root-ca
-        mountPath: /etc/secrets/ca
-      - name: secret-volume-server-crt
-        mountPath: /etc/secrets/crt
+      - name: secret-volume-client-crt
+        mountPath: /etc/secrets/cert
   volumes:
-    - name: secret-volume-server-crt
+    - name: secret-volume-client-crt
       secret:
-        secretName: pg-server-cert
-        defaultMode: 0600
-    - name: secret-volume-root-ca
-      secret:
-        secretName: pg-root-ca
+        secretName: pg-client-cert
         defaultMode: 0600
 # [END gke_databases_postgresql_cloudnativepg_pg_client]

@@ -27,10 +27,13 @@ spec:
   certificates:
     serverCASecret: pg-root-ca
     serverTLSSecret: pg-server-cert
+    clientCASecret: pg-root-ca
+    replicationTLSSecret: streaming-replica-cert
+
 
   postgresql:
     pg_hba:
-      - hostssl app all all md5
+      - hostssl app all all md5 clientcert=verify-full
 
   bootstrap:
     initdb:
