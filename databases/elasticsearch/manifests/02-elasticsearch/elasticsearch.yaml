@@ -17,6 +17,8 @@ apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch-ha
+  labels:
+    examples.ai.gke.io/source: elastic-guide 
 spec:
   version: 8.11.4
   nodeSets:
@@ -37,7 +39,6 @@ spec:
       metadata:
         labels:
           app.stateful/component: elasticsearch
-          examples.ai.gke.io/source: elastic-guide
       spec:
         initContainers:
         - name: max-map-count-check
