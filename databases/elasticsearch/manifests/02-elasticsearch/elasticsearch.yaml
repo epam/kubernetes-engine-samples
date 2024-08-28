@@ -37,6 +37,7 @@ spec:
       metadata:
         labels:
           app.stateful/component: elasticsearch
+          examples.ai.gke.io/source: elastic-guide
       spec:
         initContainers:
         - name: max-map-count-check

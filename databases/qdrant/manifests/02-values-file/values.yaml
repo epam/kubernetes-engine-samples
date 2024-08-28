@@ -47,6 +47,8 @@ tolerations:
     value: "qdrant"
     effect: NoSchedule
 
+podLabels: 
+  examples.ai.gke.io/source: qdrant-guide
 affinity:
   nodeAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:

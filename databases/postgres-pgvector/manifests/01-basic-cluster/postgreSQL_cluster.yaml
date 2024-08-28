@@ -18,6 +18,8 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: gke-pg-cluster
+  labels:
+    examples.ai.gke.io/source: pgvector-guide
 spec:
   description: "Standard GKE PostgreSQL cluster"
   imageName: ghcr.io/cloudnative-pg/postgresql:16.2
