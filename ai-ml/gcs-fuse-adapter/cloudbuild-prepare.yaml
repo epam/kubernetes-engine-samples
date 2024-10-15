@@ -5,12 +5,7 @@ steps:
   args:
     - "-c"
     - |
-      if ! gcloud storage buckets list "gs://${_BUCKET_NAME}" >/dev/null 2>&1; then
-        echo "Bucket '${_BUCKET_NAME}' does not exist, creating the bucket..."
-        gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
-      else
-        echo "Bucket '${_BUCKET_NAME}' already exists, skipping creation."
-      fi
+      gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
 
   # Build step where the repo with gke-disk-image-builder is cloned
 - name: 'gcr.io/cloud-builders/git'
@@ -38,19 +33,14 @@ steps:
   args:
     - "-c"
     - |
-      if ! gcloud container clusters describe ${_CLUSTER_NAME} --project ${_PROJECT_ID} --region ${_REGION} >/dev/null 2>&1; then
-        echo "Cluster '${_CLUSTER_NAME}' does not exist, creating the cluster..."
-        gcloud container clusters create ${_CLUSTER_NAME} \
-          --project=${_PROJECT_ID} \
-          --region=${_REGION} \
-          --workload-pool=${_PROJECT_ID}.svc.id.goog \
-          --release-channel=rapid \
-          --num-nodes=1 \
-          --enable-image-streaming \
-          --addons GcsFuseCsiDriver
-      else
-        echo "Cluster '${_CLUSTER_NAME}' already exists, skipping creation."
-      fi
+      gcloud container clusters create ${_CLUSTER_NAME} \
+        --project=${_PROJECT_ID} \
+        --region=${_REGION} \
+        --workload-pool=${_PROJECT_ID}.svc.id.goog \
+        --release-channel=rapid \
+        --num-nodes=1 \
+        --enable-image-streaming \
+        --addons GcsFuseCsiDriver
 
   # Build step where the node-pool with the secondary boot disk, which already has the cached image for serving the model is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -58,19 +48,14 @@ steps:
   args:
     - "-c"
     - |
-      if ! gcloud container node-pools describe gpupool --cluster=${_CLUSTER_NAME} --project=${_PROJECT_ID} --region=${_REGION} >/dev/null 2>&1; then
-        echo "Node-pool 'gpupool' does not exist in cluster '${_CLUSTER_NAME}', creating the node-pool..."
-        gcloud beta container node-pools create gpupool \
-          --accelerator type=nvidia-l4,count=2,gpu-driver-version=latest \
-          --project=${_PROJECT_ID} \
-          --location=${_REGION} \
-          --node-locations=${_ZONE} \
-          --cluster=${_CLUSTER_NAME} \
-          --machine-type=g2-standard-24 \
-          --num-nodes=1 \
-          --enable-image-streaming \
-          --disk-size 200 \
-          --secondary-boot-disk=disk-image=projects/${_PROJECT_ID}/global/images/${_DISK_IMAGE},mode=CONTAINER_IMAGE_CACHE
-      else
-        echo "Node-pool 'gpupool' already exists in cluster '${_CLUSTER_NAME}', skipping creation."
-      fi
+      gcloud beta container node-pools create gpupool \
+        --accelerator type=nvidia-l4,count=2,gpu-driver-version=latest \
+        --project=${_PROJECT_ID} \
+        --location=${_REGION} \
+        --node-locations=${_ZONE} \
+        --cluster=${_CLUSTER_NAME} \
+        --machine-type=g2-standard-24 \
+        --num-nodes=1 \
+        --enable-image-streaming \
+        --disk-size 200 \
+        --secondary-boot-disk=disk-image=projects/${_PROJECT_ID}/global/images/${_DISK_IMAGE},mode=CONTAINER_IMAGE_CACHE

@@ -49,7 +49,7 @@ gcloud builds submit \
   --substitutions=_BUCKET_NAME=$BUCKET_NAME,_CLUSTER_NAME=$CLUSTER_NAME,_REGION=$REGION,_KSA_NAME=$KSA_NAME,_PROJECT_NUMBER=$PROJECT_NUMBER,_PROJECT_ID=$PROJECT_ID,_ROLE_NAME=$ROLE_NAME,_MODEL_PATH=$MODEL_PATH
 
 # Check if files are downloaded to the Cloud Storage bucket
-gsutil ls gs://$BUCKET_NAME/$MODEL_PATH
+gcloud storage ls gs://$BUCKET_NAME/$MODEL_PATH
 
 # Setup the kubectl
 gcloud container clusters get-credentials ${CLUSTER_NAME} \
@@ -57,6 +57,9 @@ gcloud container clusters get-credentials ${CLUSTER_NAME} \
 
 # Apply the manifest and change the placeholder with the name of the requred bucket and required k8s service account in STANDARD
 sed "s|<BUCKET_NAME>|$BUCKET_NAME|g; s|<KSA_NAME>|$KSA_NAME|g; s|<CONTAINER_IMAGE>|'$CONTAINER_IMAGE'|g" model-deployment.yaml | kubectl apply -f -
+
+# Check the logs of the pod
+kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')
 
 # Clean-up
 gcloud secrets delete hf-username \
@@ -82,7 +85,7 @@ gcloud secrets delete hf-username \
     --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
     --role="roles/compute.instanceAdmin.v1" \
     --condition=None \
-&& gsutil -m rm -rf gs://$BUCKET_NAME \
-&& gsutil -m rm -rf gs://$LOG_BUCKET_NAME \
+&& gcloud storage rm --recursive gs://$BUCKET_NAME \
+&& gcloud storage rm --recursive gs://$LOG_BUCKET_NAME \
 && gcloud compute images delete $DISK_IMAGE \
     --quiet
