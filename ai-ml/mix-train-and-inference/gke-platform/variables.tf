@@ -86,7 +86,7 @@ variable "gpu_driver_version" {
   default     = "DEFAULT"
 }
 
-variable "train_data_bucket" {
+variable "training_data_bucket" {
   type        = string
   description = "A bucket, containing training data"
 }

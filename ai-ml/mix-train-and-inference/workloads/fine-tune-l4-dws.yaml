@@ -55,12 +55,6 @@ spec:
         env:
         - name: "EXPERIMENT"
           value: "finetune-experiment"
-        - name: "MLFLOW_ENABLE"
-          value: "false"
-        # - name: "MLFLOW_TRACKING_URI"
-        #   value: "http://mlflow-tracking-svc:5000"
-        - name: "MLFLOW_ENABLE_SYSTEM_METRICS_LOGGING"
-          value: "false"
         - name: "TRAINING_DATASET_BUCKET"
           value: <TRAINING_BUCKET>
         - name: "TRAINING_DATASET_PATH"

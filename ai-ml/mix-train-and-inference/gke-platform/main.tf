@@ -71,7 +71,7 @@ module "gke_standard" {
 }
 
 resource "google_storage_bucket" "train_data" {
-  name          = var.train_data_bucket
+  name          = var.training_data_bucket
   location      = var.region
   uniform_bucket_level_access = true
 }
