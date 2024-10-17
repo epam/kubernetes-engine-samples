@@ -54,6 +54,9 @@ kubectl apply -f default-priorityclass.yaml
 kubectl apply -f high-priorityclass.yaml
 kubectl apply -f low-priorityclass.yaml
 kubectl apply -f cluster-queue.yaml
+kubectl apply -f local-queue.yaml -n $NAMESPACE
+
+
 
 gcloud storage buckets add-iam-policy-binding "gs://$MODEL_BUCKET" \
     --role=roles/storage.objectAdmin \
@@ -73,28 +76,10 @@ gcloud artifacts repositories add-iam-policy-binding fine-tuning \
 
 
 kubectl create -f tgi-gemma-2-9b-it-hp.yaml -n $NAMESPACE
-# kubectl apply -f fine-tune-l4-dws.yaml -n $NAMESPACE
+
+# deploy fine-tuning job
 sed -e "s/<TRAINING_BUCKET>/$TRAINING_DATA_BUCKET/g" \
 -e "s/<MODEL_BUCKET>/$MODEL_BUCKET/g" \
 -e "s/<PROJECT_ID>/$PROJECT_ID/g" \
 -e "s/<REGION>/$REGION/g" \
 fine-tune-l4-dws.yaml |kubectl apply -f - -n $NAMESPACE
-
-
-
-# sleep 360
-# kubectl apply -f monitoring.yaml -n $NAMESPACE
-
-# #Grant your user the ability to create required authorization roles:
-# kubectl create clusterrolebinding cluster-admin-binding \
-#     --clusterrole cluster-admin --user "$(gcloud config get-value account)"
-
-# #Deploy the custom metrics adapter on your cluster:
-# kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/k8s-stackdriver/master/custom-metrics-stackdriver-adapter/deploy/production/adapter_new_resource_model.yaml
-
-# gcloud projects add-iam-policy-binding projects/$PROJECT_ID \
-#   --role roles/monitoring.viewer \
-#   --condition=None \
-#   --member=principal://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$PROJECT_ID.svc.id.goog/subject/ns/custom-metrics/sa/custom-metrics-stackdriver-adapter
-
-# kubectl apply -f hpa-custom-metrics.yaml -n llm 
