@@ -24,7 +24,7 @@ gpu_pool_node_locations     = $(gcloud compute accelerator-types list --filter="
 
 enable_fleet                = false
 gateway_api_channel         = "CHANNEL_STANDARD"
-training_data_bucket           = "$TRAINING_DATA_BUCKET"
+training_data_bucket        = "$TRAINING_DATA_BUCKET"
 model_bucket                = "$MODEL_BUCKET"
 EOF
 
