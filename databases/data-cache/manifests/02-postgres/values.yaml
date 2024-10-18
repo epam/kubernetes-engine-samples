@@ -1,0 +1,40 @@
+global:
+  postgresql:
+    auth:
+      postgresPassword: "benchmark"
+primary:
+  resources:
+    requests:
+      memory: 8Gi
+      cpu: "2"
+    limits:
+      memory: 8Gi
+      cpu: "4"
+  extraEnvVars:
+    - name: POSTGRESQL_MAX_CONNECTIONS
+      value: "400"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: "app.stateful/component"
+            operator: In
+            values:
+            - "data-cache"
+  tolerations:
+  - key: "app.stateful/component"
+    operator: "Equal"
+    value: "data-cache"
+    effect: NoSchedule
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 150Gi
+readReplicas:
+  replicaCount: 0
+shmVolume:
+  enabled: true
+  sizeLimit: "1Gi"

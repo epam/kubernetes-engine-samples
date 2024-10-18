@@ -46,13 +46,14 @@ module "data_cache_cluster" {
   ]
   node_pools_labels = {
     all = {}
-    pool-weaviate = {
+    pool-data-cache = {
       "app.stateful/component" = "data-cache"
+      "datacache-storage-gke-io" = "enabled"
     }
   }
   node_pools_taints = {
     all = []
-    pool-weaviate = [
+    pool-data-cache = [
       {
         key    = "app.stateful/component"
         value  = "data-cache"
