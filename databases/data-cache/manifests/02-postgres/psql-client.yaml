@@ -35,8 +35,15 @@ spec:
     effect: NoSchedule
   containers:
   - name: main
-    image: postgres:16
+    image: postgres:17
     command: ["sleep", "360000"]
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: "1"
+      limits:
+        memory: 2Gi
+        cpu: "2"
     env:
     - name: PGDATABASE
       value: postgres

@@ -13,6 +13,9 @@ primary:
   extraEnvVars:
     - name: POSTGRESQL_MAX_CONNECTIONS
       value: "400"
+#  extendedConfiguration: |-
+#    max_connections = 400
+#    shared_buffers = '2048MB'
   affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
