@@ -15,6 +15,7 @@ master:
     limits:
       memory: 8Gi
       cpu: "4"
+  heapSize: "4g"
   affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
