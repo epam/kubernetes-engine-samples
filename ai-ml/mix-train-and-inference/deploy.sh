@@ -9,6 +9,7 @@ export GPU_POOL_ACCELERATOR_TYPE="nvidia-l4"
 export TRAINING_DATA_BUCKET="data-bucket-$PROJECT_ID"
 export MODEL_BUCKET="model-bucket-$PROJECT_ID"
 
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
 
 gcloud services enable container.googleapis.com \
     --project=$PROJECT_ID 
@@ -16,7 +17,7 @@ gcloud services enable container.googleapis.com \
 # Create terraform.tfvars file 
 cat <<EOF >gke-platform/terraform.tfvars
 project_id                  = "$PROJECT_ID"
-enable_autopilot            = false
+enable_autopilot            = true
 region                      = "$REGION"
 gpu_pool_machine_type       = "$GPU_POOL_MACHINE_TYPE"
 gpu_pool_accelerator_type   = "$GPU_POOL_ACCELERATOR_TYPE"
@@ -37,18 +38,22 @@ gcloud container clusters get-credentials llm-cluster \
     --region=$REGION \
     --project=$PROJECT_ID
 
+# upload training dataset to bucket
+gcloud storage rsync -r training_data/ gs://$TRAINING_DATA_BUCKET/
 
 NAMESPACE=llm
-cd workloads
+
 kubectl create ns $NAMESPACE
 kubectl create secret generic hf-secret \
 --from-literal=hf_api_token=$HF_TOKEN \
 --dry-run=client -o yaml | kubectl apply -n $NAMESPACE -f -
 
-kubectl apply --server-side -f manifests.yaml
+# kubectl apply --server-side -f manifests.yaml
+kubectl kustomize kueue/ |kubectl apply --server-side -f - 
 
 sleep 180 # wait for kueue deployment
 
+cd workloads
 kubectl apply -f flavors.yaml
 kubectl apply -f default-priorityclass.yaml
 kubectl apply -f high-priorityclass.yaml
@@ -77,9 +82,14 @@ gcloud artifacts repositories add-iam-policy-binding fine-tuning \
 
 kubectl create -f tgi-gemma-2-9b-it-hp.yaml -n $NAMESPACE
 
+
+
+
 # deploy fine-tuning job
 sed -e "s/<TRAINING_BUCKET>/$TRAINING_DATA_BUCKET/g" \
 -e "s/<MODEL_BUCKET>/$MODEL_BUCKET/g" \
 -e "s/<PROJECT_ID>/$PROJECT_ID/g" \
 -e "s/<REGION>/$REGION/g" \
 fine-tune-l4-dws.yaml |kubectl apply -f - -n $NAMESPACE
+
+

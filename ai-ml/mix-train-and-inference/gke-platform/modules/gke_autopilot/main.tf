@@ -41,6 +41,9 @@ resource "google_container_cluster" "ml_cluster" {
     reservation_affinity {
       consume_reservation_type = "NO_RESERVATION"
     }
+    gvnic {
+      enabled = true
+    }
   }
   cluster_autoscaling {
     auto_provisioning_defaults {
