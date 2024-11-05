@@ -81,6 +81,8 @@ spec:
           value: "/model-data/model-gemma2/experiment"
         - name: EPOCHS
           value: "1"
+        - name: CHECKPOINT_SAVE_STEPS
+          value: "1"
         - name: HF_TOKEN
           valueFrom:
             secretKeyRef:
