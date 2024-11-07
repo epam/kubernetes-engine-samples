@@ -1,0 +1,37 @@
+shards: 1
+replicaCount: 1
+resources:
+  requests:
+    memory: 12Gi
+    cpu: "2"
+  limits:
+    memory: 12Gi
+    cpu: "4"
+auth:
+  username: default
+  password: benchmark
+keeper:
+  enabled: true
+zookeeper:
+  enabled: false
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 1
+      preference:
+        matchExpressions:
+        - key: "app.stateful/component"
+          operator: In
+          values:
+          - "data-cache"
+tolerations:
+- key: "app.stateful/component"
+  operator: "Equal"
+  value: "data-cache"
+  effect: NoSchedule
+persistence:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  size: 150Gi
+
