@@ -71,4 +71,6 @@ spec:
                 cpu: 3
                 memory: "16Gi"
                 nvidia.com/gpu: 1
+          nodeSelector:
+            cloud.google.com/gke-accelerator: nvidia-l4
 # [END gke_ai_ml_gke_ray_rayserve_stable_diffusion_rayservice]

@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-# Copyright 2022 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source scripts/variables.sh
-
-echo "*********************************"
-echo "Deleting GCP resources"
-echo "*********************************"
-
-echo "Deleting GKE cluster..."
-gcloud container clusters delete ${CLUSTER_NAME} \
-    --project=${PROJECT_ID} --zone=${ZONE}
-echo "GKE cluster '${CLUSTER_NAME}' deleted."
-
-echo "Deleting Filestore instance..."
-gcloud filestore instances delete ${FILESTORE_ID} --zone=${ZONE}
-echo "Filestore instance '${FILESTORE_ID}' deleted."
-
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'us-docker.pkg.dev/$PROJECT_ID/gemma/finetune-gemma-gpu:1.0.0', '.' ]
+images:
+- 'us-docker.pkg.dev/$PROJECT_ID/gemma/finetune-gemma-gpu:1.0.0'
