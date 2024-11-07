@@ -24,6 +24,12 @@ spec:
     spec:
       containers:
       - name: inference-server
+# [START gke_ai_ml_llm_serving_gemma_vllm_7b_kvcache]
+        args:
+        - --model=$(MODEL_ID)
+        - --tensor-parallel-size=1
+        - --kv-cache-dtype=fp8_e5m2
+        - --max-model-len=1200
         resources:
           requests:
             cpu: "2"
@@ -35,9 +41,4 @@ spec:
             memory: "25Gi"
             ephemeral-storage: "25Gi"
             nvidia.com/gpu: 1
-        args:
-        - --model=$(MODEL_ID)
-        - --tensor-parallel-size=1
-        - --kv-cache-dtype=fp8_e5m2
-        - --max-model-len=1200
-
+# [END gke_ai_ml_llm_serving_gemma_vllm_7b_kvcache]

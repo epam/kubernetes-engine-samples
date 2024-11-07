@@ -25,13 +25,8 @@ spec:
         runtime_env:
           working_dir: "https://github.com/GoogleCloudPlatform/kubernetes-engine-samples/archive/refs/heads/main.zip"
           pip:
-            - pydantic<2
-            - google-api-python-client
-            - pillow
             - diffusers==0.7.2
-            - transformers==4.24.0
             - flax
-            - ml_dtypes==0.2.0
             - jax[tpu]==0.4.11
             - -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
             - fastapi
@@ -43,7 +38,7 @@ spec:
         spec:
           containers:
           - name: ray-head
-            image: rayproject/ray:2.9.0-py310
+            image: rayproject/ray-ml:2.9.0-py310
             ports:
             - containerPort: 6379
               name: gcs
@@ -71,7 +66,7 @@ spec:
         spec:
           containers:
           - name: ray-worker
-            image: rayproject/ray:2.9.0-py310
+            image: rayproject/ray-ml:2.9.0-py310
             resources:
               limits:
                 cpu: "100"
