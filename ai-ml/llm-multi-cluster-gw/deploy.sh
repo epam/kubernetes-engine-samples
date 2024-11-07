@@ -1,5 +1,19 @@
 #!/bin/sh
 
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Set up env variables values
 # export HF_TOKEN=HF_TOKEN
 # export REGION_1=us-central1
@@ -8,8 +22,9 @@
 # export GPU_POOL_ACCELERATOR_TYPE_1="nvidia-tesla-a100"
 # export GPU_POOL_MACHINE_TYPE_2="g2-standard-4"
 # export GPU_POOL_ACCELERATOR_TYPE_2="nvidia-l4"
-set -e
 
+set -e
+NAMESPACE=llm
 PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
 
 gcloud services enable container.googleapis.com \
@@ -66,11 +81,6 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud container fleet ingress enable \
     --config-membership=projects/$PROJECT_ID/locations/$REGION_1/memberships/llm-cluster-1 \
     --project=$PROJECT_ID
-# Add second cluster
-gcloud container fleet ingress update \
-    --config-membership=projects/$PROJECT_ID/locations/$REGION_2/memberships/llm-cluster-2 \
-    --project=$PROJECT_ID
-
 
 # Grant Identity and Access Management (IAM) permissions required by the multi-cluster Gateway controller
 gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -78,9 +88,6 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --role "roles/container.admin" \
     --condition=None \
     --project=$PROJECT_ID
-
-
-NAMESPACE=llm
 
 # Deploy workloads in gke-us
 kubectl config use-context gke-us
