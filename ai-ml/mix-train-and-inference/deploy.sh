@@ -103,6 +103,6 @@ sed -e "s/<TRAINING_BUCKET>/$TRAINING_DATA_BUCKET/g" \
 -e "s/<MODEL_BUCKET>/$MODEL_BUCKET/g" \
 -e "s/<PROJECT_ID>/$PROJECT_ID/g" \
 -e "s/<REGION>/$REGION/g" \
-fine-tune-l4-dws.yaml |kubectl apply -f - -n $NAMESPACE
+fine-tune-l4.yaml |kubectl apply -f - -n $NAMESPACE
 
 
