@@ -101,8 +101,6 @@ kubectl create -f tgi-gemma-2-9b-it-hp.yaml -n $NAMESPACE
 # deploy fine-tuning job
 sed -e "s/<TRAINING_BUCKET>/$TRAINING_DATA_BUCKET/g" \
 -e "s/<MODEL_BUCKET>/$MODEL_BUCKET/g" \
--e "s/<PROJECT_ID>/$PROJECT_ID/g" \
--e "s/<REGION>/$REGION/g" \
 fine-tune-l4.yaml |kubectl apply -f - -n $NAMESPACE
 
 
