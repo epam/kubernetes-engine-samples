@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_databases_postgres_chaos_testing_01_postgres_psql_client]
+# [START gke_databases_data_cache_03_elasticsearch_client]
 apiVersion: v1
 kind: Pod
 metadata:
@@ -44,4 +44,6 @@ spec:
       limits:
         memory: 4Gi
         cpu: "2"
-# [END gke_databases_postgres_chaos_testing_01_postgres_psql_client]
+
+# [END gke_databases_data_cache_03_elasticsearch_client]
+

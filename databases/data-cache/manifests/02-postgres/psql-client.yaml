@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_databases_postgres_chaos_testing_01_postgres_psql_client]
+# [START gke_databases_data_cache_02_postgres_psql_client]
 apiVersion: v1
 kind: Pod
 metadata:
@@ -51,4 +51,5 @@ spec:
       value: postgres
     - name: PGPASSWORD
       value: benchmark
-# [END gke_databases_postgres_chaos_testing_01_postgres_psql_client]
+# [END gke_databases_data_cache_02_postgres_psql_client]
+
