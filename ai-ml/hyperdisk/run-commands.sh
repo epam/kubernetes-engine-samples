@@ -56,13 +56,9 @@ gcloud builds submit \
   --config cloudbuild-prepare.yaml --no-source \
   --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE_A="$ZONE_A",_ZONE_B="$ZONE_B",_ZONE_C="$ZONE_C",_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
 
-kubectl create secret generic hf-secret \
-    --from-literal=hf_api_token=$HF_TOKEN\
-    --dry-run=client -o yaml | kubectl apply -f -
-
 gcloud builds submit \
   --config cloudbuild-preload-apply.yaml --no-source \
-  --substitutions=_REGION=$REGION,_CLUSTER_NAME=$CLUSTER_NAME
+  --substitutions=_REGION=$REGION,_CLUSTER_NAME=$CLUSTER_NAME,_HF_TOKEN=$HF_TOKEN
 
 # Check the logs of the pod
 kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')
