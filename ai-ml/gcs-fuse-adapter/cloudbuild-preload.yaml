@@ -13,7 +13,7 @@
 # limitations under the License.
 
 steps:
-  # Build step where the bucket for files is created
+# Build step where the bucket for files is created
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: "/bin/bash"
     args:
@@ -21,7 +21,7 @@ steps:
       - |
         gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
   
-  # Build step where the kubernetes service account is created
+# Build step where the kubernetes service account is created
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
@@ -30,7 +30,7 @@ steps:
         gcloud container clusters get-credentials ${_CLUSTER_NAME} --location=${_REGION}
         kubectl create serviceaccount ${_KSA_NAME}
 
-  # Build step where the permissions to kubernetes service account are added
+# Build step where the permissions to kubernetes service account are added
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args: 
@@ -40,7 +40,7 @@ steps:
           --member "principal://iam.googleapis.com/projects/${_PROJECT_NUMBER}/locations/global/workloadIdentityPools/${_PROJECT_ID}.svc.id.goog/subject/ns/default/sa/${_KSA_NAME}" \
           --role "${_ROLE_NAME}"
   
-  # Build step where the model weights and configuration files are cloned
+# Build step where the model weights and configuration files are cloned
   - name: 'gcr.io/cloud-builders/git'
     entrypoint: 'bash'
     args:
@@ -52,7 +52,7 @@ steps:
         git lfs clone https://$$HF_USERNAME:$$HF_TOKEN@huggingface.co/google/${_MODEL_PATH} ./${_MODEL_PATH}
     secretEnv: ['HF_USERNAME', 'HF_TOKEN']
 
-  # Build step where the files are uploaded to the bucket
+# Build step where the files are uploaded to the bucket
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:

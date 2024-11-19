@@ -13,7 +13,7 @@
 # limitations under the License.
 
 steps:
-  # Build step where a Cloud Storage bucket to store the execution logs of gke-disk-image-builder is created
+# Build step where a Cloud Storage bucket to store the execution logs of gke-disk-image-builder is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: "/bin/bash"
   args:
@@ -21,11 +21,11 @@ steps:
     - |
       gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
 
-  # Build step where the repo with gke-disk-image-builder is cloned
+# Build step where the repo with gke-disk-image-builder is cloned
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/GoogleCloudPlatform/ai-on-gke.git']
 
-  # Build step where gke-disk-image-builder is run with required parameters
+# Build step where gke-disk-image-builder is run with required parameters
 - name: 'gcr.io/cloud-builders/go:1.21'
   env: ['GOPATH=./ai-on-gke/tools/gke-disk-image-builder']
   dir: './ai-on-gke/tools/gke-disk-image-builder'
@@ -41,7 +41,7 @@ steps:
     - --container-image=${_CONTAINER_IMAGE}
     - --image-pull-auth=ServiceAccountToken
 
-  # Build step where the GKE cluster with GCS Fuse addon enabled is created
+# Build step where the GKE cluster with GCS Fuse addon enabled is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: "/bin/bash"
   args:
@@ -56,7 +56,7 @@ steps:
         --enable-image-streaming \
         --addons GcsFuseCsiDriver
 
-  # Build step where the node-pool with the secondary boot disk, which already has the cached image for serving the model is created
+# Build step where the node-pool with the secondary boot disk, which already has the cached image for serving the model is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: "/bin/bash"
   args:
