@@ -1,0 +1,82 @@
+# Ensure that the project_id is set
+gcloud config set project PROJECT_ID
+
+# Set the required environment variables
+export PROJECT_ID=$(gcloud config get project) \
+&& export PROJECT_NUMBER=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)") \
+&& export REGION=europe-west4 \
+&& export ZONE=$REGION-a \
+&& export ZONE_A=$REGION-a \
+&& export ZONE_B=$REGION-b \
+&& export ZONE_C=$REGION-c \
+&& export CLUSTER_NAME=CLUSTER_NAME \
+&& export DISK_IMAGE=DISK_IMAGE_NAME \
+&& export LOG_BUCKET_NAME=$LOG_BUCKET_NAME \
+&& export CONTAINER_IMAGE=CONTAINER_IMAGE_NAME
+
+# Add the Hugging Face username and Hugging Face user token to the cloud secrets
+echo -n ${HF_USERNAME} | gcloud secrets create hf-username --data-file=- \
+&& echo -n ${HF_TOKEN} | gcloud secrets create hf-token --data-file=-
+
+# Add the required permissions to the default Cloud Build service account
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/storage.admin" \
+    --condition=None \
+&& gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor" \
+    --condition=None \
+&& gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/container.clusterAdmin" \
+    --condition=None \
+&& gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/compute.instanceAdmin.v1" \
+    --condition=None
+
+
+# Run the Cloud Build command to prepare the cluster with all required substitutions
+gcloud builds submit \
+  --config cloudbuild-prepare.yaml --no-source \
+  --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE_A="$ZONE_A",_ZONE_B="$ZONE_B",_ZONE_C="$ZONE_C",_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
+
+kubectl create secret generic hf-secret \
+    --from-literal=hf_api_token=$HF_TOKEN\
+    --dry-run=client -o yaml | kubectl apply -f -
+
+gcloud builds submit \
+  --config cloudbuild-preload-apply.yaml --no-source \
+  --substitutions=_REGION=$REGION,_CLUSTER_NAME=$CLUSTER_NAME
+
+# Check the logs of the pod
+kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')
+
+# Clean-up
+gcloud secrets delete hf-username \
+  --quiet \
+&& gcloud secrets delete hf-token \
+    --quiet \
+&& gcloud projects remove-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/storage.admin" \
+    --condition=None \
+&& gcloud projects remove-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor" \
+    --condition=None \
+&& gcloud projects remove-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/container.clusterAdmin" \
+    --condition=None \
+&& gcloud projects remove-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/compute.instanceAdmin.v1" \
+    --condition=None \
+&& gcloud container clusters delete ${CLUSTER_NAME} \
+    --region=${REGION} \
+    --quiet \
+&& gcloud storage rm --recursive gs://$LOG_BUCKET_NAME \
+&& gcloud compute images delete $DISK_IMAGE \
+    --quiet

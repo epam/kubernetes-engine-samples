@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: producer-job-gpu
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - "gpupool"
+      containers:
+      - name: gpu-intensive-task
+        image: huggingface/downloader:0.17.3
+        command: ["huggingface-cli"]
+        args:
+        - download
+        - google/gemma-2b-it
+        - --local-dir=/data/gemma-2b-it
+        - --local-dir-use-symlinks=False
+        resources:
+          limits:
+            cpu: "16"
+            memory: "64Gi"
+            nvidia.com/gpu: 1  # Assuming each node has 2 GPUs available as per your configuration.
+        env:
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-secret
+              key: hf_api_token
+        volumeMounts:
+        - mountPath: "/data"
+          name: volume
+      restartPolicy: Never
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: producer-pvc
+  parallelism: 1         # Run 1 Pod concurrently
+  completions: 1         # Once 1 Pod completes successfully, the Job is done
+  backoffLimit: 4        # Max retries on failure

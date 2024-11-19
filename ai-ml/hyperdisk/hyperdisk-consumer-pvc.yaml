@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: hdml-consumer-pvc
+spec:
+  dataSource:
+    name: hyperdisk-snapshot
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
+  accessModes:
+  - ReadOnlyMany
+  storageClassName: hyperdisk-ml-multi-zone
+  resources:
+    requests:
+      storage: 300Gi

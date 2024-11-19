@@ -1,0 +1,60 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud container clusters get-credentials ${_CLUSTER_NAME} --location=${_REGION}
+        kubectl create -f 2.1-hyperdisk-ml-storage-class.yaml
+        kubectl create -f 2.2-hyperdisk-producer-pvc.yaml
+        kubectl apply -f 2.3-hyperdisk-preload-job.yaml
+
+  - name: 'gcr.io/cloud-builders/cloud-sdk'
+    entrypoint: 'bash'
+    id: 'check_job_run'
+    args:
+      - '-c'
+      - |
+        echo "Waiting for job to complete"
+        while true; do
+          if [[ "$(kubectl get jobs producer-job-gpu -o=jsonpath='{.status.succeeded}') == "1" ]]; then
+            echo "Job completed successfully."
+            break
+          fi
+          echo "Job is not yet complete. Waiting..."
+          sleep 30
+        done
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    waitFor:
+      - 'check_job_run'
+    args:
+      - '-c'
+      - |
+        kubectl apply -f 2.4-hyperdisk-disk-image-vsc.yaml
+        kubectl apply -f 2.5-hyperdisk-snapshot.yaml
+
+  - name: 'gcr.io/cloud-builders/cloud-sdk'
+    entrypoint: 'bash'
+    id: 'check_snapshot_readines'
+    args:
+      - '-c'
+      - |
+        echo "Waiting for VolumeSnapshot to be ready..."
+        while [[ "$(kubectl get volumesnapshot hyperdisk-snapshot -o=jsonpath='{.status.readyToUse}')" != "true" ]]; do
+          echo "Snapshot not ready. Waiting..."
+          sleep 30
+        done
+        echo "Snapshot is ready to use!"
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    waitFor:
+      - 'check_snapshot_readines'
+    args:
+      - '-c'
+      - |
+        kubectl apply -f 2.6-hyperdisk-ml-multi-zone.yaml
+        kubectl apply -f 2.7-hyperdisk-consumer-pvc.yaml
+        kubectl apply -f 2.8-model-deployment.yaml
