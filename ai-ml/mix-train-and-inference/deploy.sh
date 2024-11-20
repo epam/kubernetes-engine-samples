@@ -74,8 +74,6 @@ kubectl apply -f low-priorityclass.yaml
 kubectl apply -f cluster-queue.yaml
 kubectl apply -f local-queue.yaml -n $NAMESPACE
 
-
-
 gcloud storage buckets add-iam-policy-binding "gs://$MODEL_BUCKET" \
     --role=roles/storage.objectAdmin \
     --member=principal://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$PROJECT_ID.svc.id.goog/subject/ns/$NAMESPACE/sa/default \
@@ -85,22 +83,9 @@ gcloud storage buckets add-iam-policy-binding "gs://$TRAINING_DATA_BUCKET" \
     --member=principal://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$PROJECT_ID.svc.id.goog/subject/ns/$NAMESPACE/sa/default \
     --condition=None
 
-
-gcloud artifacts repositories add-iam-policy-binding fine-tuning \
-    --role=roles/artifactregistry.reader \
-    --member=serviceAccount:gke-llm-sa@$PROJECT_ID.iam.gserviceaccount.com \
-    --location=$REGION \
-    --condition=None
-
-
 kubectl create -f tgi-gemma-2-9b-it-hp.yaml -n $NAMESPACE
-
-
-
 
 # deploy fine-tuning job
 sed -e "s/<TRAINING_BUCKET>/$TRAINING_DATA_BUCKET/g" \
 -e "s/<MODEL_BUCKET>/$MODEL_BUCKET/g" \
 fine-tune-l4.yaml |kubectl apply -f - -n $NAMESPACE
-
-
