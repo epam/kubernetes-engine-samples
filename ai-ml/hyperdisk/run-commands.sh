@@ -19,18 +19,12 @@ gcloud config set project PROJECT_ID
 export PROJECT_ID=$(gcloud config get project) \
 && export PROJECT_NUMBER=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)") \
 && export REGION=europe-west4 \
-&& export ZONE=$REGION-a \
-&& export ZONE_A=$REGION-a \
-&& export ZONE_B=$REGION-b \
-&& export ZONE_C=$REGION-c \
 && export CLUSTER_NAME=CLUSTER_NAME \
 && export DISK_IMAGE=DISK_IMAGE_NAME \
 && export LOG_BUCKET_NAME=$LOG_BUCKET_NAME \
-&& export CONTAINER_IMAGE=CONTAINER_IMAGE_NAME
-
-# Add the Hugging Face username and Hugging Face user token to the cloud secrets
-echo -n ${HF_USERNAME} | gcloud secrets create hf-username --data-file=- \
-&& echo -n ${HF_TOKEN} | gcloud secrets create hf-token --data-file=-
+&& export CONTAINER_IMAGE=CONTAINER_IMAGE_NAME \
+&& export HF_TOKEN=HF_TOKEN \
+&& for zone in A B C … ; do export ZONE_$zone="$REGION-$(echo $zone | tr A-Z a-z)"; done
 
 # Add the required permissions to the default Cloud Build service account
 gcloud projects add-iam-policy-binding $PROJECT_ID \

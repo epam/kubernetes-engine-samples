@@ -26,4 +26,4 @@ spec:
   storageClassName: hyperdisk-ml-multi-zone
   resources:
     requests:
-      storage: 300Gi
+      storage: 75Gi
