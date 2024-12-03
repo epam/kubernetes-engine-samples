@@ -1,0 +1,14 @@
+kubectl apply -f - <<EOF
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hyperdisk-storage
+provisioner: pd.csi.storage.gke.io
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: hyperdisk-balanced
+  provisioned-throughput-on-create: "140Mi"
+  provisioned-iops-on-create: "3000"
+  storage-pools: projects/my-project/zones/us-east4-c/storagePools/pool-us-east4-c
+EOF

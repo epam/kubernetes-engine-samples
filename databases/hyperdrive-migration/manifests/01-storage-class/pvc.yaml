@@ -1,0 +1,13 @@
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  storageClassName: hyperdisk-storage
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 150Gi
+EOF
