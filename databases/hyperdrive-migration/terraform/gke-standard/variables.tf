@@ -29,19 +29,9 @@ variable "cluster_prefix" {
   type        = string
 }
 
-variable "node_machine_type" {
-  description = "The machine type for node instances"
-  default     = "n2-standard-4"
-  type        = string
-}
 variable "hd_node_machine_type" {
   description = "The machine type for node instances"
   default     = "c3-standard-4"
-  type        = string
-}
-variable "node_disk_type" {
-  description = "The persistent disk type for node instances"
-  default     = "pd-ssd"
   type        = string
 }
 variable "hyper_disk_type" {
