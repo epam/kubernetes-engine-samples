@@ -31,18 +31,6 @@ module "hyper_drive_cluster" {
 
   node_pools = [
     {
-      name            = "pool-database"
-      disk_size_gb    = var.node_disk_size
-      disk_type       = var.node_disk_type
-      autoscaling     = true
-      min_count       = 1
-      max_count       = var.autoscaling_max_count
-      max_surge       = 1
-      max_unavailable = 0
-      machine_type    = var.node_machine_type
-      auto_repair     = true
-    },
-    {
       name            = "pool-hyperdisk"
       disk_size_gb    = var.node_disk_size
       disk_type       = var.hyper_disk_type
@@ -57,20 +45,9 @@ module "hyper_drive_cluster" {
   ]
   node_pools_labels = {
     all = {}
-    pool-database = {
-      "app.stateful/component" = "database"
-      "datacache-storage-gke-io" = "enabled"
-    }
   }
   node_pools_taints = {
     all = []
-    pool-database = [
-      {
-        key    = "app.stateful/component"
-        value  = "database"
-        effect = "NO_SCHEDULE"
-      }
-    ]
   }
 }
 
