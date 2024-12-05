@@ -33,21 +33,17 @@ primary:
     limits:
       cpu: "4"
       memory: 8Gi
-  affinity: 
+
+  affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 1
         preference:
           matchExpressions:
-          - key: "app.stateful/component"
+          - key: "cloud.google.com/gke-nodepool"
             operator: In
             values:
-            - "database"
-  tolerations:
-  - key: "app.stateful/component"
-    operator: "Equal"
-    value: "database"
-    effect: NoSchedule
+            - "default-pool"
   extraFlags: "--max_connections=400"
   persistence:
     enabled: true
@@ -76,16 +72,10 @@ secondary:
       - weight: 1
         preference:
           matchExpressions:
-          - key: "app.stateful/component"
+          - key: "cloud.google.com/gke-nodepool"
             operator: In
             values:
-            - "database"
-  tolerations:
-  - key: "app.stateful/component"
-    operator: "Equal"
-    value: "database"
-    effect: NoSchedule
-  extraFlags: "--max_connections=400"
+            - "pool-hyperdisk"
   persistence:
     enabled: true
     accessModes:
@@ -97,4 +87,3 @@ secondary:
       mysql: 3306
     nodePorts:
       mysql: "31005"    
-  
