@@ -82,4 +82,4 @@ steps:
       - |
         kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-ml-multi-zone.yaml
         kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-consumer-pvc.yaml
-        kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/model-deployment.yaml
+        kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/model-deployment-${_CLUSTER_TYPE}.yaml

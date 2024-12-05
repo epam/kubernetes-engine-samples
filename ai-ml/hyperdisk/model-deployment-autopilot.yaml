@@ -66,7 +66,7 @@ spec:
       volumes:
       - name: dshm
         emptyDir:
-            medium: Memory
+          medium: Memory
       - name: gemma-2b-it
         persistentVolumeClaim:
           claimName: hdml-consumer-pvc

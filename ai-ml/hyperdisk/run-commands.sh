@@ -47,8 +47,12 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 # Run the Cloud Build command to prepare the cluster with all required substitutions
 gcloud builds submit \
-  --config cloudbuild-prepare.yaml --no-source \
-  --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE_A="$ZONE_A",_ZONE_B="$ZONE_B",_ZONE_C="$ZONE_C",_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
+  --config cloudbuild-prepare-autopilot.yaml --no-source \
+  --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID,_CLUSTER_TYPE=autopilot
+
+gcloud builds submit \
+  --config cloudbuild-prepare-standard.yaml --no-source \
+  --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE_A="$ZONE_A",_ZONE_B="$ZONE_B",_ZONE_C="$ZONE_C",_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID,_CLUSTER_TYPE-standard
 
 gcloud builds submit \
   --config cloudbuild-preload-apply.yaml --no-source \
