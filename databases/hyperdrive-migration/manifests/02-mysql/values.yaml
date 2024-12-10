@@ -58,7 +58,7 @@ primary:
       mysql: "31006"
 
 secondary:
-  replicaCount: 2
+  replicaCount: 0
   resources:
     requests:
       cpu: "2"
@@ -80,6 +80,7 @@ secondary:
     enabled: true
     accessModes:
     - ReadWriteOnce
+    storageClass: "balanced-storage"
     size: 150Gi  
   service:
     type: NodePort
