@@ -62,7 +62,14 @@ gcloud builds submit \
 kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')
 
 # Clean-up
-gcloud secrets delete hf-username \
+gcloud container clusters get-credentials ${CLUSTER_NAME} \
+  --location=${REGION}
+&& kubectl delete deployment vllm-gemma-deployment \
+&& kubect delete job producer-job-gpu \
+&& kubectl delete pvc producer-pvc \
+&& kubectl delete pvc hdml-consumer-pvc \
+&& kubectl delete volumesnapshot hyperdisk-snapshot \
+&& gcloud secrets delete hf-username \
   --quiet \
 && gcloud secrets delete hf-token \
     --quiet \
@@ -88,3 +95,8 @@ gcloud secrets delete hf-username \
 && gcloud storage rm --recursive gs://$LOG_BUCKET_NAME \
 && gcloud compute images delete $DISK_IMAGE \
     --quiet
+
+
+gcloud builds submit \
+  --config cloudbuild-cleanup.yaml --no-source \
+  --substitutions=_CLUSTER_NAME=$CLUSTER_NAME,_REGION=$REGION,_PROJECT_ID=$PROJECT_ID,_PROJECT_NUMBER=$PPROJECT_NUMBER_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,,_ZONE_A="$ZONE_A",_ZONE_B="$ZONE_B",_ZONE_C="$ZONE_C",,_
