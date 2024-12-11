@@ -23,6 +23,8 @@ steps:
         kubectl delete job producer-job-gpu &&
         kubectl delete pvc producer-pvc &&
         kubectl delete pvc hdml-consumer-pvc &&
+        kubectl delete storageclass hyperdisk-ml-multi-zone &&
+        kubectl delete storageclass hyperdisk-ml &&
         kubectl delete volumesnapshot hyperdisk-snapshot &&
         gcloud secrets delete hf-username --quiet &&
         gcloud secrets delete hf-token --quiet &&
@@ -31,5 +33,5 @@ steps:
         gcloud projects remove-iam-policy-binding ${_PROJECT_ID} --member="serviceAccount:${_PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/container.clusterAdmin" --condition=None &&
         gcloud projects remove-iam-policy-binding ${_PROJECT_ID} --member="serviceAccount:${_PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/compute.instanceAdmin.v1" --condition=None &&
         gcloud container clusters delete ${_CLUSTER_NAME} --region=${_REGION} --quiet &&
-        gcloud storage rm --recursive gs://${_LOG_BUCKET_NAME} &&
+        gcloud storage rm --recursive gs://${_BUCKET_NAME} &&
         gcloud compute images delete ${_DISK_IMAGE} --quiet
