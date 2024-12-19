@@ -18,7 +18,7 @@ metadata:
   name: hyperdisk-ml-multi-zone
 parameters:
   type: hyperdisk-ml
-  provisioned-throughput-on-create: "2400Mi"
+  provisioned-throughput-on-create: "4800Mi"
   enable-multi-zone-provisioning: "true"
 provisioner: pd.csi.storage.gke.io
 allowVolumeExpansion: false
@@ -31,7 +31,5 @@ allowedTopologies:
     - europe-west4-a
     - europe-west4-b
     - europe-west4-c
-  mountOptions:
-  - read
-    ahead
-    kb=8192
+mountOptions:
+- read_ahead_kb=8192
