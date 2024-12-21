@@ -35,8 +35,9 @@ spec:
             memory: "25Gi"
             ephemeral-storage: "25Gi"
             nvidia.com/gpu: 1
+# [START gke_ai_ml_llm_serving_gemma_vllm_7b_token]
         args:
         - --model=$(MODEL_ID)
         - --tensor-parallel-size=1
         - --max-model-len=600
-
+# [END gke_ai_ml_llm_serving_gemma_vllm_7b_token]

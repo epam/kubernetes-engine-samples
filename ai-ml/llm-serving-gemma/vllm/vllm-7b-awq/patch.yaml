@@ -24,6 +24,7 @@ spec:
     spec:
       containers:
       - name: inference-server
+# [START gke_ai_ml_llm_serving_gemma_vllm_7b_awq]
         args:
         - --model=$(MODEL_ID)
         - --tensor-parallel-size=1
@@ -36,4 +37,4 @@ spec:
             nvidia.com/gpu: 1
           limits:
             nvidia.com/gpu: 1
-
+# [END gke_ai_ml_llm_serving_gemma_vllm_7b_awq]
