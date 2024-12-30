@@ -87,4 +87,11 @@ steps:
         kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-ml-multi-zone.yaml
         kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-consumer-pvc.yaml
         sleep 300
-        kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/model-deployment-${_CLUSTER_TYPE}.yaml
+        if [ "${_CLUSTER_TYPE}" = "autopilot" ]; then
+          sed "s|<DISK_IMAGE_NAME>|${_DISK_IMAGE}|g; s|<PROJECT_ID>|${_PROJECT_ID}|g" kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-preload-job-${_CLUSTER_TYPE}.yaml | kubectl apply -f -
+        elif [ "${_CLUSTER_TYPE}" = "standard" ]; then
+          kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-preload-job-${_CLUSTER_TYPE}.yaml
+        else
+          echo "Error: Unknown cluster type '${_CLUSTER_TYPE}'"
+          exit 1
+        fi
