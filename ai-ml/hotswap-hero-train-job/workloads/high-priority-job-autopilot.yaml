@@ -38,6 +38,7 @@ spec:
            nodeSelector:
              cloud.google.com/gke-tpu-accelerator: tpu-v5-lite-podslice
              cloud.google.com/gke-tpu-topology: 2x4
+             cloud.google.com/gke-spot: "true"
            priorityClassName: high-prior-job
            containers:
            - name: jax-tpu

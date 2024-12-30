@@ -16,12 +16,10 @@ gcloud services enable container.googleapis.com \
 # Create terraform.tfvars file 
 cat <<EOF >gke-platform/terraform.tfvars
 project_id                  = "$PROJECT_ID"
-enable_autopilot            = true
+enable_autopilot            = false
 enable_tpu                  = true
 region                      = "$REGION"
 tpu_node_location           = ["$TPU_NODE_LOCATION"]
-enable_fleet                = false
-gateway_api_channel         = "CHANNEL_STANDARD"
 tpu_machine_type            = "ct5lp-hightpu-4t"
 tpu_topology                 = "2x4"
 tpu_node_pools_number       = 3

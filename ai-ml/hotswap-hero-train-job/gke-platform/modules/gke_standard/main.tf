@@ -26,6 +26,10 @@ locals {
   gateway_api_config = var.gateway_api_channel != null ? [{ channel : var.gateway_api_channel }] : []
 }
 
+data "google_service_account" "default" {
+  account_id = var.service_account
+}
+
 # GKE cluster
 resource "google_container_cluster" "ml_cluster" {
   name                     = var.cluster_name
@@ -106,9 +110,6 @@ resource "google_container_cluster" "ml_cluster" {
   }
 }
 
-data "google_service_account" "default" {
-  account_id = var.service_account
-}
 
 resource "google_container_node_pool" "cpu_pool" {
   name     = "cpu-pool"
