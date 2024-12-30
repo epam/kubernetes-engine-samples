@@ -13,24 +13,19 @@
 # limitations under the License.
 
 steps:
-# Build step 1 where a Cloud Storage bucket to store the execution logs of gke-disk-image-builder is created
+# Build step where a Cloud Storage bucket to store the execution logs of gke-disk-image-builder is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: "/bin/bash"
   args:
     - "-c"
     - |
-      if ! gcloud storage buckets list "gs://${_BUCKET_NAME}" >/dev/null 2>&1; then
-        echo "Bucket '${_BUCKET_NAME}' does not exist, creating the bucket..."
-        gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
-      else
-        echo "Bucket '${_BUCKET_NAME}' already exists, skipping creation."
-      fi
+      gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
 
-# Build step 2 where the repo with gke-disk-image-builder is cloned
+# Build step where the repo with gke-disk-image-builder is cloned
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/GoogleCloudPlatform/ai-on-gke.git']
 
-# Build step 3 where gke-disk-image-builder is run with required parameters
+# Build step where gke-disk-image-builder is run with required parameters
 - name: 'gcr.io/cloud-builders/go:1.21'
   env: ['GOPATH=./ai-on-gke/tools/gke-disk-image-builder']
   dir: './ai-on-gke/tools/gke-disk-image-builder'
@@ -46,17 +41,18 @@ steps:
     - --container-image=${_CONTAINER_IMAGE}
     - --image-pull-auth=ServiceAccountToken
 
-# Build step 4 where the GKE cluster with GCS Fuse addon enabled is created
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
+# Build step where the GKE cluster with GCS Fuse addon enabled is created
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: "/bin/bash"
   args:
-    - '-c'
+    - "-c"
     - |
       gcloud container clusters create-auto ${_CLUSTER_NAME} \
         --project=${_PROJECT_ID} \
         --region=${_REGION} \
         --release-channel=rapid
-# Build step 5 enables GKE to create nodes with secondary boot disks using all disk images in the project, including the secondary boot disk that has already been prepared with a cached image for serving the model.
+
+# Build step enables GKE to create nodes with secondary boot disks using all disk images in the project
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args:
