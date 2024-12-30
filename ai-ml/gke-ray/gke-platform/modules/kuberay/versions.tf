@@ -16,11 +16,11 @@ terraform {
   required_providers {
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.15.0"
+      version = "~> 2.17.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.32.0"
+      version = "2.35.1"
     }
   }
   provider_meta "google" {
