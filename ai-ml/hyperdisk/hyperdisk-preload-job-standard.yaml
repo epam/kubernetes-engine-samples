@@ -15,17 +15,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: producer-job-gpu
+  name: producer-job
 spec:
-  template:
+  template: # Template for the Pods the Job will create
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - "gpupool"
       containers:
       - name: model-download
-        resources:
-          requests:
-            cpu: "24"
-          limits:
-            cpu: "24"
         image: huggingface/downloader:0.17.3
         command: ["huggingface-cli"]
         args:
@@ -33,6 +37,11 @@ spec:
         - google/gemma-2b-it
         - --local-dir=/data/gemma-2b-it
         - --local-dir-use-symlinks=False
+        resources:
+          limits:
+            cpu: "16"
+            memory: "64Gi"
+            nvidia.com/gpu: 1  # Assuming each node has 2 GPUs available as per your configuration.
         env:
         - name: HUGGING_FACE_HUB_TOKEN
           valueFrom:

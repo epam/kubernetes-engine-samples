@@ -33,7 +33,7 @@ steps:
         kubectl create secret generic hf-secret --from-literal=hf_api_token=${_HF_TOKEN} --dry-run=client -o yaml | kubectl apply -f -
         kubectl create -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-ml-storage-class.yaml
         kubectl create -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-producer-pvc.yaml
-        kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-preload-job.yaml
+        kubectl apply -f kubernetes-engine-samples/ai-ml/hyperdisk/hyperdisk-preload-job-${_CLUSTER_TYPE}.yaml
 
 # This step waits for the job to finish before proceeding to the next step.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -44,7 +44,7 @@ steps:
       - |
         echo "Waiting for job to complete"
         while true; do
-          if [[ "$(kubectl get jobs producer-job-gpu -o=jsonpath='{.status.succeeded}')" == "1" ]]; then
+          if [[ "$(kubectl get jobs producer-job -o=jsonpath='{.status.succeeded}')" == "1" ]]; then
             echo "Job completed successfully."
             break
           fi
