@@ -65,7 +65,7 @@ steps:
 # This step waits until the snapshot is ready to use.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
-    id: 'check_snapshot_readines'
+    id: 'check_snapshot_readiness'
     args:
       - '-c'
       - |
