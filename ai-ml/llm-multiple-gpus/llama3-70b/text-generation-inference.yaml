@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: llm
-        image: ghcr.io/huggingface/text-generation-inference:2.0.4
+        image: us-docker.pkg.dev/deeplearning-platform-release/gcr.io/huggingface-text-generation-inference-cu124.2-3.ubuntu2204.py311
         resources:
           requests:
             cpu: "10"
@@ -79,18 +79,4 @@ spec:
       nodeSelector:
         cloud.google.com/gke-accelerator: "nvidia-l4"
         cloud.google.com/gke-spot: "true"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: llm-service
-spec:
-  selector:
-    app: llm
-  type: ClusterIP
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
 # [END gke_aiml_llm_multi_gpus_llama3_70b_inference]

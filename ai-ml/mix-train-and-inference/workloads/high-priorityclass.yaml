@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-# Copyright 2022 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,18 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source scripts/variables.sh
+# [START gke_ai_ml_mix_train_and_inference_workloads_high_priorityclass]
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority-preempting
+value: 30
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "This high priority class will cause other pods to be preempted."
 
-echo "*********************************"
-echo "Deleting GCP resources"
-echo "*********************************"
-
-echo "Deleting GKE cluster..."
-gcloud container clusters delete ${CLUSTER_NAME} \
-    --project=${PROJECT_ID} --zone=${ZONE}
-echo "GKE cluster '${CLUSTER_NAME}' deleted."
-
-echo "Deleting Filestore instance..."
-gcloud filestore instances delete ${FILESTORE_ID} --zone=${ZONE}
-echo "Filestore instance '${FILESTORE_ID}' deleted."
-
+# [END gke_ai_ml_mix_train_and_inference_workloads_high_priorityclass]
