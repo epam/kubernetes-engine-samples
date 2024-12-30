@@ -30,6 +30,20 @@ spec:
         examples.ai.gke.io/source: user-guide
     spec:
       containers:
+      - name: init-prefetch
+        image: busybox:latest # https://boxmatrix.info/wiki/BusyBox-Commands
+        volumeMounts:
+        - mountPath: /mnt/disks/hdml
+          name: gemma-2b-it
+        command: ['/bin/sh','-ec']
+        args:
+        - |
+          df;
+          echo;
+          date;
+          time find /mnt/disks/hdml -name \*.safetensors | xargs -I {} -P 15 dd if={} of=/dev/null bs=8192k
+          date;
+          sleep infinity;
       - name: inference-server
         image: us-docker.pkg.dev/vertex-ai/vertex-vision-model-garden-dockers/pytorch-vllm-serve:20240220_0936_RC01
         readinessProbe:
