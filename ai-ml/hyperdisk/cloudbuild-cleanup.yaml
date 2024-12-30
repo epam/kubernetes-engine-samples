@@ -13,14 +13,14 @@
 # limitations under the License.
 
 steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
         gcloud container clusters get-credentials ${_CLUSTER_NAME} --location=${_REGION} &&
         kubectl delete deployment vllm-gemma-deployment &&
-        kubectl delete job producer-job-gpu &&
+        kubectl delete job producer-job &&
         kubectl delete pvc producer-pvc &&
         kubectl delete pvc hdml-consumer-pvc &&
         kubectl delete storageclass hyperdisk-ml-multi-zone &&
