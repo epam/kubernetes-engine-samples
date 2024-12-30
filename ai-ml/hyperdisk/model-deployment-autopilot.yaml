@@ -72,7 +72,7 @@ spec:
           claimName: hdml-consumer-pvc
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4
-      # cloud.google.com.node-restriction.kubernetes.io/gke-secondary-boot-disk-<DISK_IMAGE_NAME>=CONTAINER_IMAGE_CACHE.<PROJECT_ID> # currently do not work
+        cloud.google.com.node-restriction.kubernetes.io/gke-secondary-boot-disk-<DISK_IMAGE_NAME>: CONTAINER_IMAGE_CACHE.<PROJECT_ID>
 ---
 apiVersion: v1
 kind: Service

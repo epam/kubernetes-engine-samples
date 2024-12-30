@@ -13,7 +13,7 @@
 # limitations under the License.
 
 steps:
-  # Build step where a Cloud Storage bucket to store the execution logs of gke-disk-image-builder is created
+# Build step where a Cloud Storage bucket to store the execution logs of gke-disk-image-builder is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: "/bin/bash"
   args:
@@ -21,11 +21,11 @@ steps:
     - |
       gcloud storage buckets create gs://${_BUCKET_NAME} --location=${_REGION} --uniform-bucket-level-access
 
-  # Build step where the repo with gke-disk-image-builder is cloned
+# Build step where the repo with gke-disk-image-builder is cloned
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/GoogleCloudPlatform/ai-on-gke.git']
 
-  # Build step where gke-disk-image-builder is run with required parameters
+# Build step where gke-disk-image-builder is run with required parameters
 - name: 'gcr.io/cloud-builders/go:1.21'
   env: ['GOPATH=./ai-on-gke/tools/gke-disk-image-builder']
   dir: './ai-on-gke/tools/gke-disk-image-builder'
@@ -41,7 +41,7 @@ steps:
     - --container-image=${_CONTAINER_IMAGE}
     - --image-pull-auth=ServiceAccountToken
 
-  # Build step where the GKE cluster with GCS Fuse addon enabled is created
+# Build step where the GKE cluster with GCS Fuse addon enabled is created
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: "/bin/bash"
   args:
@@ -51,3 +51,20 @@ steps:
         --project=${_PROJECT_ID} \
         --region=${_REGION} \
         --release-channel=rapid
+
+# Build step enables GKE to create nodes with secondary boot disks using all disk images in the project
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+        gcloud container clusters get-credentials ${_CLUSTER_NAME} --region ${_REGION}
+        kubectl apply -f - << EOF
+        apiVersion: "node.gke.io/v1"
+        kind: GCPResourceAllowlist
+        metadata:
+          name: gke-secondary-boot-disk-allowlist
+        spec:
+          allowedResourcePatterns:
+          - "projects/${_PROJECT_ID}/global/images/.*"
+        EOF

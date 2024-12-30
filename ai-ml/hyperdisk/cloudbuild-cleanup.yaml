@@ -28,10 +28,7 @@ steps:
         kubectl delete volumesnapshot hyperdisk-snapshot &&
         gcloud secrets delete hf-username --quiet &&
         gcloud secrets delete hf-token --quiet &&
-        gcloud projects remove-iam-policy-binding ${_PROJECT_ID} --member="serviceAccount:${_PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/storage.admin" --condition=None &&
-        gcloud projects remove-iam-policy-binding ${_PROJECT_ID} --member="serviceAccount:${_PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/secretmanager.secretAccessor" --condition=None &&
-        gcloud projects remove-iam-policy-binding ${_PROJECT_ID} --member="serviceAccount:${_PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/container.clusterAdmin" --condition=None &&
-        gcloud projects remove-iam-policy-binding ${_PROJECT_ID} --member="serviceAccount:${_PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/compute.instanceAdmin.v1" --condition=None &&
+        sleep 180 &&
         gcloud container clusters delete ${_CLUSTER_NAME} --region=${_REGION} --quiet &&
         gcloud storage rm --recursive gs://${_BUCKET_NAME} &&
         gcloud compute images delete ${_DISK_IMAGE} --quiet
