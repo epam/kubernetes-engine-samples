@@ -52,9 +52,13 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --condition=None
 
 
+gcloud builds submit \
+  --config cloudbuild-prepare-autopilot.yaml --no-source \
+  --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE=$ZONE,_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
+
 # Run the Cloud Build command to prepare the cluster with all required substitutions
 gcloud builds submit \
-  --config cloudbuild-prepare.yaml --no-source \
+  --config cloudbuild-prepare-standard.yaml --no-source \
   --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE=$ZONE,_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
 
 # Run the Cloud Build command for model weights prelod with all required substitutions
@@ -69,8 +73,12 @@ gcloud storage ls gs://$BUCKET_NAME/$MODEL_PATH
 gcloud container clusters get-credentials ${CLUSTER_NAME} \
   --location=${REGION}
 
+# Apply the manifest and change the placeholder with the name of the requred bucket and required k8s service account in AUTOPILOT
+sed "s|<BUCKET_NAME>|$BUCKET_NAME|g; s|<KSA_NAME>|$KSA_NAME|g; s|<CONTAINER_IMAGE>|'$CONTAINER_IMAGE'|g; s|<DISK_IMAGE_NAME>|$DISK_IMAGE|g; s|<PROJECT_ID>|$PROJECT_ID|g" model-deployment-autopilot.yaml | kubectl apply -f -
+
+
 # Apply the manifest and change the placeholder with the name of the requred bucket and required k8s service account in STANDARD
-sed "s|<BUCKET_NAME>|$BUCKET_NAME|g; s|<KSA_NAME>|$KSA_NAME|g; s|<CONTAINER_IMAGE>|'$CONTAINER_IMAGE'|g" model-deployment.yaml | kubectl apply -f -
+sed "s|<BUCKET_NAME>|$BUCKET_NAME|g; s|<KSA_NAME>|$KSA_NAME|g; s|<CONTAINER_IMAGE>|'$CONTAINER_IMAGE'|g" model-deployment-standard.yaml | kubectl apply -f -
 
 # Check the logs of the pod
 kubectl logs $(kubectl get pods -o jsonpath='{.items[0].metadata.name}')

@@ -72,7 +72,7 @@ spec:
           readOnly: false
           volumeAttributes:
             bucketName: <BUCKET_NAME>
-            mountOptions: "implicit-dirs,metadata-cache:ttl-secs:-1,file-cache:max-size-mb:-1,file-cache:cache-file-for-range-read:true,file-cache:enable-parallel-downloads:true"
+            mountOptions: "implicit-dirs,file-cache:enable-parallel-downloads:true,file-cache:max-size-mb:-1"
             gcsfuseLoggingSeverity: warning
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4
