@@ -11,28 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# [START gke_databases_qdrant_04_notebook]
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels: &labels
-    app: jupyter-notebook
-  name: notebook
-spec:
-  ports:
-  - port: 8888
-  selector: *labels
-  type: LoadBalancer
-  # type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notebook
+  name: chatbot
   labels: &labels
-    app: jupyter-notebook
+    app: weaviate-chatbot
 spec:
   selector:
     matchLabels: *labels
@@ -40,34 +25,46 @@ spec:
     metadata: 
       labels: *labels
     spec:
+      serviceAccountName: embed-docs-sa
       containers:
-      - name: jupyter
-        image: tensorflow/tensorflow:2.15.0-jupyter
+      - name: chatbot
+        image: <DOCKER_REPO>/chatbot:1.0
+        imagePullPolicy: Always
         resources:
           requests:
-            memory: "4500Mi"
-            cpu: "1"
+            memory: "1Gi"
+            cpu: "500m"
           limits:
-            memory: "4500Mi"
+            memory: "1Gi"
             cpu: "1"
-        ports:
-        - containerPort: 8888
         env:
         - name: APIKEY
           valueFrom:
             secretKeyRef:
-              name: qdrant-database-apikey
-              key: api-key
-        volumeMounts:
-        - name: books-dataset
-          mountPath: /usr/local/dataset
-        - name: notebook
-          mountPath: /tf
-      volumes:
-      - name: books-dataset
-        configMap:
-          name: books-dataset
-      - name: notebook
-        configMap:
-          name: notebook
- # [END gke_databases_qdrant_04_notebook]
+              name: apikeys
+              key: AUTHENTICATION_APIKEY_ALLOWED_KEYS
+        - name: WEAVIATE_ENDPOINT
+          value: "weaviate.weaviate"
+        - name: WEAVIATE_GRPC_ENDPOINT
+          value: "weaviate-grpc.weaviate" 
+        - name: STREAMLIT_SERVER_PORT
+          value: "80"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatbot
+  labels: &labels
+    app: weaviate-chatbot
+spec:
+  #type: ClusterIP
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector: *labels
+

@@ -15,7 +15,7 @@
 # [START gke_qdrant_standard_private_regional_cluster]
 module "qdrant_cluster" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "30.3.0"
+  version                       = "~> 31.0"
   project_id                    = var.project_id
   name                          = "${var.cluster_prefix}-cluster"
   regional                      = true
@@ -35,7 +35,9 @@ module "qdrant_cluster" {
   enable_cost_allocation        = true
   deletion_protection           = false
   initial_node_count            = 1
-  kubernetes_version            = "1.28"
+  kubernetes_version            = "latest"
+  release_channel               = "RAPID"
+  stateful_ha                   = true
 
   cluster_resource_labels = {
     name      = "${var.cluster_prefix}-cluster"

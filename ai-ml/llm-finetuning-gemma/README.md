@@ -1,3 +1,6 @@
-# Finetune an LLM with multiple GPUs in GKE samples
+# Tutorial: Finetuning Gemma 2b on GKE using L4 GPUs
 
-TBD
+[Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine).
+
+Visit [Google Cloud documentation](https://cloud.google.com/kubernetes-engine/docs/tutorials/finetune-gemma-gpu)
+to follow this tutorial.
