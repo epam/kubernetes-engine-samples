@@ -51,12 +51,12 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --role="roles/compute.instanceAdmin.v1" \
     --condition=None
 
-
+# Run the Cloud Build command to prepare the AUTOPILOT cluster with all required substitutions
 gcloud builds submit \
   --config cloudbuild-prepare-autopilot.yaml --no-source \
   --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE=$ZONE,_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
 
-# Run the Cloud Build command to prepare the cluster with all required substitutions
+# Run the Cloud Build command to prepare the STANDARD cluster with all required substitutions
 gcloud builds submit \
   --config cloudbuild-prepare-standard.yaml --no-source \
   --substitutions=_DISK_IMAGE=$DISK_IMAGE,_CONTAINER_IMAGE=$CONTAINER_IMAGE,_BUCKET_NAME=$LOG_BUCKET_NAME,_REGION=$REGION,_ZONE=$ZONE,_CLUSTER_NAME=$CLUSTER_NAME,_PROJECT_ID=$PROJECT_ID
