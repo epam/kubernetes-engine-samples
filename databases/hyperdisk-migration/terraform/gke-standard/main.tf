@@ -41,8 +41,21 @@ module "hyper_drive_cluster" {
       max_unavailable = 0
       machine_type    = var.hd_node_machine_type
       auto_repair     = true
+    },
+    {
+      name            = "regular-pool"
+      disk_size_gb    = var.node_disk_size
+      disk_type       = var.disk_type
+      autoscaling     = true
+      min_count       = 1
+      max_count       = var.autoscaling_max_count
+      max_surge       = 1
+      max_unavailable = 0
+      machine_type    = var.regular_node_machine_type
+      auto_repair     = true
     }
   ]
+  
   node_pools_labels = {
     all = {}
   }

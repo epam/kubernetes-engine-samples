@@ -31,12 +31,22 @@ variable "cluster_prefix" {
 
 variable "hd_node_machine_type" {
   description = "The machine type for node instances"
-  default     = "c3-standard-4"
+  default     = "n4-standard-4"
+  type        = string
+}
+variable "regular_node_machine_type" {
+  description = "The machine type for node instances"
+  default     = "n2-standard-4"
   type        = string
 }
 variable "hyper_disk_type" {
   description = "The persistent disk type for node instances"
   default     = "hyperdisk-balanced"
+  type        = string
+}
+variable "disk_type" {
+  description = "The persistent disk type for node instances"
+  default     = "pd-ssd"
   type        = string
 }
 variable "node_disk_size" {

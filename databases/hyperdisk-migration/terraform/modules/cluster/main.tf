@@ -38,6 +38,7 @@ module "data_cache_cluster" {
   grant_registry_access         = true
   kubernetes_version            = "latest"
   release_channel               = "RAPID"
+  remove_default_node_pool      = true
 
   cluster_resource_labels = {
     name      = "${var.cluster_prefix}-cluster"
