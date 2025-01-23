@@ -58,7 +58,7 @@ primary:
           - key: "cloud.google.com/gke-nodepool"
             operator: In
             values:
-            - "default-pool"
+            - "regular-pool"
   extraFlags: "--max_connections=400"
   persistence:
     enabled: true
