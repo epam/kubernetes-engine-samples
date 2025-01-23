@@ -42,7 +42,7 @@ controller:
           - key: "cloud.google.com/gke-nodepool"
             operator: In
             values:
-            - "default-pool"
+            - "regular-pool"
   persistence:
     enabled: true
     storageClass: "premium-rwo"

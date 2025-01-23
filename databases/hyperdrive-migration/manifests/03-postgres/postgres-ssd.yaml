@@ -69,7 +69,7 @@ spec:
               - key: "cloud.google.com/gke-nodepool"
                 operator: In
                 values:
-                - "default-pool"
+                - "regular-pool"
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
