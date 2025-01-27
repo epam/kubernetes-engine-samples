@@ -16,12 +16,12 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: pd-balanced-data-cache-sc
+  name: hd-balanced-data-cache
 provisioner: pd.csi.storage.gke.io
 parameters:
   type: hyperdisk-balanced
   data-cache-mode: writethrough
-  data-cache-size: "100Gi"
+  data-cache-size: "150Gi"
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 # [END gke_databases_data_cache_01_sc_storage_class_balanced]

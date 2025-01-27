@@ -53,7 +53,7 @@ module "data_cache_cluster" {
       max_count       = var.autoscaling_max_count
       max_surge       = 1
       max_unavailable = 0
-      machine_type    = var.node_machine_type
+      machine_type    = "c3-standard-4-lssd"
       auto_repair     = true
     }
   ]

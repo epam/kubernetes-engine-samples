@@ -31,7 +31,7 @@ variable "cluster_prefix" {
 
 variable "node_machine_type" {
   description = "The machine type for node instances"
-  default     = "n4-standard-4"
+  default     = "c3-standard-4"
   type        = string
 }
 
