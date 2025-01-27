@@ -30,11 +30,25 @@ module "data_cache_cluster" {
   subnetwork               = module.network.subnet_name
 
   node_pools = [
+      {
+      name            = "regular-pool"
+      disk_size_gb    = var.node_disk_size
+      disk_type       = var.node_disk_type
+      autoscaling     = true
+      enable_secure_boot            = true
+      min_count       = 1
+      max_count       = var.autoscaling_max_count
+      max_surge       = 1
+      max_unavailable = 0
+      machine_type    = var.node_machine_type
+      auto_repair     = true
+    },
     {
       name            = "pool-data-cache"
       disk_size_gb    = var.node_disk_size
       disk_type       = var.node_disk_type
       autoscaling     = true
+      enable_secure_boot            = true
       min_count       = 1
       max_count       = var.autoscaling_max_count
       max_surge       = 1

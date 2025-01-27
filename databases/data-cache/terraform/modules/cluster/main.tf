@@ -34,6 +34,7 @@ module "data_cache_cluster" {
   enable_cost_allocation        = true
   deletion_protection           = false
   initial_node_count            = 1
+  remove_default_node_pool      = true
   stateful_ha                   = true
   grant_registry_access         = true
   kubernetes_version            = "latest"
