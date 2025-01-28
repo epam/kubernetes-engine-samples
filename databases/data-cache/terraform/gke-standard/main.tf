@@ -47,6 +47,7 @@ module "data_cache_cluster" {
       name            = "pool-data-cache"
       disk_size_gb    = var.node_disk_size
       disk_type       = var.node_disk_type
+      node_locations              = "us-central1-b"
       autoscaling     = true
       enable_secure_boot            = true
       min_count       = 1
