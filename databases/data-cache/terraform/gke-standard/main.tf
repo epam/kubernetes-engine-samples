@@ -47,6 +47,7 @@ module "data_cache_cluster" {
       name            = "pool-data-cache"
       disk_size_gb    = var.node_disk_size
       disk_type       = var.node_disk_type
+      #remove this line after
       node_locations              = "us-central1-b"
       autoscaling     = true
       enable_secure_boot            = true
@@ -54,7 +55,8 @@ module "data_cache_cluster" {
       max_count       = var.autoscaling_max_count
       max_surge       = 1
       max_unavailable = 0
-      machine_type    = "c3-standard-4-lssd"
+      machine_type    = var.node_machine_type_ssd
+      local_nvme_ssd_count = 1
       auto_repair     = true
     }
   ]

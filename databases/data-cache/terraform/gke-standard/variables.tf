@@ -31,7 +31,13 @@ variable "cluster_prefix" {
 
 variable "node_machine_type" {
   description = "The machine type for node instances"
-  default     = "c3-standard-4"
+  default     = "e2-standard-2"
+  type        = string
+}
+
+variable "node_machine_type_ssd" {
+  description = "The machine type for node instances"
+  default     = "c3-standard-4-lssd"
   type        = string
 }
 
