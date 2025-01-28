@@ -43,6 +43,13 @@ variable "node_machine_type_ssd" {
 
 variable "node_disk_type" {
   description = "The persistent disk type for node instances"
+  default     = "pd-ssd"
+  type        = string
+}
+
+
+variable "node_disk_type_ssd" {
+  description = "The persistent disk type for node instances"
   default     = "hyperdisk-balanced"
   type        = string
 }
