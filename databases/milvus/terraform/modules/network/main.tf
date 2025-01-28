@@ -15,7 +15,7 @@
 # [START gke_milvus_vpc_multi_region_network]
 module "gcp-network" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 8.1.0"
+  version = "~> 10.0"
 
   project_id   = var.project_id
   network_name = "${var.cluster_prefix}-vpc"
@@ -56,7 +56,7 @@ output "subnet_name" {
 # [START gke_milvus_cloudnat_simple_create]
 module "cloud_router" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "~> 6.0"
+  version = "~> 6.2"
   project = var.project_id 
   name    = "${var.cluster_prefix}-nat-router"
   network = module.gcp-network.network_name

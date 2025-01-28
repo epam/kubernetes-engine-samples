@@ -15,7 +15,7 @@
 # [START gke_autopilot_private_regional_cluster]
 module "milvus_cluster" {
   source                   = "terraform-google-modules/kubernetes-engine/google//modules/beta-autopilot-private-cluster"
-  version                  = "~> 31.0"
+  version                  = "~> 35.0"
   project_id               = var.project_id
   name                     = "${var.cluster_prefix}-cluster"
   regional                 = true
