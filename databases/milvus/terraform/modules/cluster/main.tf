@@ -35,7 +35,6 @@ module "milvus_cluster" {
   deletion_protection           = false
   initial_node_count            = 1
   stateful_ha                   = true
-  grant_registry_access         = true
   kubernetes_version            = "latest"
   release_channel               = "RAPID"
 
