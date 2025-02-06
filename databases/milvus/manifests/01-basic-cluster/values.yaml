@@ -36,21 +36,21 @@ proxy:
   replicas: 1
   resources:
     limits:
-      cpu: "1"
-      memory: 2Gi
+      cpu: "2"
+      memory: 4Gi
     requests:
-      cpu: "500m"
-      memory: 2Gi
+      cpu: "1"
+      memory: 4Gi
 
 mixCoordinator:
   replicas: 1
   resources:
     limits:
-      cpu: "1"
-      memory: 2Gi
+      cpu: "2"
+      memory: 4Gi
     requests:
-      cpu: "500m"
-      memory: 2Gi
+      cpu: "1"
+      memory: 4Gi
 
 minio:
   enabled: false
@@ -60,7 +60,7 @@ externalS3:
   host: storage.googleapis.com
   port: 443
   rootPath: milvus/storage
-  bucketName: or2-msq-go2-gkes-t1iylu-milvus-vector-storage
+  #bucketName: or2-msq-go2-gkes-t1iylu-milvus-vector-storage
   cloudProvider: gcp
   useSSL: true
   useIAM: true
@@ -72,7 +72,7 @@ queryNode:
   replicas: 1
   resources:
     limits:
-      cpu: "1"
+      cpu: "2"
       memory: 4Gi
     requests:
       cpu: "1"
@@ -82,7 +82,7 @@ indexNode:
   replicas: 1
   resources:
     limits:
-      cpu: "1"
+      cpu: "2"
       memory: 4Gi
     requests:
       cpu: "1"
@@ -92,7 +92,7 @@ dataNode:
   replicas: 1
   resources:
     limits:
-      cpu: "1"
+      cpu: "2"
       memory: 4Gi
     requests:
       cpu: "1"
@@ -113,9 +113,9 @@ tolerations:
 affinity:
   nodeAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 1
-      preference:
-        matchExpressions:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
         - key: "app.stateful/component"
           operator: In
           values:
