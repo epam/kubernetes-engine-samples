@@ -9,12 +9,25 @@ data "google_compute_network" "kafka_vpc" {
   name = "kafka-vpc"
 }
 
+resource "google_compute_firewall" "kafka-firewall" {
+  name    = "kafka-firewall"
+  network = data.google_compute_network.kafka_vpc.self_link # Reference "kafka-vpc"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["9092", "9093"] # Port 9092 (broker) and 9093 (controller communication)
+  }
+
+  source_tags = ["gce-kafka"] # Allow traffic only from other Kafka brokers tagged "gce-kafka"
+  target_tags = ["gce-kafka"] # Apply this rule only to Kafka broker instances with "gce-kafka" tag
+}
+
 # Create 3 persistent disks, one for each Kafka broker
 resource "google_compute_disk" "kafka-disks" {
   count = 3
   name  = "gce-kafka-disk-${count.index}"
   type  = "hyperdisk-balanced"  # Hyperdisk Balanced
-  size  = 20                    # Size in GB
+  size  = 100                    # Size in GB
   zone  = var.zones[count.index]
 }
 
@@ -73,56 +86,77 @@ resource "google_compute_instance" "kafka" {
   }  
 
   # Startup script for Kafka setup
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
+metadata_startup_script = <<-EOT
+  #!/bin/bash
+  set -e
 
-    LOG_FILE="/var/log/startup-script.log"
-    KAFKA_DONE_FILE="/opt/kafka/setup-done" # Marker file to indicate setup is complete
-    LOG_DIR="/mnt/kafka-logs"
+  LOG_FILE="/var/log/startup-script.log"
+  KAFKA_DONE_FILE="/opt/kafka/setup-done"
+  KAFKA_ROOT="/mnt/kafka-data"
+  LOG_DIR="/mnt/kafka-data/kafka-logs"
 
-    exec > >(tee -a "$${LOG_FILE}") 2>&1
+  exec > >(tee -a "$${LOG_FILE}") 2>&1
 
-    echo "$(date) Starting metadata script."
+  echo "$(date) Starting metadata script."
 
-    # Fetch the pre-generated cluster ID from metadata
-    echo "$(date) Fetching Kafka cluster ID from instance metadata."
-    CLUSTER_ID=$(curl -H "Metadata-Flavor: Google" \
-      http://metadata.google.internal/computeMetadata/v1/instance/attributes/kafka-cluster-id)
-    echo "$(date) Retrieved cluster ID: $${CLUSTER_ID}"
+  # Ensure the "kafka" system user exists without an interactive shell
+  if ! id -u kafka >/dev/null 2>&1; then
+    echo "$(date) Creating 'kafka' system user with no shell."
+    sudo useradd -r -m -d /home/kafka -s /usr/sbin/nologin kafka
+  else
+    echo "$(date) 'kafka' system user already exists."
+  fi
 
-    # Check if Kafka is already configured
-    if [ -f "$${KAFKA_DONE_FILE}" ]; then
-      echo "$(date) Kafka is already configured. Skipping setup steps."
-    else
-      echo "$(date) Kafka is not configured. Beginning setup."
+  # Fetch the pre-generated cluster ID from metadata
+  echo "$(date) Fetching Kafka cluster ID from instance metadata"
+  CLUSTER_ID=$(curl -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/attributes/kafka-cluster-id)
+  echo "$(date) Retrieved cluster ID: $${CLUSTER_ID}"
 
-      # Install dependencies (OpenJDK 17)
-      echo "$(date) Installing OpenJDK 17."
-      sudo apt-get update
-      sudo apt-get install -y openjdk-17-jdk
+  # Check if Kafka is already configured
+  if [ -f "$${KAFKA_DONE_FILE}" ]; then
+    echo "$(date) Kafka is already configured. Skipping setup."
+  else
+    echo "$(date) Kafka is not configured. Beginning setup."
 
-      # Mount Kafka logs disk
-      echo "$(date) Preparing the disk for Kafka logs."
-      sudo mkdir -p $${LOG_DIR}
+    # Install dependencies (OpenJDK 17)
+    echo "$(date) Installing OpenJDK 17."
+    sudo apt-get update
+    sudo apt-get install -y openjdk-17-jdk
+
+    # Format and mount the Kafka disk (if not already mounted)
+    echo "$(date) Preparing the disk for Kafka data storage."
+    if ! mount | grep -q "$${KAFKA_ROOT}"; then
+      sudo mkdir -p $${KAFKA_ROOT}
       sudo mkfs.ext4 -m 0 -F /dev/disk/by-id/google-kafka-data-disk-${count.index} || true
-      sudo mount -o discard,defaults /dev/disk/by-id/google-kafka-data-disk-${count.index} $${LOG_DIR}
-      echo "/dev/disk/by-id/google-kafka-data-disk-${count.index} $${LOG_DIR} ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+      sudo mount -o discard,defaults /dev/disk/by-id/google-kafka-data-disk-${count.index} $${KAFKA_ROOT}
+      echo "/dev/disk/by-id/google-kafka-data-disk-${count.index} $${KAFKA_ROOT} ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+    else
+      echo "$(date) Disk is already mounted on $${KAFKA_ROOT}. Skipping disk formatting."
+    fi
 
-      # Download and extract Kafka
-      echo "$(date) Downloading and setting up Kafka."
-      cd /tmp
-      curl -O https://downloads.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
-      tar -xvf kafka_2.13-3.9.0.tgz
-      sudo mv kafka_2.13-3.9.0 /opt/kafka
+    # Prepare Kafka logs directory with proper ownership and permissions
+    echo "$(date) Preparing Kafka logs directory."
+    sudo mkdir -p "$${LOG_DIR}"
+    sudo chown -R kafka:kafka "$${KAFKA_ROOT}"
+    sudo chmod -R 700 "$${KAFKA_ROOT}" # Ensure root directory is restricted
+    sudo chown -R kafka:kafka "$${LOG_DIR}"
+    sudo chmod -R 700 "$${LOG_DIR}"    # Ensure logs directory is restricted
 
-      # Configure Kafka broker (server.properties) BEFORE running kafka-storage.sh
-      echo "$(date) Configuring Kafka broker."
-      BROKER_IP=$(hostname -I | awk '{print $1}') # Use VM's internal IP
-      BROKER_ID=${count.index}
-      BROKER_HOSTNAME="gce-kafka-broker-$${BROKER_ID}"
+    # Download and extract Kafka
+    echo "$(date) Downloading and setting up Kafka."
+    cd /tmp
+    curl -O https://downloads.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
+    tar -xvf kafka_2.13-3.9.0.tgz
+    sudo mv kafka_2.13-3.9.0 /opt/kafka
 
-      cat <<EOF | sudo tee /opt/kafka/config/server.properties
+    # Configure Kafka broker (server.properties) BEFORE running kafka-storage.sh
+    echo "$(date) Configuring Kafka broker."
+    BROKER_IP=$(hostname -I | awk '{print $1}') # Use VM's internal IP
+    BROKER_ID=${count.index}
+    BROKER_HOSTNAME="gce-kafka-broker-$${BROKER_ID}"
+
+    cat <<EOF | sudo tee /opt/kafka/config/server.properties
 broker.id=$${BROKER_ID}
 log.dirs=$${LOG_DIR}
 listeners=PLAINTEXT://$${BROKER_IP}:9092,CONTROLLER://$${BROKER_IP}:9093
@@ -139,33 +173,33 @@ log.segment.bytes=1073741824
 log.retention.check.interval.ms=300000
 EOF
 
-      echo "$(date) Kafka broker configuration written to server.properties."
+    echo "$(date) Kafka broker configuration written to server.properties."
 
-      # Format the KRaft metadata directory (meta.properties) AFTER server.properties is prepared
-      if [ ! -f "$${LOG_DIR}/meta.properties" ]; then
-        echo "$(date) Formatting metadata directory for broker node ${count.index}."
-        /opt/kafka/bin/kafka-storage.sh format \
-          --config /opt/kafka/config/server.properties \
-          --cluster-id $${CLUSTER_ID}
-      else
-        echo "$(date) Metadata directory already formatted for broker node ${count.index}."
-      fi
-
-      echo "$(date) Kafka setup completed."
-
-      # Mark setup as complete
-      sudo touch "$${KAFKA_DONE_FILE}"
-      echo "$(date) Setup marker file created at $${KAFKA_DONE_FILE}."
+    # Format the KRaft metadata directory (meta.properties) AFTER server.properties is prepared
+    if [ ! -f "$${LOG_DIR}/meta.properties" ]; then
+      echo "$(date) Formatting metadata directory for broker node ${count.index}."
+      /opt/kafka/bin/kafka-storage.sh format \
+        --config /opt/kafka/config/server.properties \
+        --cluster-id "$${CLUSTER_ID}"
+    else
+      echo "$(date) Metadata directory already formatted for broker node ${count.index}."
     fi
 
-    # Always (re)start Kafka on VM boot
-    echo "$(date) Starting Kafka service."
-    nohup /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties > /tmp/kafka.log 2>&1 &
+    echo "$(date) Kafka setup completed."
 
-    echo "$(date) Metadata script execution completed."
-  EOT
+    # Mark setup as complete
+    sudo touch "$${KAFKA_DONE_FILE}"
+    echo "$(date) Setup marker file created at $${KAFKA_DONE_FILE}."
+  fi
 
-  tags = ["kafka"]
+  # Always (re)start Kafka on VM boot
+  echo "$(date) Starting Kafka service."
+  nohup /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties > /tmp/kafka.log 2>&1 &
+
+  echo "$(date) Metadata script execution completed."
+EOT
+
+  tags = ["gce-kafka"]
 }
 
 # Outputs for internal IPs of Kafka brokers
