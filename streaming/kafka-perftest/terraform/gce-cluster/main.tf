@@ -24,11 +24,13 @@ resource "google_compute_firewall" "kafka-firewall" {
 
 # Create 3 persistent disks, one for each Kafka broker
 resource "google_compute_disk" "kafka-disks" {
-  count = 3
-  name  = "gce-kafka-disk-${count.index}"
-  type  = "hyperdisk-balanced"  # Hyperdisk Balanced
-  size  = 100                    # Size in GB
-  zone  = var.zones[count.index]
+  count                  = 3
+  name                   = "gce-kafka-disk-${count.index}"
+  type                   = "hyperdisk-balanced"  # Hyperdisk Balanced
+  provisioned_iops       = "7000"
+  provisioned_throughput = "250"
+  size                   = 20                    # Size in GB
+  zone                   = var.zones[count.index]
 }
 
 resource "random_uuid" "kafka_cluster_id" {}
@@ -43,7 +45,7 @@ resource "google_compute_instance" "kafka" {
   # Boot disk (Debian 12)
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-12"
+      image = "debian-cloud/debian-12-arm64"
       size  = 20 # Boot disk size in GB
     }
   }
@@ -119,10 +121,12 @@ metadata_startup_script = <<-EOT
   else
     echo "$(date) Kafka is not configured. Beginning setup."
 
+    # Waiting for 90 seconds for system setup to release all the locks
+    sleep 90
     # Install dependencies (OpenJDK 17)
     echo "$(date) Installing OpenJDK 17."
-    sudo apt-get update
-    sudo apt-get install -y openjdk-17-jdk
+    sudo apt update
+    sudo apt install -y openjdk-17-jdk
 
     # Format and mount the Kafka disk (if not already mounted)
     echo "$(date) Preparing the disk for Kafka data storage."
@@ -171,6 +175,10 @@ cluster.id=$${CLUSTER_ID}
 log.retention.hours=168
 log.segment.bytes=1073741824
 log.retention.check.interval.ms=300000
+
+# Default configurations for fault tolerance
+default.replication.factor=3
+min.insync.replicas=2
 EOF
 
     echo "$(date) Kafka broker configuration written to server.properties."

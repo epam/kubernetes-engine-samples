@@ -31,5 +31,5 @@ variable "zones" {
 variable "machine_type" {
   description = "Machine type for Kafka brokers"
   type        = string
-  default     = "c4-standard-4"
+  default     = "c4-standard-8"
 }

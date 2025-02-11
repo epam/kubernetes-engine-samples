@@ -50,6 +50,9 @@ resource "google_compute_instance" "kafka_load_generator" {
 
     echo "$(date) Starting Kafka load generator setup."
 
+    # Waiting for 90 seconds for system setup to release all the locks
+    sleep 90
+
     # Install OpenJDK 17
     echo "$(date) Installing OpenJDK 17."
     sudo apt-get update
@@ -62,9 +65,10 @@ resource "google_compute_instance" "kafka_load_generator" {
     tar -xvf kafka_2.13-3.9.0.tgz
     sudo mv kafka_2.13-3.9.0 /opt/kafka
 
-    # Add Kafka tools to the PATH
-    echo 'export PATH=$PATH:/opt/kafka/bin' >> ~/.bashrc
-    source ~/.bashrc
+    # Add Kafka tools to the global PATH for all users
+    echo "$(date) Adding Kafka tools to PATH globally."
+    echo 'export PATH=$PATH:/opt/kafka/bin' | sudo tee /etc/profile.d/kafka.sh
+    sudo chmod +x /etc/profile.d/kafka.sh
 
     echo "$(date) Kafka setup completed."
 
