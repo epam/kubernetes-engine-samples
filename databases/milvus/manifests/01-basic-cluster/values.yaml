@@ -60,7 +60,6 @@ externalS3:
   host: storage.googleapis.com
   port: 443
   rootPath: milvus/storage
-  #bucketName: or2-msq-go2-gkes-t1iylu-milvus-vector-storage
   cloudProvider: gcp
   useSSL: true
   useIAM: true
@@ -112,7 +111,6 @@ tolerations:
 
 affinity:
   nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
@@ -127,7 +125,7 @@ kafka:
   offsetsTopicReplicationFactor: 1
   persistence:
     enabled: true
-    storageClass:
+    storageClass: "standard-rwo"
     accessMode: ReadWriteOnce
     size: 50Gi
   metrics:
@@ -136,33 +134,4 @@ kafka:
   zookeeper:
     enabled: true
     replicaCount: 1
-
-#standalone:
-#  replicas: 3
-#  resources:
-#  limits:
-#    cpu: "2"
-#    memory: 4Gi
-#  requests:
-#    cpu: "1"
-#    memory: 4Gi
-#  disk:
-#    enabled: true
-#  persistence:
-#    enabled: true
-#    persistentVolumeClaim:
-#      storageClass: "premium-rwo"
-#      accessModes: ReadWriteOnce
-#      size: 10Gi
-
-
-
-#topologySpreadConstraints:
-#  - maxSkew: 1
-#    topologyKey: "topology.kubernetes.io/zone"
-#    whenUnsatisfiable: ScheduleAnyway
-#    labelSelector:
-#      matchLabels:
-#        app.kubernetes.io/name: qdrant
-#        app.kubernetes.io/instance: qdrant
 
