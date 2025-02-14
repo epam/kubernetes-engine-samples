@@ -27,9 +27,14 @@ variable "cluster_prefix" {
   default     = "kafka"
 }
 
-variable "node_pool_instance_type" {
-  description = "The VM instance type for node pool"
-  default     = "c4-standard-4"
+variable "kafka_node_pool_instance_type" {
+  description = "The VM instance type for kafka node pool"
+  default     = "c4-standard-8"
+}
+
+variable "perftest_node_pool_instance_type" {
+  description = "The VM instance type for performance test node pool"
+  default     = "c4-standard-8"
 }
 
 

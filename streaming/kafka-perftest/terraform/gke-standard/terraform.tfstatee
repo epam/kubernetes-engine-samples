@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.10.2",
-  "serial": 50,
+  "serial": 133,
   "lineage": "16fcfc94-9aca-3e1e-e4e7-f40f8a296a19",
   "outputs": {
     "kubectl_connection_command": {
@@ -19,7 +19,7 @@
         {
           "schema_version": 0,
           "attributes": {
-            "access_token": "ya29.a0AXeO80RH6iBvxDISEZsuAk9fGnfEQHFnAdOYe3wmF_yWQ8l5GVxRTTmTMkUjUn4ToYcJwLRgXB77kbofDmF2m8oy7ytpMo3crO70ui7eQdugVbFFjV9-TBo7xrpv7ff5f5IOyDsGkW1MHrbCUxOKbsDROOvMgVmF3ykrlCwb4aMaCgYKARwSARASFQHGX2MixqRPpIk-zz8jSpphzlwHBg0178",
+            "access_token": "ya29.a0AXeO80TcW3WqYtoFbuYP0fwB8iVKAK-iToKLyNhQcfW7RfR3zUzIkTCpyoWvxfggkLizriVs4ax0_644DqVt1IJE8ROCdoYFuSYFQrmGVNNFtWNIN_LmuLdPFTHBLLX-wWoAf8B0gZqjWlmML2XJSEtiBTALYx70MgaPz_BlUrQaCgYKAYQSARASFQHGX2Min-CkIN_7znzu0HLGlLw3Sw0178",
             "default_labels": {},
             "id": "projects//regions//zones/",
             "project": "",
@@ -70,56 +70,54 @@
         {
           "schema_version": 0,
           "attributes": {
-            "default_cluster_version": "1.31.4-gke.1256000",
-            "id": "2025-02-05 05:42:32.957512 +0000 UTC",
-            "latest_master_version": "1.31.5-gke.1068000",
-            "latest_node_version": "1.31.5-gke.1068000",
+            "default_cluster_version": "1.31.4-gke.1372000",
+            "id": "2025-02-09 09:58:23.179223 +0000 UTC",
+            "latest_master_version": "1.31.5-gke.1169000",
+            "latest_node_version": "1.31.5-gke.1169000",
             "location": "us-central1",
             "project": "hl2-gogl-wopt-t1iylu",
             "release_channel_default_version": {
-              "EXTENDED": "1.31.4-gke.1256000",
-              "RAPID": "1.31.5-gke.1023000",
-              "REGULAR": "1.31.4-gke.1256000",
-              "STABLE": "1.30.8-gke.1051000"
+              "EXTENDED": "1.31.4-gke.1372000",
+              "RAPID": "1.31.5-gke.1068000",
+              "REGULAR": "1.31.4-gke.1372000",
+              "STABLE": "1.30.8-gke.1128001"
             },
             "release_channel_latest_version": {
-              "EXTENDED": "1.31.4-gke.1372000",
-              "RAPID": "1.32.1-gke.1200000",
-              "REGULAR": "1.31.4-gke.1372000",
-              "STABLE": "1.31.4-gke.1183000"
+              "EXTENDED": "1.31.5-gke.1023000",
+              "RAPID": "1.32.1-gke.1357001",
+              "REGULAR": "1.31.5-gke.1023000",
+              "STABLE": "1.31.4-gke.1256000"
             },
             "valid_master_versions": [
+              "1.31.5-gke.1169000",
               "1.31.5-gke.1068000",
               "1.31.5-gke.1023000",
               "1.31.4-gke.1372000",
               "1.31.4-gke.1256000",
               "1.31.4-gke.1183000",
+              "1.30.9-gke.1127000",
               "1.30.9-gke.1046000",
-              "1.30.9-gke.1027000",
               "1.30.9-gke.1009000",
               "1.30.8-gke.1261000",
               "1.30.8-gke.1162001",
               "1.30.8-gke.1162000",
               "1.30.8-gke.1128001",
-              "1.30.8-gke.1051001",
               "1.30.8-gke.1051000",
-              "1.30.5-gke.1713000",
+              "1.29.13-gke.1109000",
               "1.29.13-gke.1038000",
               "1.29.13-gke.1006000",
               "1.29.12-gke.1270000",
               "1.29.12-gke.1143001",
-              "1.29.12-gke.1143000",
               "1.29.12-gke.1120001",
-              "1.29.12-gke.1055001",
-              "1.29.12-gke.1055000",
+              "1.28.15-gke.1720000",
               "1.28.15-gke.1673000",
               "1.28.15-gke.1641000",
               "1.28.15-gke.1612000",
               "1.28.15-gke.1503000",
-              "1.28.15-gke.1480000",
-              "1.28.15-gke.1435000"
+              "1.28.15-gke.1480000"
             ],
             "valid_node_versions": [
+              "1.31.5-gke.1169000",
               "1.31.5-gke.1068000",
               "1.31.5-gke.1023000",
               "1.31.4-gke.1372000",
@@ -142,6 +140,7 @@
               "1.31.1-gke.1846000",
               "1.31.1-gke.1678000",
               "1.31.1-gke.1146000",
+              "1.30.9-gke.1127000",
               "1.30.9-gke.1046000",
               "1.30.9-gke.1027000",
               "1.30.9-gke.1009000",
@@ -183,6 +182,7 @@
               "1.30.3-gke.1225000",
               "1.30.2-gke.1587003",
               "1.30.1-gke.1329003",
+              "1.29.13-gke.1109000",
               "1.29.13-gke.1038000",
               "1.29.13-gke.1006000",
               "1.29.12-gke.1270000",
@@ -253,6 +253,7 @@
               "1.29.1-gke.1425000",
               "1.29.1-gke.1016000",
               "1.29.0-gke.1381000",
+              "1.28.15-gke.1720000",
               "1.28.15-gke.1673000",
               "1.28.15-gke.1641000",
               "1.28.15-gke.1612000",
@@ -327,6 +328,7 @@
               "1.28.3-gke.1098000",
               "1.28.3-gke.1090000",
               "1.28.2-gke.1157000",
+              "1.27.16-gke.2342000",
               "1.27.16-gke.2296000",
               "1.27.16-gke.2270000",
               "1.27.16-gke.2246000",
@@ -1024,56 +1026,54 @@
         {
           "schema_version": 0,
           "attributes": {
-            "default_cluster_version": "1.31.4-gke.1256000",
-            "id": "2025-02-05 05:42:32.982569 +0000 UTC",
-            "latest_master_version": "1.31.5-gke.1068000",
-            "latest_node_version": "1.31.5-gke.1068000",
+            "default_cluster_version": "1.31.4-gke.1372000",
+            "id": "2025-02-09 09:58:23.20488 +0000 UTC",
+            "latest_master_version": "1.31.5-gke.1169000",
+            "latest_node_version": "1.31.5-gke.1169000",
             "location": "us-central1-a",
             "project": "hl2-gogl-wopt-t1iylu",
             "release_channel_default_version": {
-              "EXTENDED": "1.31.4-gke.1256000",
-              "RAPID": "1.31.5-gke.1023000",
-              "REGULAR": "1.31.4-gke.1256000",
-              "STABLE": "1.30.8-gke.1051000"
+              "EXTENDED": "1.31.4-gke.1372000",
+              "RAPID": "1.31.5-gke.1068000",
+              "REGULAR": "1.31.4-gke.1372000",
+              "STABLE": "1.30.8-gke.1128001"
             },
             "release_channel_latest_version": {
-              "EXTENDED": "1.31.4-gke.1372000",
-              "RAPID": "1.32.1-gke.1200000",
-              "REGULAR": "1.31.4-gke.1372000",
-              "STABLE": "1.31.4-gke.1183000"
+              "EXTENDED": "1.31.5-gke.1023000",
+              "RAPID": "1.32.1-gke.1357001",
+              "REGULAR": "1.31.5-gke.1023000",
+              "STABLE": "1.31.4-gke.1256000"
             },
             "valid_master_versions": [
+              "1.31.5-gke.1169000",
               "1.31.5-gke.1068000",
               "1.31.5-gke.1023000",
               "1.31.4-gke.1372000",
               "1.31.4-gke.1256000",
               "1.31.4-gke.1183000",
+              "1.30.9-gke.1127000",
               "1.30.9-gke.1046000",
-              "1.30.9-gke.1027000",
               "1.30.9-gke.1009000",
               "1.30.8-gke.1261000",
               "1.30.8-gke.1162001",
               "1.30.8-gke.1162000",
               "1.30.8-gke.1128001",
-              "1.30.8-gke.1051001",
               "1.30.8-gke.1051000",
-              "1.30.5-gke.1713000",
+              "1.29.13-gke.1109000",
               "1.29.13-gke.1038000",
               "1.29.13-gke.1006000",
               "1.29.12-gke.1270000",
               "1.29.12-gke.1143001",
-              "1.29.12-gke.1143000",
               "1.29.12-gke.1120001",
-              "1.29.12-gke.1055001",
-              "1.29.12-gke.1055000",
+              "1.28.15-gke.1720000",
               "1.28.15-gke.1673000",
               "1.28.15-gke.1641000",
               "1.28.15-gke.1612000",
               "1.28.15-gke.1503000",
-              "1.28.15-gke.1480000",
-              "1.28.15-gke.1435000"
+              "1.28.15-gke.1480000"
             ],
             "valid_node_versions": [
+              "1.31.5-gke.1169000",
               "1.31.5-gke.1068000",
               "1.31.5-gke.1023000",
               "1.31.4-gke.1372000",
@@ -1096,6 +1096,7 @@
               "1.31.1-gke.1846000",
               "1.31.1-gke.1678000",
               "1.31.1-gke.1146000",
+              "1.30.9-gke.1127000",
               "1.30.9-gke.1046000",
               "1.30.9-gke.1027000",
               "1.30.9-gke.1009000",
@@ -1137,6 +1138,7 @@
               "1.30.3-gke.1225000",
               "1.30.2-gke.1587003",
               "1.30.1-gke.1329003",
+              "1.29.13-gke.1109000",
               "1.29.13-gke.1038000",
               "1.29.13-gke.1006000",
               "1.29.12-gke.1270000",
@@ -1207,6 +1209,7 @@
               "1.29.1-gke.1425000",
               "1.29.1-gke.1016000",
               "1.29.0-gke.1381000",
+              "1.28.15-gke.1720000",
               "1.28.15-gke.1673000",
               "1.28.15-gke.1641000",
               "1.28.15-gke.1612000",
@@ -1281,6 +1284,7 @@
               "1.28.3-gke.1098000",
               "1.28.3-gke.1090000",
               "1.28.2-gke.1157000",
+              "1.27.16-gke.2342000",
               "1.27.16-gke.2296000",
               "1.27.16-gke.2270000",
               "1.27.16-gke.2246000",
@@ -2051,7 +2055,7 @@
                 "dns_endpoint_config": [
                   {
                     "allow_external_traffic": false,
-                    "endpoint": "gke-ba2130b03cf645c98de13a850648fd25b73c-343408765424.us-central1.gke.goog"
+                    "endpoint": "gke-316ee37214414f2da1b5160bccf30e2f8011-343408765424.us-central1.gke.goog"
                   }
                 ]
               }
@@ -2093,7 +2097,7 @@
             "enable_multi_networking": false,
             "enable_shielded_nodes": true,
             "enable_tpu": false,
-            "endpoint": "35.188.72.204",
+            "endpoint": "35.184.19.162",
             "enterprise_config": [
               {
                 "cluster_tier": "STANDARD",
@@ -2156,17 +2160,17 @@
                   }
                 ],
                 "client_key": "",
-                "cluster_ca_certificate": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVMRENDQXBTZ0F3SUJBZ0lRWFVXdGJxc2hYeTRmUjhYblh6U3dFakFOQmdrcWhraUc5dzBCQVFzRkFEQXYKTVMwd0t3WURWUVFERXlSbE16SmlNelkxTmkwell6QmpMVFEyTnpndE9HSXdPQzFtWXpOak1UYzRNV0psWVdNdwpJQmNOTWpVd01qQTFNRFEwTWpNMVdoZ1BNakExTlRBeE1qa3dOVFF5TXpWYU1DOHhMVEFyQmdOVkJBTVRKR1V6Ck1tSXpOalUyTFROak1HTXRORFkzT0MwNFlqQTRMV1pqTTJNeE56Z3hZbVZoWXpDQ0FhSXdEUVlKS29aSWh2Y04KQVFFQkJRQURnZ0dQQURDQ0FZb0NnZ0dCQUs4TU1VeGNwemdyQlpGYmY5Yk9rRnhubTYyamZLVnpwM0lNeko3RwpZUTNKUklwRU1yeU8wd3ZWcXl5QTM3VU4wL1hLakNoUm03UFA0Mkdkb3RSQ1kvZzZkMTFNWXgwbzhvWjhhYThHClhWSHU0TW1ERVVoSXFkYjIwd25NSjA5cndDY1A4cGFhNks0Q090OEV0T0p4ZUZLL1MzQzhxYVZzTS9hN2RINWMKMkM5eG1rUXhPbnJFVWZaOWJ4L1k4Y05vTlFOeDRaNmJlYTkwUVdzdXJseVRnVVVPalZidEhoY091YjdnckNKOQpPeHNkbGdRK2h5VFJtSExxN3pjengwa3ZRVkJrZ2xIdDJPQzVNT1U1RFVhS1pMNHN5RXlkWFpBaTJvYU1FT01yCkJVS3pZRStXVXVRQ0M4Mjg4UW0wVHl4aUJvcW1KdDZ1dVF3MkFsU1hHaXJxMVRKd0JxS0RxQzVQZUw4c0ZlTWcKdFBOdFRmQ3hCVkUxcmMzYUdoUkdRejJHRmtyMU0rMGtRRVV0L2M2R2Q3UjR2OFkxK0lkdENMYjgxdGttM3IzdgpUR0pOMDBGWXR5YkFkU3lSWmRnL3NsbjQrelFUcXJqZDdpKzB1NXZWcSszazRoVlRFK0hMTG1rd2pqZk9sZnUxCnhGNXk2eUtQMkVJRGswWWNPLzBpRUdTOUhRSURBUUFCbzBJd1FEQU9CZ05WSFE4QkFmOEVCQU1DQWdRd0R3WUQKVlIwVEFRSC9CQVV3QXdFQi96QWRCZ05WSFE0RUZnUVU4Kzk0WEdhYTNFU1o2amMyRlJjMG43cGlMOEF3RFFZSgpLb1pJaHZjTkFRRUxCUUFEZ2dHQkFJRDVVN1R2N1dCU29DWTFOcnN6NDl6bVZyQjNvRTlSdy9WTHd4a0ozT0VECmQybkd0Y1lGT3pFWXd0cHF1M2RKOW94OXFuKytaRE54K25UbGZEazNXQkU2RDdlTG5CNFZGVDAvVjhRaDhXSzYKMzR0ZHFKWHdmUmk5eEw2Um0vcWZTTDFjUUNSMDI3c0VGUU56SmV3VHdZOTVycXBPQnNBVkZtK0tEWDd3NjBVegpYQmd2MXVMc0c2UmQwUFp6c201OWhPVVA4S2VRTTV6N2J2K1lzZlZLL0VWU3psTzlEdktlV1hTdjcrSnQycDlWCjY5K0lzOThqdVhzYkVha3hEcDNuMkFWTjdCTkNMNDFVZFlhTS9MYWNXUHlVZjRGbEdkRU1RSUdXRmVVQUEydnAKcEdSTS8wMVpOWXhnSjVlWnpJOCtmeGZjeTlOTXdlZnhNdHRXQU9mK1pkK3ViMkRFdzkrWDMyMFpZajhiNytMegpnVmREQUxzaTNEVEptUW55MmpaN2duUGhqNEY1bE4vemRqdzEyOWNyZC9SRU9VVTY0Rzh2ZWpmRXorWjFuRGVPCmk1a3NOWFNVaWg1T0c1UzZZajM5WFY2eXJVUDBzOEQvN2VZYjJ3MjRhSzV4TzFLeDBuRm00cFFvL0hSczkzZ2wKVGduUlBWbjBTNnhZWjdZdXppR3hWdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+                "cluster_ca_certificate": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVMVENDQXBXZ0F3SUJBZ0lSQUwwOEp3alFUMll6RkFORlN4RzNQRXd3RFFZSktvWklodmNOQVFFTEJRQXcKTHpFdE1Dc0dBMVVFQXhNa01qSmhNRGhoWkRBdFpqSmtZeTAwTjJZMkxUbGxOREF0TlRaak5UTmxNR1V6T1RWaApNQ0FYRFRJMU1ESXdPVEE0TlRneU5sb1lEekl3TlRVd01qQXlNRGsxT0RJMldqQXZNUzB3S3dZRFZRUURFeVF5Ck1tRXdPR0ZrTUMxbU1tUmpMVFEzWmpZdE9XVTBNQzAxTm1NMU0yVXdaVE01TldFd2dnR2lNQTBHQ1NxR1NJYjMKRFFFQkFRVUFBNElCandBd2dnR0tBb0lCZ1FEdnh3RUhuWUNNRDB2c1pvR2ZNdTFzQjF1RW9yUE9WWWp3TEJwcwpFdWdyNTdxYTJsUkJTRnViQlpCbHpWNEZKWlE5eHZMSHN6RHdLZUI2dFFHYWZicWVmQmE1UE0zZnNvRjEyV3Q3CmhwUVo2NlMxc1pnMWZlQUtXenRtc0JtVXBVUmo3YklCY2ZXVHFvMlBFUUJYTThSNlZlZUNvS2VuZ1hGRTlTZ0gKeVZ1MmJ0ZytPc0d5ZWJleE02UnVvZ3poSVcrS3FTYk1MYjVCWXpmK2M3aTdFOEFwSHF3em5VUVdHVFMxdFQzVwp5azhTTkp4YmZSd1p0S2twTkJTRE8rV2haN2Q2UitmaVdxWDdwVitmRlB6dmpxT3djUVBLZEdCUE94R1JUOVJWCkIwMENDaXZMU0xPQTNaNnRnQ2kwRHpoTTJpSGg3Z25pYU56aWdkYm1vM1JrUThoNUpGSmw0bzRUNmFDekx2VFUKcVB5cE1VSzl1QTZEUkdYOEdRNC9Cczc0UktuZkxLWDBtUUtWMXJ5Y005emJYUUJKanZ2dHNYei9NK0Q2dTFHRwpqVWIrN0drbmZKeGJxcGtESTFGSTZ5alhIZmVHMVk1bU9rV0Z1UnE2Mkc3QzBXZElxR1FRbEdYNE9hTTdtYWdLCkZ1WGFZejJQbW9vbyt0QkJFY2ozem5PSjRxVUNBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdJRU1BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGR3ZjZ1FLd0FybmxuR1FqUVk5NmdobW8xNTNBTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQmdRQmRnNStxOWFUUk9CQjFhYktQRWlSeXpJYldVRlRjcnIrMjlMT0RCY1U3CkViVHkxakZBazZrcmh0SGQ0VHk2S2ppb25PM1dIb0tpdkJCeFJ5RG95QW5FcnE5MVhrMklwdm1SMzd5S2UwcWcKcFlJV0Qxc0Ivd0hLOE5wSHk2VFVrZXJYNHowUDlaTVBYSWI0ZmZXdHg4UVpUcjEyV1Fmd0s3bnFuU0Jwa3lRNQpieHZJRTJ5TUlEQ3IxaXlKd0hQTmU5WGNZWmgxbWVUMjdwYnp0T3FiczBiL3Q3clBnOHhmTDA3V0hFOFpLbit5ClJPTENlendXR2d1eTdBRzFVajZPZmUxVXBvU2J4Wm1oaGc5NnVzQWljYzZNNW9xUGgrVldmajFnOUx3clMyeWQKNFZoSk5OMm5HRmtWT3RpVTY0R0dHeFlucUp2K1pSWTNmUklwTzVlOENnQkI5NE5YTGRTUXBIVy9xZzc5UkRxRAp3N0RkWVMvM2dndXJnTVprTFFXN0lqUkV6NHlHRVBPdzNQU1R3aHRrK21jeDBjb3NBYVdJdGpCQThDZVkzek8zCjdncytFWENwWHBxU1JpN0hOelN0N1ZpbFQ3TW41VU0vdmdIcEN1d0pIbWp3UzdReGt4enB3SGdPc2V5b2lobUQKQWlqUFgzeW8yOFprbThBSXkrNThPRVU9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
               }
             ],
             "master_authorized_networks_config": [],
-            "master_version": "1.31.4-gke.1256000",
+            "master_version": "1.30.8-gke.1261000",
             "mesh_certificates": [
               {
                 "enable_certificates": false
               }
             ],
-            "min_master_version": null,
+            "min_master_version": "1.30.8",
             "monitoring_config": [
               {
                 "advanced_datapath_observability_config": [
@@ -2195,13 +2199,213 @@
               }
             ],
             "networking_mode": "VPC_NATIVE",
-            "node_config": [],
+            "node_config": [
+              {
+                "advanced_machine_features": [],
+                "boot_disk_kms_key": "",
+                "confidential_nodes": [],
+                "containerd_config": [],
+                "disk_size_gb": 100,
+                "disk_type": "hyperdisk-balanced",
+                "effective_taints": [],
+                "enable_confidential_storage": false,
+                "ephemeral_storage_local_ssd_config": [],
+                "fast_socket": [],
+                "gcfs_config": [],
+                "guest_accelerator": [],
+                "gvnic": [],
+                "host_maintenance_policy": [],
+                "image_type": "COS_CONTAINERD",
+                "kubelet_config": [
+                  {
+                    "cpu_cfs_quota": false,
+                    "cpu_cfs_quota_period": "",
+                    "cpu_manager_policy": "",
+                    "insecure_kubelet_readonly_port_enabled": "FALSE",
+                    "pod_pids_limit": 0
+                  }
+                ],
+                "labels": {},
+                "linux_node_config": [],
+                "local_nvme_ssd_block_config": [],
+                "local_ssd_count": 0,
+                "local_ssd_encryption_mode": "",
+                "logging_variant": "DEFAULT",
+                "machine_type": "c4-standard-4",
+                "max_run_duration": "",
+                "metadata": {
+                  "disable-legacy-endpoints": "true"
+                },
+                "min_cpu_platform": "",
+                "node_group": "",
+                "oauth_scopes": [
+                  "https://www.googleapis.com/auth/devstorage.read_only",
+                  "https://www.googleapis.com/auth/logging.write",
+                  "https://www.googleapis.com/auth/monitoring",
+                  "https://www.googleapis.com/auth/service.management.readonly",
+                  "https://www.googleapis.com/auth/servicecontrol",
+                  "https://www.googleapis.com/auth/trace.append"
+                ],
+                "preemptible": false,
+                "reservation_affinity": [],
+                "resource_labels": {},
+                "resource_manager_tags": {},
+                "secondary_boot_disks": [],
+                "service_account": "default",
+                "shielded_instance_config": [
+                  {
+                    "enable_integrity_monitoring": true,
+                    "enable_secure_boot": false
+                  }
+                ],
+                "sole_tenant_config": [],
+                "spot": false,
+                "storage_pools": [],
+                "tags": [
+                  "gke-kafka-cluster",
+                  "gke-kafka-cluster-default-pool"
+                ],
+                "taint": [],
+                "workload_metadata_config": [
+                  {
+                    "mode": "GKE_METADATA"
+                  }
+                ]
+              }
+            ],
             "node_locations": [
               "us-central1-a",
               "us-central1-b",
               "us-central1-c"
             ],
-            "node_pool": [],
+            "node_pool": [
+              {
+                "autoscaling": [],
+                "initial_node_count": 1,
+                "instance_group_urls": [
+                  "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroupManagers/gke-kafka-cluster-default-pool-c579633d-grp",
+                  "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroupManagers/gke-kafka-cluster-default-pool-39b392d7-grp",
+                  "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroupManagers/gke-kafka-cluster-default-pool-260f2a4d-grp"
+                ],
+                "managed_instance_group_urls": [
+                  "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroups/gke-kafka-cluster-default-pool-c579633d-grp",
+                  "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroups/gke-kafka-cluster-default-pool-39b392d7-grp",
+                  "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroups/gke-kafka-cluster-default-pool-260f2a4d-grp"
+                ],
+                "management": [
+                  {
+                    "auto_repair": true,
+                    "auto_upgrade": true
+                  }
+                ],
+                "max_pods_per_node": 110,
+                "name": "default-pool",
+                "name_prefix": "",
+                "network_config": [
+                  {
+                    "additional_node_network_configs": [],
+                    "additional_pod_network_configs": [],
+                    "create_pod_range": false,
+                    "enable_private_nodes": true,
+                    "network_performance_config": [],
+                    "pod_cidr_overprovision_config": [],
+                    "pod_ipv4_cidr_block": "10.48.0.0/20",
+                    "pod_range": "k8s-pod-range"
+                  }
+                ],
+                "node_config": [
+                  {
+                    "advanced_machine_features": [],
+                    "boot_disk_kms_key": "",
+                    "confidential_nodes": [],
+                    "containerd_config": [],
+                    "disk_size_gb": 100,
+                    "disk_type": "hyperdisk-balanced",
+                    "effective_taints": [],
+                    "enable_confidential_storage": false,
+                    "ephemeral_storage_local_ssd_config": [],
+                    "fast_socket": [],
+                    "gcfs_config": [],
+                    "guest_accelerator": [],
+                    "gvnic": [],
+                    "host_maintenance_policy": [],
+                    "image_type": "COS_CONTAINERD",
+                    "kubelet_config": [
+                      {
+                        "cpu_cfs_quota": false,
+                        "cpu_cfs_quota_period": "",
+                        "cpu_manager_policy": "",
+                        "insecure_kubelet_readonly_port_enabled": "FALSE",
+                        "pod_pids_limit": 0
+                      }
+                    ],
+                    "labels": {},
+                    "linux_node_config": [],
+                    "local_nvme_ssd_block_config": [],
+                    "local_ssd_count": 0,
+                    "local_ssd_encryption_mode": "",
+                    "logging_variant": "DEFAULT",
+                    "machine_type": "c4-standard-4",
+                    "max_run_duration": "",
+                    "metadata": {
+                      "disable-legacy-endpoints": "true"
+                    },
+                    "min_cpu_platform": "",
+                    "node_group": "",
+                    "oauth_scopes": [
+                      "https://www.googleapis.com/auth/devstorage.read_only",
+                      "https://www.googleapis.com/auth/logging.write",
+                      "https://www.googleapis.com/auth/monitoring",
+                      "https://www.googleapis.com/auth/service.management.readonly",
+                      "https://www.googleapis.com/auth/servicecontrol",
+                      "https://www.googleapis.com/auth/trace.append"
+                    ],
+                    "preemptible": false,
+                    "reservation_affinity": [],
+                    "resource_labels": null,
+                    "resource_manager_tags": null,
+                    "secondary_boot_disks": [],
+                    "service_account": "default",
+                    "shielded_instance_config": [
+                      {
+                        "enable_integrity_monitoring": true,
+                        "enable_secure_boot": false
+                      }
+                    ],
+                    "sole_tenant_config": [],
+                    "spot": false,
+                    "storage_pools": null,
+                    "tags": [
+                      "gke-kafka-cluster",
+                      "gke-kafka-cluster-default-pool"
+                    ],
+                    "taint": [],
+                    "workload_metadata_config": [
+                      {
+                        "mode": "GKE_METADATA"
+                      }
+                    ]
+                  }
+                ],
+                "node_count": 1,
+                "node_locations": [
+                  "us-central1-a",
+                  "us-central1-b",
+                  "us-central1-c"
+                ],
+                "placement_policy": [],
+                "queued_provisioning": [],
+                "upgrade_settings": [
+                  {
+                    "blue_green_settings": [],
+                    "max_surge": 1,
+                    "max_unavailable": 0,
+                    "strategy": "SURGE"
+                  }
+                ],
+                "version": "1.30.8-gke.1261000"
+              }
+            ],
             "node_pool_auto_config": [],
             "node_pool_defaults": [
               {
@@ -2219,7 +2423,7 @@
                 ]
               }
             ],
-            "node_version": "1.31.4-gke.1256000",
+            "node_version": "1.30.8-gke.1261000",
             "notification_config": [
               {
                 "pubsub": [
@@ -2244,8 +2448,8 @@
                 "master_ipv4_cidr_block": "172.16.0.0/28",
                 "peering_name": "",
                 "private_endpoint": "172.16.0.2",
-                "private_endpoint_subnetwork": "projects/hl2-gogl-wopt-t1iylu/regions/us-central1/subnetworks/gke-kafka-cluster-89b31c65-pe-subnet",
-                "public_endpoint": "35.188.72.204"
+                "private_endpoint_subnetwork": "projects/hl2-gogl-wopt-t1iylu/regions/us-central1/subnetworks/gke-kafka-cluster-5872b4da-pe-subnet",
+                "public_endpoint": "35.184.19.162"
               }
             ],
             "private_ipv6_google_access": "",
@@ -2255,7 +2459,7 @@
                 "channel": "REGULAR"
               }
             ],
-            "remove_default_node_pool": true,
+            "remove_default_node_pool": false,
             "resource_labels": {
               "component": "kafka-operator",
               "name": "kafka-cluster"
@@ -2350,24 +2554,24 @@
               {
                 "location_policy": "BALANCED",
                 "max_node_count": 1,
-                "min_node_count": 0,
+                "min_node_count": 1,
                 "total_max_node_count": 0,
                 "total_min_node_count": 0
               }
             ],
             "cluster": "kafka-cluster",
             "id": "projects/hl2-gogl-wopt-t1iylu/locations/us-central1/clusters/kafka-cluster/nodePools/pool-kafka",
-            "initial_node_count": 0,
+            "initial_node_count": 1,
             "instance_group_urls": [
-              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroupManagers/gke-kafka-cluster-pool-kafka-2bf1371d-grp",
-              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroupManagers/gke-kafka-cluster-pool-kafka-60e339dd-grp",
-              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroupManagers/gke-kafka-cluster-pool-kafka-1c1d6af4-grp"
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroupManagers/gke-kafka-cluster-pool-kafka-1ebb8a6a-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroupManagers/gke-kafka-cluster-pool-kafka-1a0a527a-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroupManagers/gke-kafka-cluster-pool-kafka-d7903c9d-grp"
             ],
             "location": "us-central1",
             "managed_instance_group_urls": [
-              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroups/gke-kafka-cluster-pool-kafka-2bf1371d-grp",
-              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroups/gke-kafka-cluster-pool-kafka-60e339dd-grp",
-              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroups/gke-kafka-cluster-pool-kafka-1c1d6af4-grp"
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroups/gke-kafka-cluster-pool-kafka-1ebb8a6a-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroups/gke-kafka-cluster-pool-kafka-1a0a527a-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroups/gke-kafka-cluster-pool-kafka-d7903c9d-grp"
             ],
             "management": [
               {
@@ -2398,7 +2602,13 @@
                 "containerd_config": [],
                 "disk_size_gb": 20,
                 "disk_type": "hyperdisk-balanced",
-                "effective_taints": [],
+                "effective_taints": [
+                  {
+                    "effect": "NO_SCHEDULE",
+                    "key": "app.stateful/component",
+                    "value": "kafka-broker"
+                  }
+                ],
                 "enable_confidential_storage": false,
                 "ephemeral_storage_local_ssd_config": [],
                 "fast_socket": [],
@@ -2457,7 +2667,187 @@
                   "gke-kafka-cluster",
                   "gke-kafka-cluster-pool-kafka"
                 ],
-                "taint": [],
+                "taint": [
+                  {
+                    "effect": "NO_SCHEDULE",
+                    "key": "app.stateful/component",
+                    "value": "kafka-broker"
+                  }
+                ],
+                "workload_metadata_config": [
+                  {
+                    "mode": "GKE_METADATA"
+                  }
+                ]
+              }
+            ],
+            "node_count": 1,
+            "node_locations": [
+              "us-central1-a",
+              "us-central1-b",
+              "us-central1-c"
+            ],
+            "operation": null,
+            "placement_policy": [],
+            "project": "hl2-gogl-wopt-t1iylu",
+            "queued_provisioning": [],
+            "timeouts": {
+              "create": "45m",
+              "delete": "45m",
+              "update": "45m"
+            },
+            "upgrade_settings": [
+              {
+                "blue_green_settings": [],
+                "max_surge": 1,
+                "max_unavailable": 0,
+                "strategy": "SURGE"
+              }
+            ],
+            "version": "1.30.8-gke.1261000"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoyNzAwMDAwMDAwMDAwLCJkZWxldGUiOjI3MDAwMDAwMDAwMDAsInVwZGF0ZSI6MjcwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "module.kafka_cluster.module.kafka_cluster.data.google_compute_subnetwork.gke_subnetwork",
+            "module.kafka_cluster.module.kafka_cluster.data.google_compute_zones.available",
+            "module.kafka_cluster.module.kafka_cluster.data.google_container_engine_versions.region",
+            "module.kafka_cluster.module.kafka_cluster.data.google_container_engine_versions.zone",
+            "module.kafka_cluster.module.kafka_cluster.google_compute_firewall.intra_egress",
+            "module.kafka_cluster.module.kafka_cluster.google_container_cluster.primary",
+            "module.kafka_cluster.module.kafka_cluster.google_service_account.cluster_service_account",
+            "module.kafka_cluster.module.kafka_cluster.random_shuffle.available_zones",
+            "module.kafka_cluster.module.kafka_cluster.random_string.cluster_service_account_suffix"
+          ]
+        },
+        {
+          "index_key": "pool-perftest",
+          "schema_version": 1,
+          "attributes": {
+            "autoscaling": [
+              {
+                "location_policy": "BALANCED",
+                "max_node_count": 1,
+                "min_node_count": 0,
+                "total_max_node_count": 0,
+                "total_min_node_count": 0
+              }
+            ],
+            "cluster": "kafka-cluster",
+            "id": "projects/hl2-gogl-wopt-t1iylu/locations/us-central1/clusters/kafka-cluster/nodePools/pool-perftest",
+            "initial_node_count": 0,
+            "instance_group_urls": [
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroupManagers/gke-kafka-cluster-pool-perftest-192c4075-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroupManagers/gke-kafka-cluster-pool-perftest-6c70d1dc-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroupManagers/gke-kafka-cluster-pool-perftest-7e70fd36-grp"
+            ],
+            "location": "us-central1",
+            "managed_instance_group_urls": [
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-a/instanceGroups/gke-kafka-cluster-pool-perftest-192c4075-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-b/instanceGroups/gke-kafka-cluster-pool-perftest-6c70d1dc-grp",
+              "https://www.googleapis.com/compute/v1/projects/hl2-gogl-wopt-t1iylu/zones/us-central1-c/instanceGroups/gke-kafka-cluster-pool-perftest-7e70fd36-grp"
+            ],
+            "management": [
+              {
+                "auto_repair": true,
+                "auto_upgrade": true
+              }
+            ],
+            "max_pods_per_node": 110,
+            "name": "pool-perftest",
+            "name_prefix": "",
+            "network_config": [
+              {
+                "additional_node_network_configs": [],
+                "additional_pod_network_configs": [],
+                "create_pod_range": false,
+                "enable_private_nodes": true,
+                "network_performance_config": [],
+                "pod_cidr_overprovision_config": [],
+                "pod_ipv4_cidr_block": "10.48.0.0/20",
+                "pod_range": "k8s-pod-range"
+              }
+            ],
+            "node_config": [
+              {
+                "advanced_machine_features": [],
+                "boot_disk_kms_key": "",
+                "confidential_nodes": [],
+                "containerd_config": [],
+                "disk_size_gb": 20,
+                "disk_type": "hyperdisk-balanced",
+                "effective_taints": [
+                  {
+                    "effect": "NO_SCHEDULE",
+                    "key": "app.stateful/component",
+                    "value": "kafka-perftest"
+                  }
+                ],
+                "enable_confidential_storage": false,
+                "ephemeral_storage_local_ssd_config": [],
+                "fast_socket": [],
+                "gcfs_config": [],
+                "guest_accelerator": [],
+                "gvnic": [],
+                "host_maintenance_policy": [],
+                "image_type": "COS_CONTAINERD",
+                "kubelet_config": [
+                  {
+                    "cpu_cfs_quota": false,
+                    "cpu_cfs_quota_period": "",
+                    "cpu_manager_policy": "",
+                    "insecure_kubelet_readonly_port_enabled": "FALSE",
+                    "pod_pids_limit": 0
+                  }
+                ],
+                "labels": {
+                  "app.stateful/component": "perftest",
+                  "cluster_name": "kafka-cluster",
+                  "node_pool": "pool-perftest"
+                },
+                "linux_node_config": [],
+                "local_nvme_ssd_block_config": [],
+                "local_ssd_count": 0,
+                "local_ssd_encryption_mode": "",
+                "logging_variant": "DEFAULT",
+                "machine_type": "c4-standard-2",
+                "max_run_duration": "",
+                "metadata": {
+                  "cluster_name": "kafka-cluster",
+                  "disable-legacy-endpoints": "true",
+                  "node_pool": "pool-perftest"
+                },
+                "min_cpu_platform": "",
+                "node_group": "",
+                "oauth_scopes": [
+                  "https://www.googleapis.com/auth/cloud-platform"
+                ],
+                "preemptible": false,
+                "reservation_affinity": [],
+                "resource_labels": null,
+                "resource_manager_tags": null,
+                "secondary_boot_disks": [],
+                "service_account": "default",
+                "shielded_instance_config": [
+                  {
+                    "enable_integrity_monitoring": true,
+                    "enable_secure_boot": false
+                  }
+                ],
+                "sole_tenant_config": [],
+                "spot": false,
+                "storage_pools": null,
+                "tags": [
+                  "gke-kafka-cluster",
+                  "gke-kafka-cluster-pool-perftest"
+                ],
+                "taint": [
+                  {
+                    "effect": "NO_SCHEDULE",
+                    "key": "app.stateful/component",
+                    "value": "kafka-perftest"
+                  }
+                ],
                 "workload_metadata_config": [
                   {
                     "mode": "GKE_METADATA"
@@ -2488,14 +2878,16 @@
                 "strategy": "SURGE"
               }
             ],
-            "version": "1.31.4-gke.1256000"
+            "version": "1.30.8-gke.1261000"
           },
           "sensitive_attributes": [],
           "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoyNzAwMDAwMDAwMDAwLCJkZWxldGUiOjI3MDAwMDAwMDAwMDAsInVwZGF0ZSI6MjcwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
           "dependencies": [
+            "module.kafka_cluster.module.kafka_cluster.data.google_compute_subnetwork.gke_subnetwork",
             "module.kafka_cluster.module.kafka_cluster.data.google_compute_zones.available",
             "module.kafka_cluster.module.kafka_cluster.data.google_container_engine_versions.region",
             "module.kafka_cluster.module.kafka_cluster.data.google_container_engine_versions.zone",
+            "module.kafka_cluster.module.kafka_cluster.google_compute_firewall.intra_egress",
             "module.kafka_cluster.module.kafka_cluster.google_container_cluster.primary",
             "module.kafka_cluster.module.kafka_cluster.google_service_account.cluster_service_account",
             "module.kafka_cluster.module.kafka_cluster.random_shuffle.available_zones",
@@ -2508,22 +2900,22 @@
   "check_results": [
     {
       "object_kind": "var",
-      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.monitoring_enabled_components",
+      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.logging_enabled_components",
       "status": "pass",
       "objects": [
         {
-          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.monitoring_enabled_components",
+          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.logging_enabled_components",
           "status": "pass"
         }
       ]
     },
     {
       "object_kind": "var",
-      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.shadow_firewall_rules_priority",
+      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.monitoring_enabled_components",
       "status": "pass",
       "objects": [
         {
-          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.shadow_firewall_rules_priority",
+          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.monitoring_enabled_components",
           "status": "pass"
         }
       ]
@@ -2541,22 +2933,33 @@
     },
     {
       "object_kind": "var",
-      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.logging_enabled_components",
+      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.timeouts",
       "status": "pass",
       "objects": [
         {
-          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.logging_enabled_components",
+          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.timeouts",
           "status": "pass"
         }
       ]
     },
     {
       "object_kind": "var",
-      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.timeouts",
+      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.monitoring_metric_writer_role",
       "status": "pass",
       "objects": [
         {
-          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.timeouts",
+          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.monitoring_metric_writer_role",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.kafka_cluster.module.kafka_cluster.var.shadow_firewall_rules_priority",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "module.kafka_cluster.module.kafka_cluster.var.shadow_firewall_rules_priority",
           "status": "pass"
         }
       ]

@@ -34,30 +34,64 @@ module "kafka_cluster" {
       name            = "pool-kafka"
       disk_size_gb    = 20
       disk_type       = "hyperdisk-balanced"
-      enable_confidential_storage = false # 'pd-ssd' with confidential storage mode: false is not compatible with the machine type c4-standard-
       autoscaling     = true
       min_count       = 0
       max_count       = 1
       max_surge       = 1
       max_unavailable = 0
-      machine_type    = var.node_pool_instance_type
+      machine_type    = var.kafka_node_pool_instance_type
+      auto_repair     = true
+    },
+    {
+      name            = "pool-perftest"
+      disk_size_gb    = 20
+      disk_type       = "hyperdisk-balanced"
+      autoscaling     = true
+      min_count       = 0
+      max_count       = 1
+      max_surge       = 1
+      max_unavailable = 0
+      machine_type    = var.perftest_node_pool_instance_type
+      auto_repair     = true
+    },
+    {
+      name            = "pool-general"
+      disk_size_gb    = 20
+      disk_type       = "hyperdisk-balanced"
+      autoscaling     = true
+      min_count       = 0
+      max_count       = 1
+      max_surge       = 1
+      max_unavailable = 0
+      machine_type    = "c4-standard-8"
       auto_repair     = true
     }
+
   ]
   node_pools_labels = {
     all = {}
     pool-kafka = {
       "app.stateful/component" = "kafka-broker"
+    },
+    pool-perftest = {
+      "app.stateful/component" = "perftest"
     }
   }
   node_pools_taints = {
     all = []
     pool-kafka = [
-      # {
-      #   key    = "app.stateful/component"
-      #   value  = "kafka-broker"
-      #   effect = "NO_SCHEDULE"
-      # }
+      {
+        key    = "app.stateful/component"
+        value  = "kafka-broker"
+        effect = "NO_SCHEDULE"
+      }
+    ]
+    pool-perftest = [
+      {
+        key    = "app.stateful/component"
+        value  = "kafka-perftest"
+        effect = "NO_SCHEDULE"
+      }
     ]
   }
 }
