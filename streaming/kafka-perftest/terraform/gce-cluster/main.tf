@@ -27,9 +27,9 @@ resource "google_compute_disk" "kafka-disks" {
   count                  = 3
   name                   = "gce-kafka-disk-${count.index}"
   type                   = "hyperdisk-balanced"  # Hyperdisk Balanced
-  provisioned_iops       = "7000"
+  provisioned_iops       = "3000"
   provisioned_throughput = "250"
-  size                   = 20                    # Size in GB
+  size                   = 300                    # Size in GB
   zone                   = var.zones[count.index]
 }
 
@@ -127,6 +127,10 @@ metadata_startup_script = <<-EOT
     echo "$(date) Installing OpenJDK 17."
     sudo apt update
     sudo apt install -y openjdk-17-jdk
+
+    # Ops Agent installation
+    curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+    sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
     # Format and mount the Kafka disk (if not already mounted)
     echo "$(date) Preparing the disk for Kafka data storage."
