@@ -16,6 +16,17 @@ do
         kafka-svc.kafka.svc.cluster.local:9092 \
         test-topic 5000 1 1000| tee -a testresults.txt
 
+    /opt/kafka/bin/kafka-producer-perf-test.sh \
+    --topic test-topic \
+    --num-records 100000 \
+    --record-size 1000 \
+    --throughput -1 \
+    --producer-props bootstrap.servers=kafka-svc.kafka.svc.cluster.local:9092 \
+    acks=1 \
+    batch.size=1 \
+    linger.ms=100 \
+    compression.type=snappy | tee -a testresults.txt
+
     echo "Maximum throughput test:" >>testresults.txt
     echo "Generating $NUMRECORDS records">>testresults.txt
 
