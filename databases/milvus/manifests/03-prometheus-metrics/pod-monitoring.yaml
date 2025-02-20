@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_databases_weaviate_03_prometheus_metrics_monitor]
+# [START gke_databases_milvus_03_prometheus_metrics_monitor]
 apiVersion: monitoring.googleapis.com/v1
 kind: PodMonitoring
 metadata:
@@ -26,4 +26,4 @@ spec:
   - port: 9091
     interval: 30s
     path: /metrics
-# [END gke_databases_weaviate_03_prometheus_metrics_monitor]
+# [END gke_databases_milvus_03_prometheus_metrics_monitor]
