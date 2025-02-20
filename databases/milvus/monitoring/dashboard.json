@@ -230,31 +230,22 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(rate(milvus_msgstream_op_count{app_kubernetes_io_instance=~\"${Cluster}\", app_kubernetes_io_name=~\"$app_name\", namespace=~\"${Namespace}\"}[1m])) by (message_op_type, status)",
-                  "unitOverride": "",
-                  "outputFullDuration": false
+                  "prometheusQuery": "sum(rate(milvus_msgstream_op_count{${Cluster},${Namespace}}[1m])) by (message_op_type, status)"
                 },
                 "plotType": "LINE",
-                "legendTemplate": "",
-                "targetAxis": "Y1",
-                "dimensions": [],
-                "measures": [],
-                "breakdowns": []
+                "targetAxis": "Y1"
               }
             ],
-            "thresholds": [],
-            "yAxis": {
-              "label": "",
-              "scale": "LINEAR"
-            },
             "chartOptions": {
               "mode": "COLOR",
-              "showLegend": false,
               "displayHorizontal": false
+            },
+            "thresholds": [],
+            "yAxis": {
+              "scale": "LINEAR"
             }
           },
-          "title": "Message Request Rate",
-          "id": ""
+          "title": "Message Request Rate"
         }
       },
       {
@@ -267,7 +258,47 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(rate(internal_storage_kv_size_count{${Cluster},${Namespace}}[1m])) by (persistent_data_op_type)",
+                  "prometheusQuery": "sum(rate(internal_storage_kv_size_count{${Cluster},${Namespace}}[1m])) by (persistent_data_op_type)"
+                },
+                "plotType": "LINE",
+                "targetAxis": "Y1"
+              }
+            ],
+            "chartOptions": {
+              "mode": "COLOR",
+              "displayHorizontal": false
+            },
+            "thresholds": [],
+            "yAxis": {
+              "scale": "LINEAR"
+            }
+          },
+          "title": "Storage Operation Throughput[cpp]"
+        }
+      },
+      {
+        "yPos": 48,
+        "width": 16,
+        "height": 16,
+        "widget": {
+          "xyChart": {
+            "dataSets": [
+              {
+                "timeSeriesQuery": {
+                  "prometheusQuery": "sum(increase(milvus_proxy_search_vectors_count{${Cluster},${Namespace}}[2m])/120) by (pod, node_id)",
+                  "unitOverride": "",
+                  "outputFullDuration": false
+                },
+                "plotType": "LINE",
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
+              },
+              {
+                "timeSeriesQuery": {
+                  "prometheusQuery": "sum(rate(milvus_proxy_search_vectors_count{${Cluster},${Namespace}}[1m]))",
                   "unitOverride": "",
                   "outputFullDuration": false
                 },
@@ -290,42 +321,8 @@
               "displayHorizontal": false
             }
           },
-          "title": "Storage Operation Throughput[cpp]",
+          "title": "Search Vector Count Rate",
           "id": ""
-        }
-      },
-      {
-        "yPos": 48,
-        "width": 16,
-        "height": 16,
-        "widget": {
-          "xyChart": {
-            "dataSets": [
-              {
-                "timeSeriesQuery": {
-                  "prometheusQuery": "sum(increase(milvus_proxy_search_vectors_count{${Cluster},${Namespace}}[2m])/120) by (pod, node_id)"
-                },
-                "plotType": "LINE",
-                "targetAxis": "Y1"
-              },
-              {
-                "timeSeriesQuery": {
-                  "prometheusQuery": "sum(rate(milvus_proxy_search_vectors_count{${Cluster},${Namespace}}[1m]))"
-                },
-                "plotType": "LINE",
-                "targetAxis": "Y1"
-              }
-            ],
-            "chartOptions": {
-              "mode": "COLOR",
-              "displayHorizontal": false
-            },
-            "thresholds": [],
-            "yAxis": {
-              "scale": "LINEAR"
-            }
-          },
-          "title": "Search Vector Count Rate"
         }
       },
       {
@@ -338,22 +335,31 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(increase(milvus_proxy_insert_vectors_count{${Cluster},${Namespace}}[2m])/120) by (pod, node_id)"
+                  "prometheusQuery": "sum(increase(milvus_proxy_insert_vectors_count{${Cluster},${Namespace}}[2m])/120) by (pod, node_id)",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               }
             ],
-            "chartOptions": {
-              "mode": "COLOR",
-              "displayHorizontal": false
-            },
             "thresholds": [],
             "yAxis": {
+              "label": "",
               "scale": "LINEAR"
+            },
+            "chartOptions": {
+              "mode": "COLOR",
+              "showLegend": false,
+              "displayHorizontal": false
             }
           },
-          "title": "Insert Vector Count Rate"
+          "title": "Insert Vector Count Rate",
+          "id": ""
         }
       },
       {
@@ -366,29 +372,44 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "histogram_quantile(0.99, sum by (le, query_type, node_id) (rate(milvus_proxy_sq_latency_bucket{${Cluster},${Namespace}}[2m])))"
+                  "prometheusQuery": "histogram_quantile(0.99, sum by (le, query_type, node_id) (rate(milvus_proxy_sq_latency_bucket{${Cluster},${Namespace}}[2m])))",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               },
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(increase(milvus_proxy_sq_latency_sum{${Cluster},${Namespace}}[2m])) by (pod, node_id, query_type) / sum(increase(milvus_proxy_sq_latency_count{${Cluster},${Namespace}}[2m])) by (pod, node_id, query_type)"
+                  "prometheusQuery": "sum(increase(milvus_proxy_sq_latency_sum{${Cluster},${Namespace}}[2m])) by (pod, node_id, query_type) / sum(increase(milvus_proxy_sq_latency_count{${Cluster},${Namespace}}[2m])) by (pod, node_id, query_type)",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               }
             ],
-            "chartOptions": {
-              "mode": "COLOR",
-              "displayHorizontal": false
-            },
             "thresholds": [],
             "yAxis": {
+              "label": "",
               "scale": "LINEAR"
+            },
+            "chartOptions": {
+              "mode": "COLOR",
+              "showLegend": false,
+              "displayHorizontal": false
             }
           },
-          "title": "Search Latency"
+          "title": "Search Latency",
+          "id": ""
         }
       },
       {
@@ -400,29 +421,44 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "histogram_quantile(0.99, sum by (le, query_type, node_id, collection_name) (rate(milvus_proxy_collection_sq_latency_bucket{${Cluster},${Namespace}, ${collection}}[2m])))"
+                  "prometheusQuery": "histogram_quantile(0.99, sum by (le, query_type, node_id, collection_name) (rate(milvus_proxy_collection_sq_latency_bucket{${Cluster},${Namespace}, ${collection}}[2m])))",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               },
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(increase(milvus_proxy_collection_sq_latency_sum{${Cluster},${Namespace}, ${collection}}[2m])) by (pod, node_id, query_type) / sum(increase(milvus_proxy_collection_sq_latency_count{${Cluster},${Namespace}, ${collection}}[2m])) by (pod, node_id, query_type)"
+                  "prometheusQuery": "sum(increase(milvus_proxy_collection_sq_latency_sum{${Cluster},${Namespace}, ${collection}}[2m])) by (pod, node_id, query_type) / sum(increase(milvus_proxy_collection_sq_latency_count{${Cluster},${Namespace}, ${collection}}[2m])) by (pod, node_id, query_type)",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               }
             ],
-            "chartOptions": {
-              "mode": "COLOR",
-              "displayHorizontal": false
-            },
             "thresholds": [],
             "yAxis": {
+              "label": "",
               "scale": "LINEAR"
+            },
+            "chartOptions": {
+              "mode": "COLOR",
+              "showLegend": false,
+              "displayHorizontal": false
             }
           },
-          "title": "Collection Search Latency"
+          "title": "Collection Search Latency",
+          "id": ""
         }
       },
       {
@@ -435,29 +471,44 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "histogram_quantile(0.99, sum by (le, pod) (rate(milvus_msgstream_request_latency_bucket{${Cluster},${Namespace}, message_op_type=\"produce\"}[2m])))"
+                  "prometheusQuery": "histogram_quantile(0.99, sum by (le, pod) (rate(milvus_msgstream_request_latency_bucket{${Cluster},${Namespace}, message_op_type=\"produce\"}[2m])))",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               },
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(increase(milvus_msgstream_request_latency_sum{${Cluster},${Namespace}, message_op_type=\"produce\"}[2m])) by (pod) / sum(increase(milvus_msgstream_request_latency_count{${Cluster},${Namespace}, message_op_type=\"produce\"}[2m])) by (pod)"
+                  "prometheusQuery": "sum(increase(milvus_msgstream_request_latency_sum{${Cluster},${Namespace}, message_op_type=\"produce\"}[2m])) by (pod) / sum(increase(milvus_msgstream_request_latency_count{${Cluster},${Namespace}, message_op_type=\"produce\"}[2m])) by (pod)",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               }
             ],
-            "chartOptions": {
-              "mode": "COLOR",
-              "displayHorizontal": false
-            },
             "thresholds": [],
             "yAxis": {
+              "label": "",
               "scale": "LINEAR"
+            },
+            "chartOptions": {
+              "mode": "COLOR",
+              "showLegend": false,
+              "displayHorizontal": false
             }
           },
-          "title": "MQ Send Latency"
+          "title": "MQ Send Latency",
+          "id": ""
         }
       },
       {
@@ -506,22 +557,31 @@
             "dataSets": [
               {
                 "timeSeriesQuery": {
-                  "prometheusQuery": "sum(milvus_rootcoord_collection_num{${Cluster},${Namespace}})"
+                  "prometheusQuery": "sum(milvus_rootcoord_collection_num{${Cluster},${Namespace}})",
+                  "unitOverride": "",
+                  "outputFullDuration": false
                 },
                 "plotType": "LINE",
-                "targetAxis": "Y1"
+                "legendTemplate": "",
+                "targetAxis": "Y1",
+                "dimensions": [],
+                "measures": [],
+                "breakdowns": []
               }
             ],
-            "chartOptions": {
-              "mode": "COLOR",
-              "displayHorizontal": false
-            },
             "thresholds": [],
             "yAxis": {
+              "label": "",
               "scale": "LINEAR"
+            },
+            "chartOptions": {
+              "mode": "COLOR",
+              "showLegend": false,
+              "displayHorizontal": false
             }
           },
-          "title": "Collection amount"
+          "title": "Collection amount",
+          "id": ""
         }
       }
     ]
