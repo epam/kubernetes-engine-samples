@@ -18,7 +18,7 @@ do
 
     /opt/kafka/bin/kafka-producer-perf-test.sh \
     --topic test-topic \
-    --num-records 100000 \
+    --num-records 1000000 \
     --record-size 1000 \
     --throughput -1 \
     --producer-props bootstrap.servers=kafka-svc.kafka.svc.cluster.local:9092 \
