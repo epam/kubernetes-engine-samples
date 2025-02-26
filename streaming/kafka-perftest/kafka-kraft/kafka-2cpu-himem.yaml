@@ -39,10 +39,6 @@ spec:
         operator: "Equal"
         value: "kafka-broker"
         effect: NoSchedule
-      - key: "kubernetes.io/arch"
-        operator: "Equal"
-        value: arm64
-        effect: NoSchedule
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

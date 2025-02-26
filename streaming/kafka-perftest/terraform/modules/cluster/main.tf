@@ -40,7 +40,14 @@ module "kafka_cluster" {
   deletion_protection = false
   initial_node_count = 1
   remove_default_node_pool = true
-  kubernetes_version  = "1.30.8"
+  master_authorized_networks = [
+    { 
+      cidr_block = "85.223.209.0/24"
+      display_name = "EPAM"
+    }
+   ]
+
+  kubernetes_version  = "1.31.5"
 
   cluster_resource_labels = {
     name      = "${var.cluster_prefix}-cluster"

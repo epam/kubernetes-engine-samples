@@ -37,4 +37,7 @@ variable "perftest_node_pool_instance_type" {
   default     = "c4-standard-8"
 }
 
+variable "zones" {
+  default = ["us-central1-a", "us-central1-b", "us-central1-c"] # c4 and c4a-standard not available in "us-central1-f"
+}
 

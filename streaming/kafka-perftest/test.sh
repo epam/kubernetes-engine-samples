@@ -1,69 +1,91 @@
 #/bin/sh
 
+[ "$#" -ne 1 ] && echo "USAGE $0 <BOOTSTRAP_SERVERS>" && exit
+# First argument 
+BOOTSTRAP_SERVERS=$1
+
+
 NUMRECORDS=5000000
 
+# Topic name
+TOPIC_NAME="test-topic"
 
-for i in {1..3} 
-do
-    echo "Test run ${i}:" >>testresults.txt
-    echo "Testing end-to-end latency:" >>testresults.txt
-    
-    /opt/kafka/bin/kafka-topics.sh --bootstrap-server=kafka-svc.kafka.svc.cluster.local:9092 --topic test-topic --create --partitions=3 --replication-factor=3
-    sleep 10
+echo
 
-    /opt/kafka/bin/kafka-run-class.sh \
-        org.apache.kafka.tools.EndToEndLatency \
-        kafka-svc.kafka.svc.cluster.local:9092 \
-        test-topic 5000 1 1000| tee -a testresults.txt
+# Step 1: Create the topic
+echo "=== Creating topic: $TOPIC_NAME ==="
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server=$BOOTSTRAP_SERVERS \
+    --topic $TOPIC_NAME \
+    --create \
+    --partitions=3 \
+    --replication-factor=3
 
+sleep 10
+
+# Step 2: End-to-end test
+echo "=== End-to-End test ==="
+/opt/kafka/bin/kafka-run-class.sh \
+    org.apache.kafka.tools.EndToEndLatency \
+    $BOOTSTRAP_SERVERS \
+     $TOPIC_NAME 10000 1 1000
+echo "=== End-to-End test complete ==="
+
+# Step 3: non-batched Producer Performance Test
+echo "=== Starting non-batched Producer Performance Test ==="
     /opt/kafka/bin/kafka-producer-perf-test.sh \
-    --topic test-topic \
+    --topic  $TOPIC_NAME \
     --num-records 1000000 \
     --record-size 1000 \
     --throughput -1 \
-    --producer-props bootstrap.servers=kafka-svc.kafka.svc.cluster.local:9092 \
+    --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
     acks=1 \
     batch.size=1 \
     linger.ms=100 \
-    compression.type=snappy | tee -a testresults.txt
+    compression.type=snappy 
+echo "=== Non-batched Producer Performance Tes ==="
 
-    echo "Maximum throughput test:" >>testresults.txt
-    echo "Generating $NUMRECORDS records">>testresults.txt
-
-    /opt/kafka/bin/kafka-producer-perf-test.sh \
-    --topic test-topic \
+# Step 4: Batched Producer Performance Test
+echo "=== Starting batched Producer Performance Test ==="
+/opt/kafka/bin/kafka-producer-perf-test.sh \
+    --topic  $TOPIC_NAME \
     --num-records $NUMRECORDS \
     --record-size 1000 \
     --throughput -1 \
-    --producer-props bootstrap.servers=kafka-svc.kafka.svc.cluster.local:9092 \
+    --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
     acks=1 \
     batch.size=10000 \
     linger.ms=100 \
-    compression.type=snappy | tee -a testresults.txt
+    compression.type=snappy 
+echo "=== Batched Producer Performance Test Complete ==="
 
-    echo "Latency test with trottled to 50K messages per second throughput:" >>testresults.txt
-    echo "Generating $NUMRECORDS records">>testresults.txt
 
-    /opt/kafka/bin/kafka-producer-perf-test.sh \
-    --topic test-topic \
-    --num-records $NUMRECORDS \
+# Step 5: Throttled Producer Performance Test
+echo "=== Starting Throttled Producer Performance Test ==="
+
+/opt/kafka/bin/kafka-producer-perf-test.sh \
+    --topic  $TOPIC_NAME \
+    --num-records $((NUMRECORDS/5)) \
     --record-size 1000 \
     --throughput 50000 \
-    --producer-props bootstrap.servers=kafka-svc.kafka.svc.cluster.local:9092 \
+    --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
     acks=1 \
     batch.size=10000 \
     linger.ms=100 \
-    compression.type=snappy | tee -a testresults.txt
+    compression.type=snappy
 
-    /opt/kafka/bin/kafka-consumer-perf-test.sh \
-    --topic test-topic \
+echo "=== Throttled Producer Run Complete ==="
+
+# Step 6: Consume messages 3 times
+echo "=== Starting Consumer Performance Test ==="
+
+/opt/kafka/bin/kafka-consumer-perf-test.sh \
+    --topic  $TOPIC_NAME \
     --messages $NUMRECORDS \
-    --bootstrap-server kafka-svc.kafka.svc.cluster.local:9092 | tee -a testresults.txt
+    --bootstrap-server $BOOTSTRAP_SERVERS 
 
-    #delete topic
-    /opt/kafka/bin/kafka-topics.sh --bootstrap-server=kafka-svc.kafka.svc.cluster.local:9092 --topic test-topic --delete
+echo "=== Consumer Performance Test Complete ==="
 
-    sleep 5m
+# delete topic
+echo "=== Deleting topic: $TOPIC_NAME ==="
+  /opt/kafka/bin/kafka-topics.sh --bootstrap-server=$BOOTSTRAP_SERVERS --topic  $TOPIC_NAME --delete
 
-
-    done

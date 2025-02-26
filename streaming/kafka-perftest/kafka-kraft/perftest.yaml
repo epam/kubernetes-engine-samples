@@ -11,10 +11,10 @@ spec:
     command: ["/bin/sh"]
     args: ["-c", "while true; do sleep 10;done"]
   restartPolicy: Always
-  tolerations:
-  - key: "app.stateful/component"
-    operator: "Equal"
-    value: "kafka-perftest"
-    effect: NoSchedule
+  # tolerations:
+  # - key: "app.stateful/component"
+  #   operator: "Equal"
+  #   value: "kafka-perftest"
+  #   effect: NoSchedule
   nodeSelector:
     cloud.google.com/gke-nodepool: pool-perftest

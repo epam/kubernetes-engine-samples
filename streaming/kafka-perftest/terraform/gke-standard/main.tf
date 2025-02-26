@@ -20,52 +20,58 @@ data "google_service_account" "default" {
 
 # [START gke_streaming_kafka_standard_private_regional_cluster]
 module "kafka_cluster" {
-  source                   = "../modules/cluster"
-  project_id               = var.project_id
-  region                   = var.region
-  zones                    = ["us-central1-a", "us-central1-b", "us-central1-c"] # c4 and c4a-standard not available in "us-central1-f"
-  cluster_prefix           = var.cluster_prefix
-  network                  = "${var.cluster_prefix}-vpc"
-  subnetwork               = "${var.cluster_prefix}-private-subnet"
-  
+  source         = "../modules/cluster"
+  project_id     = var.project_id
+  region         = var.region
+  zones          = var.zones
+  cluster_prefix = var.cluster_prefix
+  network        = "${var.cluster_prefix}-vpc"
+  subnetwork     = "${var.cluster_prefix}-private-subnet"
+
 
   node_pools = [
     {
-      name            = "pool-kafka"
-      disk_size_gb    = 20
-      disk_type       = "hyperdisk-balanced"
-      autoscaling     = true
-      min_count       = 0
-      max_count       = 1
-      max_surge       = 1
-      max_unavailable = 0
-      machine_type    = var.kafka_node_pool_instance_type
-      auto_repair     = true
+      name               = "pool-kafka"
+      disk_size_gb       = 20
+      disk_type          = "hyperdisk-balanced"
+      image_type         = "UBUNTU_CONTAINERD"
+      autoscaling        = true
+      min_count          = 1
+      max_count          = 1
+      max_surge          = 1
+      max_unavailable    = 0
+      machine_type       = var.kafka_node_pool_instance_type
+      auto_repair        = true
+      enable_secure_boot = true
     },
     {
-      name            = "pool-perftest"
-      disk_size_gb    = 20
-      disk_type       = "hyperdisk-balanced"
-      autoscaling     = true
-      min_count       = 0
-      max_count       = 1
-      max_surge       = 1
-      max_unavailable = 0
-      machine_type    = var.perftest_node_pool_instance_type
-      auto_repair     = true
+      name               = "pool-perftest"
+      disk_size_gb       = 20
+      disk_type          = "hyperdisk-balanced"
+      image_type         = "UBUNTU_CONTAINERD"
+      autoscaling        = true
+      min_count          = 0
+      max_count          = 1
+      max_surge          = 1
+      max_unavailable    = 0
+      machine_type       = var.perftest_node_pool_instance_type
+      auto_repair        = true
+      enable_secure_boot = true
     },
-    {
-      name            = "pool-general"
-      disk_size_gb    = 20
-      disk_type       = "hyperdisk-balanced"
-      autoscaling     = true
-      min_count       = 0
-      max_count       = 1
-      max_surge       = 1
-      max_unavailable = 0
-      machine_type    = "c4-standard-8"
-      auto_repair     = true
-    }
+    # {
+    #   name               = "pool-general"
+    #   disk_size_gb       = 20
+    #   disk_type          = "hyperdisk-balanced"
+    #   image_type         = "UBUNTU_CONTAINERD"
+    #   autoscaling        = true
+    #   min_count          = 0
+    #   max_count          = 1
+    #   max_surge          = 1
+    #   max_unavailable    = 0
+    #   machine_type       = "c4-standard-8"
+    #   auto_repair        = true
+    #   enable_secure_boot = true
+    # }
 
   ]
   node_pools_labels = {
@@ -86,13 +92,13 @@ module "kafka_cluster" {
         effect = "NO_SCHEDULE"
       }
     ]
-    pool-perftest = [
-      {
-        key    = "app.stateful/component"
-        value  = "kafka-perftest"
-        effect = "NO_SCHEDULE"
-      }
-    ]
+    # pool-perftest = [
+    #   {
+    #     key    = "app.stateful/component"
+    #     value  = "kafka-perftest"
+    #     effect = "NO_SCHEDULE"
+    #   }
+    # ]
   }
 }
 
