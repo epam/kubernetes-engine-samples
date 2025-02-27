@@ -4,7 +4,7 @@ metadata:
   name: backup
   labels:
     topology.kubernetes.io/region: us-central1
-    topology.kubernetes.io/zone: us-central1-c
+    topology.kubernetes.io/zone: PZONE
   finalizers:
     - kubernetes.io/pv-protection
 spec:
@@ -15,7 +15,7 @@ spec:
     - ReadWriteMany
   volumeMode: Filesystem
   gcePersistentDisk:
-    pdName: pvc-54cb6bc2-0139-4883-bd5e-2cf09a623eb5
+    pdName: PDISK
     fsType: ext4
 
 ---

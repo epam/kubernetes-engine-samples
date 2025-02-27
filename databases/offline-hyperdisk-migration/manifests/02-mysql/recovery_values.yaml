@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_databases_offline_hyperdisk_02_mysql_cluster]
+# [START gke_databases_offline_hyperdisk_02_recovery_mysql_cluster]
 global:
   imageRegistry: ""
   imagePullSecrets: []
@@ -66,7 +66,7 @@ primary:
           - key: "topology.gke.io/zone"
             operator: In
             values: 
-            - "us-central1-b"
+            - "ZONE"
   extraFlags: "--max_connections=400"
   persistence:
     enabled: true
@@ -112,4 +112,4 @@ secondary:
       mysql: 3306
     nodePorts:
       mysql: "31008"    
-# [END gke_databases_offline_hyperdisk_02_mysql_cluster]
+# [END gke_databases_offline_hyperdisk_02_recovery_mysql_cluster]

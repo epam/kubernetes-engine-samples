@@ -25,7 +25,7 @@ variable "region" {
 
 variable "cluster_prefix" {
   description = "The prefix for all cluster resources"
-  default     = "offline-migration"
+  default     = "offline-hyperdisk-migration"
   type        = string
 }
 
