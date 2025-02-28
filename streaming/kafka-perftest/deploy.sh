@@ -92,17 +92,25 @@ gcloud container clusters get-credentials ${KUBERNETES_CLUSTER_PREFIX}-cluster -
 
 NAMESPACE="kafka"
 TEST_RESULTS=testresults.txt
+TEST_RESULTS_CSV=testresults.csv
+PD_FILE_SYSTEM=ext4
 kubectl create ns $NAMESPACE
 
 #kubectl apply -f kafka-kraft/hd-balanced.yaml
-kubectl apply -f kafka-kraft/hd-balanced-xfs.yaml
+kubectl apply -f kafka-kraft/hd-balanced-$PD_FILE_SYSTEM.yaml
 
 
 kubectl apply -f kafka-kraft/perftest.yaml -n $NAMESPACE
 
 echo "Kafka performance test" >$TEST_RESULTS
 echo "Machine type: $MACHINE_TYPE" >>$TEST_RESULTS
+echo "PD filesystem, $PD_FILE_SYSTEM" >>$TEST_RESULTS
 echo "Test date and time: $(date '+%Y-%m-%d %H:%M:%S')" >>$TEST_RESULTS
+
+echo "Machine type,$MACHINE_TYPE" >$TEST_RESULTS_CSV
+echo "PD filesystem, $PD_FILE_SYSTEM" >>$TEST_RESULTS_CSV
+echo "Test date and time, $(date '+%Y-%m-%d %H:%M:%S')" >>$TEST_RESULTS_CSV
+echo >>$TEST_RESULTS_CSV
 
 for run in {1..3}
 do
@@ -120,6 +128,40 @@ kubectl delete -f $MANIFEST_FILE -n $NAMESPACE
 sleep 30
 done
 
-gsutil cp $TEST_RESULTS  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/$TEST_FILE_EXT-ubxfs-$(date +"%Y_%m_%d_%I_%M_%p").txt
+kubectl delete -f kafka-kraft/hd-balanced-$PD_FILE_SYSTEM.yaml
+
+
+
+echo "End-to-End Performance Test" >>$TEST_RESULTS_CSV
+echo "Avg latency" >>$TEST_RESULTS_CSV
+cat $TEST_RESULTS | grep "Avg latency" | sed 's/[^0-9.]/ /g' | tr -s ' '  >>$TEST_RESULTS_CSV
+echo "Percentiles:" >>$TEST_RESULTS_CSV
+echo "50th, 99th, 99.9th" >>$TEST_RESULTS_CSV
+cat $TEST_RESULTS | grep "Percentiles:" | sed 's/50th//g; s/95th//g; s/99th//g; s/99\.9th//g'|sed 's/[^0-9.,]/ /g' |tr -s ' ' >>$TEST_RESULTS_CSV
+echo >>$TEST_RESULTS_CSV
+
+echo "non-batched Producer Performance Test" >>$TEST_RESULTS_CSV
+echo "Records Sent,Records/sec,Throughput (MB/sec),Avg Latency (ms),Max Latency (ms),50th Percentile (ms),95th Percentile (ms),99th Percentile (ms),99.9th Percentile (ms)">>$TEST_RESULTS_CSV
+cat $TEST_RESULTS | grep "1000000 records sent" | sed 's/50th//g; s/95th//g; s/99th//g; s/99\.9th//g'|sed 's/[^0-9.]/ /g' | tr -s ' ' ',' |sed 's/..$//'>>$TEST_RESULTS_CSV
+echo >>$TEST_RESULTS_CSV
+
+echo "Batched Producer Performance Test" >>$TEST_RESULTS_CSV
+echo "Records Sent,Records/sec,Throughput (MB/sec),Avg Latency (ms),Max Latency (ms),50th Percentile (ms),95th Percentile (ms),99th Percentile (ms),99.9th Percentile (ms)">>$TEST_RESULTS_CSV
+cat $TEST_RESULTS | grep "5000000 records sent" | sed 's/50th//g; s/95th//g; s/99th//g; s/99\.9th//g'|sed 's/[^0-9.]/ /g' | tr -s ' ' ',' |sed 's/..$//'>>$TEST_RESULTS_CSV
+echo >>$TEST_RESULTS_CSV
+
+echo "Throttled Producer Performance Test" >>$TEST_RESULTS_CSV
+echo "Records Sent,Records/sec,Throughput (MB/sec),Avg Latency (ms),Max Latency (ms),50th Percentile (ms),95th Percentile (ms),99th Percentile (ms),99.9th Percentile (ms)">>$TEST_RESULTS_CSV
+cat $TEST_RESULTS | grep "1500000 records sent" | sed 's/50th//g; s/95th//g; s/99th//g; s/99\.9th//g' |sed 's/[^0-9.]/ /g' | tr -s ' ' ',' |sed 's/..$//'>>$TEST_RESULTS_CSV
+echo >>$TEST_RESULTS_CSV
+# Consumer 
+
+echo "Start Time,End Time,Data Consumed (MB),Throughput (MB/sec),Messages Consumed,Messages/sec,Rebalance Time (ms),Fetch Time (ms),Fetch MB/sec,Fetch Messages/sec" >>$TEST_RESULTS_CSV
+cat $TEST_RESULTS | grep "start.time" -A1 |grep 2025 >>$TEST_RESULTS_CSV
+
+
+
+gsutil cp $TEST_RESULTS  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt
+gsutil cp $TEST_RESULTS_CSV  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/csv/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv
 rm $TEST_RESULTS
 

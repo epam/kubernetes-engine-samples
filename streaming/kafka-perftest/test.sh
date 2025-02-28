@@ -42,13 +42,13 @@ echo "=== Starting non-batched Producer Performance Test ==="
     batch.size=1 \
     linger.ms=100 \
     compression.type=snappy 
-echo "=== Non-batched Producer Performance Tes ==="
+echo "=== Non-batched Producer Performance Test ==="
 
 # Step 4: Batched Producer Performance Test
 echo "=== Starting batched Producer Performance Test ==="
 /opt/kafka/bin/kafka-producer-perf-test.sh \
     --topic  $TOPIC_NAME \
-    --num-records $NUMRECORDS \
+    --num-records 5000000 \
     --record-size 1000 \
     --throughput -1 \
     --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
@@ -64,7 +64,7 @@ echo "=== Starting Throttled Producer Performance Test ==="
 
 /opt/kafka/bin/kafka-producer-perf-test.sh \
     --topic  $TOPIC_NAME \
-    --num-records $((NUMRECORDS/5)) \
+    --num-records 1500000 \
     --record-size 1000 \
     --throughput 50000 \
     --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
