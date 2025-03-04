@@ -12,27 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_databases_offline_hyperdisk_02_convert_pv]
+# [START gke_databases_offline_hyperdisk_02_restore_pv]
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: backup
-  labels:
-    topology.kubernetes.io/region: us-central1
-    topology.kubernetes.io/zone: PZONE
-  finalizers:
-    - kubernetes.io/pv-protection
 spec:
   storageClassName: balanced-storage
   capacity:
     storage: 150G
   accessModes:
-    - ReadWriteMany
-  volumeMode: Filesystem
-  gcePersistentDisk:
-    pdName: PDISK
+    - ReadWriteOnce
+  claimRef:
+    name: hyperdisk-recovery
+    namespace: default
+  csi:
+    driver: pd.csi.storage.gke.io
+    volumeHandle: projects/PRJCTID/regions/us-central1/disks/mysql-recovery
     fsType: ext4
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -40,11 +37,10 @@ metadata:
   namespace: default
   name: hyperdisk-recovery
 spec:
+  storageClassName: hyperdisk-recovery
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 150G
-  volumeName: backup
-  storageClassName: balanced-storage
-# [END gke_databases_offline_hyperdisk_02_convert_pv]
+# [END gke_databases_offline_hyperdisk_02_restore_pv]
