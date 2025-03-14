@@ -33,3 +33,9 @@ variable "machine_type" {
   type        = string
   default     = "c4-standard-8"
 }
+
+variable "os_image" {
+  description = "Image OS type for Kafka brokers"
+  type        = string
+  default     = "ubuntu-os-cloud/ubuntu-2204-lts"
+}

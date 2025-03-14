@@ -1,14 +1,17 @@
 resource "google_compute_instance" "kafka_load_generator" {
-  name         = "kafka-load-generator"
-  machine_type = "c4-standard-4"
+  count        = 3
+  name         = "kafka-load-generator-${count.index}"
+  machine_type = "c4-highmem-2"
   zone         = "us-central1-a"
 
   # Boot disk
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-12" # Debian 12 (same as Kafka brokers)
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
       size  = 20                      # Boot disk size in GB
       type  = "hyperdisk-balanced"
+      provisioned_iops       = "3000"
+      provisioned_throughput = "700"
     }
   }
 
@@ -25,7 +28,7 @@ resource "google_compute_instance" "kafka_load_generator" {
 
   service_account {
     email  = "343408765424-compute@developer.gserviceaccount.com"
-    scopes = ["https://www.googleapis.com/auth/devstorage.read_only", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/service.management.readonly", "https://www.googleapis.com/auth/servicecontrol", "https://www.googleapis.com/auth/trace.append"]
+    scopes = ["https://www.googleapis.com/auth/compute", "https://www.googleapis.com/auth/devstorage.read_write", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/service.management.readonly", "https://www.googleapis.com/auth/servicecontrol", "https://www.googleapis.com/auth/trace.append"]
   }
 
   metadata = {
@@ -55,8 +58,12 @@ resource "google_compute_instance" "kafka_load_generator" {
 
     # Install OpenJDK 17
     echo "$(date) Installing OpenJDK 17."
-    sudo apt-get update
-    sudo apt-get install -y openjdk-17-jdk
+    sudo apt update
+    sudo apt install -y openjdk-17-jdk sysstat
+
+    # Ops Agent installation
+    curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+    sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
     # Download and install Kafka tools
     echo "$(date) Downloading Kafka tools."
