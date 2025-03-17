@@ -96,7 +96,7 @@ spec:
       spec:
         accessModes:
           - "ReadWriteOnce"
-        storageClassName: balanced-storage
+        storageClassName: premium-rwo
         resources:
           requests:
             storage: "300Gi"

@@ -33,11 +33,11 @@ module "kafka_cluster" {
     {
       name               = "pool-kafka"
       disk_size_gb       = 20
-      disk_type          = "hyperdisk-balanced"
+      disk_type          = var.kafka_boot_disk_type
       image_type         = "UBUNTU_CONTAINERD"
       autoscaling        = true
       min_count          = 1
-      max_count          = 1
+      max_count          = 3
       max_surge          = 1
       max_unavailable    = 0
       machine_type       = var.kafka_node_pool_instance_type
@@ -50,7 +50,7 @@ module "kafka_cluster" {
       disk_type          = "hyperdisk-balanced"
       image_type         = "UBUNTU_CONTAINERD"
       autoscaling        = true
-      min_count          = 0
+      min_count          = 1
       max_count          = 1
       max_surge          = 1
       max_unavailable    = 0
@@ -100,6 +100,25 @@ module "kafka_cluster" {
     #   }
     # ]
   }
+  node_pools_linux_node_configs_sysctls = {
+    all = {}
+    # pool-kafka = {
+    #   "net.core.netdev_max_backlog" = "8192"
+    #   "net.core.somaxconn" = "8192"
+    # },
+    # pool-perftest = {
+    #   "net.core.netdev_max_backlog" = "8192"
+    #   "net.core.somaxconn" = "8192"
+    # },
+    default-node-pool = {}
+  }
+  node_pools_cgroup_mode=  {
+    all               = "CGROUP_MODE_UNSPECIFIED"
+    default-node-pool = "CGROUP_MODE_UNSPECIFIED"
+    pool-kafka        = "CGROUP_MODE_UNSPECIFIED"
+    pool-perftest     = "CGROUP_MODE_UNSPECIFIED"
+  }
+  
 }
 
 output "kubectl_connection_command" {

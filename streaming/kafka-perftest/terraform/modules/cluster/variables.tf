@@ -51,3 +51,12 @@ variable "node_pools_taints" {
   description = "Map of lists containing node taints by node-pool name"
 }
 
+variable "node_pools_linux_node_configs_sysctls" {
+  description = "Map of maps containing linux node config sysctls by node-pool name"
+  type        = map(map(string))
+}
+
+variable "node_pools_cgroup_mode" {
+  type        = map(string)
+  description = "Map of strings containing cgroup node config by node-pool name"
+}

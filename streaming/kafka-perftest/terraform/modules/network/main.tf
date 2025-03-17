@@ -27,6 +27,13 @@ module "gcp-network" {
       subnet_region         = var.region
       subnet_private_access = true
       subnet_flow_logs      = "true"
+    },
+    {
+      subnet_name           = "${var.cluster_prefix}-eu-private-subnet"
+      subnet_ip             = "10.12.0.0/24"
+      subnet_region         = "europe-west4"
+      subnet_private_access = true
+      subnet_flow_logs      = "true"
     }
   ]
 
@@ -39,6 +46,16 @@ module "gcp-network" {
       {
         range_name    = "k8s-service-range"
         ip_cidr_range = "10.52.0.0/20"
+      },
+    ],
+    ("${var.cluster_prefix}-eu-private-subnet") = [
+      {
+        range_name    = "k8s-pod-range"
+        ip_cidr_range = "10.54.0.0/20"
+      },
+      {
+        range_name    = "k8s-service-range"
+        ip_cidr_range = "10.56.0.0/20"
       },
     ]
   }

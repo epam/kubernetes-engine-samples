@@ -19,7 +19,7 @@
 # [START gke_streaming_kafka_standard_private_regional_cluster]
 module "kafka_cluster" {
   source                   = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                  = "~> 36.0"
+  version                  = "~> 36.0.2"
   project_id               = var.project_id
   name                     = "${var.cluster_prefix}-cluster"
   regional                 = true
@@ -61,6 +61,8 @@ module "kafka_cluster" {
   node_pools        = var.node_pools
   node_pools_labels = var.node_pools_labels
   node_pools_taints = var.node_pools_taints
+  node_pools_linux_node_configs_sysctls = var.node_pools_linux_node_configs_sysctls
+  node_pools_cgroup_mode = var.node_pools_cgroup_mode
   gce_pd_csi_driver = true
 }
 # [END gke_streaming_kafka_standard_private_regional_cluster]

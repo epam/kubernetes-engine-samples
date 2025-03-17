@@ -60,7 +60,7 @@ spec:
             app.kubernetes.io/name: kafka-app
       containers:
         - name: kafka-container
-          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/kafka-repo/kafka:3.9.0-debian
+          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/kafka-repo/kafka:3.9.0
           imagePullPolicy: Always
           ports:
             - containerPort: 9092
@@ -80,6 +80,8 @@ spec:
               value: '3'
             - name: DEFAULT_MIN_INSYNC_REPLICAS
               value: '2'
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xms1536M -Xmx4g -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:G1HeapRegionSize=16M -XX:MinMetaspaceFreeRatio=50 -XX:MaxMetaspaceFreeRatio=80"
           volumeMounts:
             - name: data
               mountPath: /mnt/kafka
@@ -99,4 +101,4 @@ spec:
         storageClassName: balanced-storage
         resources:
           requests:
-            storage: "300Gi"
+            storage: "30Gi"

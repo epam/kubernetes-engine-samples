@@ -41,3 +41,7 @@ variable "zones" {
   default = ["us-central1-a", "us-central1-b", "us-central1-c"] # c4 and c4a-standard not available in "us-central1-f"
 }
 
+variable "kafka_boot_disk_type" {
+  description = "Boot disk type for kafka node pool."
+  default = "hyperdisk-balanced"
+}
