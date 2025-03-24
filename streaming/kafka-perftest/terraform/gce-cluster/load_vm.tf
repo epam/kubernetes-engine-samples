@@ -1,13 +1,13 @@
 resource "google_compute_instance" "kafka_load_generator" {
-  count        = 3
+  count        = 1
   name         = "kafka-load-generator-${count.index}"
-  machine_type = "c4-highmem-2"
+  machine_type = var.machine_type
   zone         = "us-central1-a"
 
   # Boot disk
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      image = var.os_image
       size  = 20                      # Boot disk size in GB
       type  = "hyperdisk-balanced"
       provisioned_iops       = "3000"
@@ -56,10 +56,30 @@ resource "google_compute_instance" "kafka_load_generator" {
     # Waiting for 90 seconds for system setup to release all the locks
     sleep 90
 
+    # Determine OS type
+    OS=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+
+    if ! id -u kafka >/dev/null 2>&1; then
+        echo "$(date) Creating 'kafka' system user with no shell."
+
+        if [[ $OS == *"CentOS"* ]]; then
+            sudo useradd -r -m -d /home/kafka -s /sbin/nologin kafka
+        else # Debian
+            sudo useradd -r -m -d /home/kafka -s /usr/sbin/nologin kafka
+        fi
+    else
+        echo "$(date) 'kafka' system user already exists."
+    fi
+
     # Install OpenJDK 17
     echo "$(date) Installing OpenJDK 17."
-    sudo apt update
-    sudo apt install -y openjdk-17-jdk sysstat
+    if [[ $OS == *"CentOS"* ]]; then
+        sudo dnf upgrade -y
+        sudo dnf install -y java-17-openjdk xfsprogs sysstat
+    else # Debian
+        sudo apt update
+        sudo apt install -y openjdk-17-jdk xfsprogs sysstat
+    fi
 
     # Ops Agent installation
     curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh

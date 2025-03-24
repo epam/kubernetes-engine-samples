@@ -29,6 +29,7 @@ resource "aws_subnet" "private_subnets" {
 
   tags = {
     Name = "kafka-private-subnet-${count.index}"
+    Tier = "private"
   }
 }
 
@@ -39,40 +40,73 @@ resource "aws_subnet" "nat_subnet" {
 
   tags = {
     Name = "nat-subnet"
+    Tier = "public"
   }
 }
 
-resource "aws_eip" "nat_eip" {
-  domain = "vpc" # Allocate Elastic IP for NAT Gateway
-}
-
-resource "aws_nat_gateway" "nat_gateway" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.nat_subnet.id # NAT Gateway resides in its own dedicated subnet
-
-  tags = {
-    Name = "nat-gateway"
-  }
-}
-
-resource "aws_route_table" "private_route_table" {
+resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main_vpc.id
 
-  # Route for Internet egress-only traffic via NAT Gateway
+  # Route for traffic between NAT Gateway and Internet Gateway
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+    gateway_id     = aws_internet_gateway.gw.id
   }
 
   tags = {
-    Name = "private-route-table"
+    Name = "public-route-table"
   }
 }
 
-# Associate the Route Table with each private subnet
-resource "aws_route_table_association" "private_subnets_route_associations" {
-  count          = 3
-  subnet_id      = aws_subnet.private_subnets[count.index].id
-  route_table_id = aws_route_table.private_route_table.id
+resource "aws_route_table_association" "public_subnets_route_associations" {
+  subnet_id      = aws_subnet.nat_subnet.id
+  route_table_id = aws_route_table.public_route_table.id
 }
 
+# Security Group for Kafka Brokers
+resource "aws_security_group" "kafka_brokers" {
+  name        = "allow-kafka-ports"
+  description = "Open ports for inter-broker communication"
+  vpc_id      = aws_vpc.main_vpc.id
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_kafka_ports" {
+  security_group_id = aws_security_group.kafka_brokers.id
+  cidr_ipv4         = aws_vpc.main_vpc.cidr_block
+  ip_protocol       = "tcp"
+  from_port         = 9092
+  to_port           = 9093
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_outbound" {
+  security_group_id = aws_security_group.kafka_brokers.id
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+}
+
+resource "aws_security_group" "iap_to_brokers" {
+  name        = "allow-iap-brokers"
+  description = "Open SSH for IAP-broker communication"
+  vpc_id      = aws_vpc.main_vpc.id
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_iap_outbound" {
+  security_group_id = aws_security_group.iap_to_brokers.id
+  cidr_ipv4         = aws_vpc.main_vpc.cidr_block
+  ip_protocol       = "tcp"
+  from_port         = 22
+  to_port           = 22
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_iap_inbound" {
+  security_group_id            = aws_security_group.kafka_brokers.id
+  referenced_security_group_id = aws_security_group.iap_to_brokers.id
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
+}
+
+resource "aws_ec2_instance_connect_endpoint" "kafka_iap" {
+  subnet_id          = aws_subnet.private_subnets.0.id
+  security_group_ids = [aws_security_group.iap_to_brokers.id]
+}

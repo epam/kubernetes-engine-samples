@@ -24,7 +24,7 @@ resource "google_compute_firewall" "kafka-firewall" {
 
 # Create 3 persistent disks, one for each Kafka broker
 resource "google_compute_disk" "kafka-disks" {
-  count                  = 3
+  count                  = 1
   name                   = "gce-kafka-disk-${count.index}"
   type                   = "hyperdisk-balanced"  # Hyperdisk Balanced
   provisioned_iops       = "6000"
@@ -38,7 +38,7 @@ resource "random_uuid" "kafka_cluster_id" {}
 
 # Create Kafka broker instances
 resource "google_compute_instance" "kafka" {
-  count        = 3
+  count        = 1
   name         = "gce-kafka-broker-${count.index}"
   machine_type = var.machine_type
   zone         = var.zones[count.index] # Assign each broker to a different zone
@@ -195,7 +195,7 @@ log.dirs=$${LOG_DIR}
 listeners=PLAINTEXT://$${BROKER_IP}:9092,CONTROLLER://$${BROKER_IP}:9093
 advertised.listeners=PLAINTEXT://$${BROKER_HOSTNAME}:9092
 node.id=$${BROKER_ID}
-controller.quorum.voters=0@gce-kafka-broker-0:9093,1@gce-kafka-broker-1:9093,2@gce-kafka-broker-2:9093
+controller.quorum.voters=0@gce-kafka-broker-0:9093
 controller.listener.names=CONTROLLER
 process.roles=broker,controller
 num.network.threads=3
@@ -205,8 +205,9 @@ log.retention.hours=168
 log.segment.bytes=1073741824
 log.retention.check.interval.ms=300000
 
-default.replication.factor=3
-min.insync.replicas=2
+default.replication.factor=1
+offsets.topic.replication.factor=1
+min.insync.replicas=1
 EOF
 
   # Format metadata directory
