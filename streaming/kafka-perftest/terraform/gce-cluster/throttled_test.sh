@@ -13,6 +13,7 @@ BOOTSTRAP_SERVERS="gce-kafka-broker-0:9092"
 BOOTSTRAP_SINGLE="gce-kafka-broker-0:9092"
 PROJECT_ID="hl2-gogl-wopt-t1iylu"
 
+BUCKET_NAME="benchmark-results-hl2-gogl-wopt-t1iylu"
 TEST_RESULTS=testresults.txt
 TEST_RESULTS_CSV=testresults.csv
 
@@ -176,5 +177,5 @@ cat $TEST_RESULTS | grep "start.time" -A1 |grep 2025 >>$TEST_RESULTS_CSV
 
 
 
-gcloud storage cp $TEST_RESULTS  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gce/$MACHINE_TYPE-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt >/dev/null
-gcloud storage cp $TEST_RESULTS_CSV  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gce/csv/$MACHINE_TYPE-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv >/dev/null
+gcloud storage cp $TEST_RESULTS  gs://$BUCKET_NAME/kafka/gce/$MACHINE_TYPE-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt >/dev/null
+gcloud storage cp $TEST_RESULTS_CSV  gs://$BUCKET_NAME/kafka/gce/csv/$MACHINE_TYPE-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv >/dev/null

@@ -81,7 +81,7 @@ resource "google_compute_instance" "kafka" {
 
   service_account {
     email  = "343408765424-compute@developer.gserviceaccount.com"
-    scopes = ["https://www.googleapis.com/auth/devstorage.read_only", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/service.management.readonly", "https://www.googleapis.com/auth/servicecontrol", "https://www.googleapis.com/auth/trace.append"]
+    scopes = ["https://www.googleapis.com/auth/devstorage.read_write", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/service.management.readonly", "https://www.googleapis.com/auth/servicecontrol", "https://www.googleapis.com/auth/trace.append"]
   }
 
   metadata = {
@@ -221,26 +221,10 @@ EOF
   echo "$(date) Setup marker file created at $${KAFKA_DONE_FILE}."
 fi
 
-# # Configure dirty memory ratios for Kafka performance
-# echo "$(date) Configuring vm.dirty_ratio and vm.dirty_background_ratio settings"
-
-# # Create a custom sysctl configuration file for dirty ratios
-# sudo bash -c "cat <<EOF > /etc/sysctl.d/99-dirty-ratio.conf
-# # Dirty memory settings to optimize Kafka workloads
-# vm.dirty_ratio=40
-# vm.dirty_background_ratio=20
-# EOF"
-
-# # Reload sysctl to apply these settings immediately
-# echo "$(date) Reloading sysctl settings from /etc/sysctl.d/"
-# sudo sysctl --system
-
-# Start Kafka on every restart/reboot
-# export KAFKA_HEAP_OPTS="-Xms4G -Xmx4G"
-# export KAFKA_JVM_PERFORMANCE_OPTS="-XX:MaxInlineLevel=15 \
-#                                    -XX:MaxGCPauseMillis=20 \
-#                                    -XX:+UseG1GC \
-#                                    -XX:InitiatingHeapOccupancyPercent=35"
+# Increase fs.nr_open and make it persistent
+echo "fs.nr_open = 1073741816" | tee /etc/sysctl.d/90-fd-limits.conf
+sysctl -w fs.nr_open=1073741816
+sysctl --system
 
 echo "$(date) Starting Kafka service."
 nohup /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties > /tmp/kafka.log 2>&1 &
