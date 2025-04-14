@@ -11,5 +11,14 @@ spec:
     command: ["/bin/sh"]
     args: ["-c", "while true; do sleep 10;done"]
   restartPolicy: Always
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - {{ZONE}}
   nodeSelector:
     cloud.google.com/gke-nodepool: pool-perftest

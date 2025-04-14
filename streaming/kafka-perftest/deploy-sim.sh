@@ -169,7 +169,7 @@ kubectl apply -f kafka-kraft/hd-balanced-$PD_FILE_SYSTEM.yaml
 kubectl apply -f kafka-kraft/perftest-3.yaml -n $NAMESPACE
 
 cat << EOF > $TEST_RESULTS
-Kafka performance test
+Kafka performance test, 3 loaders simultaneous, $NUMRECORDS producer messages
 Machine type, $MACHINE_TYPE
 PD filesystem, $PD_FILE_SYSTEM
 Test date and time, $(date '+%Y-%m-%d %H:%M:%S')
@@ -195,9 +195,9 @@ kubectl cp test.sh kafka-perftest-$run:/opt/kafka -n $NAMESPACE
 kubectl exec -it kafka-perftest-$run -n $NAMESPACE -- chmod +x /opt/kafka/test.sh 
 done
 
-kubectl exec -it kafka-perftest-0 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-0 $NUMRECORDS" |tee  "$TEST_RESULTS-0" &
-kubectl exec -it kafka-perftest-1 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-1 $NUMRECORDS" |tee  "$TEST_RESULTS-1" &
-kubectl exec -it kafka-perftest-2 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-2 $NUMRECORDS" |tee  "$TEST_RESULTS-2"
+kubectl exec -it kafka-perftest-0 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-0 $NUMRECORDS 3" > "$TEST_RESULTS-0" 2>&1 &
+kubectl exec -it kafka-perftest-1 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-1 $NUMRECORDS 3" >  "$TEST_RESULTS-1" 2>&1 &
+kubectl exec -it kafka-perftest-2 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-2 $NUMRECORDS 3" |tee  "$TEST_RESULTS-2"
 
 wait
 
@@ -206,11 +206,12 @@ wait
 for i in {0..2} 
 do
 ./result_parser.sh $TEST_RESULTS-$i >>$TEST_RESULTS_CSV
+cat $TEST_RESULTS-$i >>$TEST_RESULTS
 done
 
-gsutil cp $TEST_RESULTS  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt
-gsutil cp $TEST_RESULTS_CSV  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/csv/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv
-rm $TEST_RESULTS
+gsutil cp $TEST_RESULTS  gs://$GCSBUCKET/kafka/gke/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt
+gsutil cp $TEST_RESULTS_CSV  gs://$GCSBUCKET/kafka/gke/csv/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv
+#  rm $TEST_RESULTS
 
 kubectl delete -f $MANIFEST_FILE -n $NAMESPACE
 kubectl delete -f kafka-kraft/hd-balanced-$PD_FILE_SYSTEM.yaml

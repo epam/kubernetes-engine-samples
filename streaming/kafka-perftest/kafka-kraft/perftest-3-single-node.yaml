@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-perftest
+  namespace: kafka
+spec:
+  serviceName: kafka-svc
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka-perftest
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
+  template:
+    metadata:
+      labels:
+        app: kafka-perftest
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: pool-perftest
+      containers:
+        - name: kafka-container
+          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/kafka-repo/kafka:3.9.0
+          imagePullPolicy: Always
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do sleep 10;done"]
+
+

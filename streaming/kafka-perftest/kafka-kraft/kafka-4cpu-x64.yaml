@@ -60,7 +60,7 @@ spec:
             app.kubernetes.io/name: kafka-app
       containers:
         - name: kafka-container
-          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/kafka-repo/kafka:3.9.0
+          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/kafka-repo/kafka:3.9.0-debian
           imagePullPolicy: Always
           ports:
             - containerPort: 9092

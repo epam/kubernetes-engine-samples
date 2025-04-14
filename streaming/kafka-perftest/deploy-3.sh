@@ -180,7 +180,6 @@ provisioned-iops-on-create, 6000
 EOF
 
 cp $TEST_RESULTS $TEST_RESULTS_CSV
-NUMRECORDS=5000000
 
 for run in {0..2}
 do
@@ -197,9 +196,9 @@ kubectl exec -it kafka-perftest-$run -n $NAMESPACE -- chmod +x /opt/kafka/test.s
 # sleep 30
 done
 
-kubectl exec -it kafka-perftest-0 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-0 $NUMRECORDS" |tee -a "$TEST_RESULTS-0" &
-kubectl exec -it kafka-perftest-1 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-1 $NUMRECORDS" |tee -a "$TEST_RESULTS-1" &
-kubectl exec -it kafka-perftest-2 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-2 $NUMRECORDS" |tee -a "$TEST_RESULTS-2"
+kubectl exec -it kafka-perftest-0 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-0 $NUMRECORDS 3" |tee -a "$TEST_RESULTS-0" &
+kubectl exec -it kafka-perftest-1 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-1 $NUMRECORDS 3" |tee -a "$TEST_RESULTS-1" &
+kubectl exec -it kafka-perftest-2 -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-2 $NUMRECORDS 3" |tee -a "$TEST_RESULTS-2"
 
 wait
 
@@ -211,7 +210,7 @@ do
 ./result_parser.sh $TEST_RESULTS-$i >>$TEST_RESULTS_CSV
 done
 
-gsutil cp $TEST_RESULTS  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt
-gsutil cp $TEST_RESULTS_CSV  gs://benchmark-results-hl2-gogl-wopt-t1iylu/kafka/gke/csv/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv
+gsutil cp $TEST_RESULTS  gs://$GCSBUCKET/kafka/gke/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").txt
+gsutil cp $TEST_RESULTS_CSV  gs://$GCSBUCKET/kafka/gke/csv/$TEST_FILE_EXT-ub$PD_FILE_SYSTEM-$(date +"%Y_%m_%d_%I_%M_%p").csv
 rm $TEST_RESULTS
 

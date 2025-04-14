@@ -35,24 +35,10 @@ spec:
         app: kafka-app
     spec:
       tolerations:
-      - key: "app.stateful/component"
-        operator: "Equal"
-        value: "kafka-broker"
-        effect: NoSchedule
       - key: "kubernetes.io/arch"
         operator: "Equal"
         value: arm64
         effect: NoSchedule
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: "app.stateful/component"
-                operator: In
-                values:
-                - "kafka-broker"
       nodeSelector:
         cloud.google.com/gke-nodepool: pool-kafka
       topologySpreadConstraints:

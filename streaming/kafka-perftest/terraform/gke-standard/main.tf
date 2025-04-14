@@ -27,17 +27,17 @@ module "kafka_cluster" {
   cluster_prefix = var.cluster_prefix
   network        = "${var.cluster_prefix}-vpc"
   subnetwork     = "${var.cluster_prefix}-private-subnet"
-
+ 
 
   node_pools = [
     {
       name               = "pool-kafka"
       disk_size_gb       = 20
       disk_type          = var.kafka_boot_disk_type
-      image_type         = "UBUNTU_CONTAINERD"
+      image_type         = var.kafka_image_type
       autoscaling        = true
       min_count          = 1
-      max_count          = 3
+      max_count          = var.kafka_max_count
       max_surge          = 1
       max_unavailable    = 0
       machine_type       = var.kafka_node_pool_instance_type
@@ -51,7 +51,7 @@ module "kafka_cluster" {
       image_type         = "UBUNTU_CONTAINERD"
       autoscaling        = true
       min_count          = 1
-      max_count          = 1
+      max_count          = var.perftest_max_count
       max_surge          = 1
       max_unavailable    = 0
       machine_type       = var.perftest_node_pool_instance_type
@@ -103,12 +103,12 @@ module "kafka_cluster" {
   node_pools_linux_node_configs_sysctls = {
     all = {}
     # pool-kafka = {
-    #   "net.core.netdev_max_backlog" = "8192"
-    #   "net.core.somaxconn" = "8192"
+    #   "net.croe.netdev_max_backlog" = "16384"
+    #   "net.core.somaxconn" = "16384"
     # },
     # pool-perftest = {
-    #   "net.core.netdev_max_backlog" = "8192"
-    #   "net.core.somaxconn" = "8192"
+    #   "net.core.netdev_max_backlog" = "16384"
+    #   "net.core.somaxconn" = "16384"
     # },
     default-node-pool = {}
   }

@@ -33,13 +33,15 @@ module "kafka_cluster" {
   enable_private_endpoint  = false
   enable_private_nodes     = true
   master_ipv4_cidr_block   = "172.16.0.0/28"
-  network_policy           = true
+  # network_policy           = true
   logging_enabled_components = ["SYSTEM_COMPONENTS","WORKLOADS"]
   monitoring_enabled_components = ["SYSTEM_COMPONENTS"]
   enable_cost_allocation = true
   deletion_protection = false
   initial_node_count = 1
   remove_default_node_pool = true
+  datapath_provider = "ADVANCED_DATAPATH"
+  # dns_cache      = true
   master_authorized_networks = [
     { 
       cidr_block = "85.223.209.0/24"
@@ -47,7 +49,7 @@ module "kafka_cluster" {
     }
    ]
 
-  kubernetes_version  = "1.31.5"
+  kubernetes_version  = "1.31"
 
   cluster_resource_labels = {
     name      = "${var.cluster_prefix}-cluster"

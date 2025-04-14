@@ -1,6 +1,6 @@
 #/bin/sh
 
-[ "$#" -ne 3 ] && echo "USAGE $0 <BOOTSTRAP_SERVERS> <TOPIC> <NUMRECORDS>" && exit
+[ "$#" -ne 4 ] && echo "USAGE $0 <BOOTSTRAP_SERVERS> <TOPIC> <NUMRECORDS> <REPL_FACTOR>" && exit
 # First argument 
 BOOTSTRAP_SERVERS=$1
 
@@ -8,7 +8,7 @@ BOOTSTRAP_SERVERS=$1
 TOPIC_NAME=$2
 
 NUMRECORDS=$3
-
+REPL_FACTOR=$4
 
 
 echo
@@ -19,7 +19,7 @@ echo "=== Creating topic: $TOPIC_NAME ==="
     --topic $TOPIC_NAME \
     --create \
     --partitions=3 \
-    --replication-factor=3
+    --replication-factor=$REPL_FACTOR
 
 sleep 10
 

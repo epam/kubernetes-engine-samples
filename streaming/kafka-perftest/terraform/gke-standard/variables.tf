@@ -45,3 +45,18 @@ variable "kafka_boot_disk_type" {
   description = "Boot disk type for kafka node pool."
   default = "hyperdisk-balanced"
 }
+
+variable "kafka_max_count" {
+  description = "Maximum number of nodes per zone"
+  default     = 3
+}
+
+variable "perftest_max_count" {
+  description = "Maximum number of perftest nodes per zone"
+  default     = 1
+}
+
+variable "kafka_image_type" {
+  description = "Image type used on kafka nodes, possible values are COS_CONTAINERD, UBUNTU_CONTAINERD"
+  default = "COS_CONTAINERD"
+}
