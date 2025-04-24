@@ -7,7 +7,7 @@ In order to use the tool it is required
 3. Rename sheet1 to "Summary"
 4. Install required python libraries with command
 ```
-    pip install -r requiremets.txt
+    pip install -r requirements.txt
 ```
 5. Copy csv files
 6. target_link_cells in line 18 contains list of cell indexes, links for these sells will be created in Summary sheet. These values should be adjusted accordingly to needs
