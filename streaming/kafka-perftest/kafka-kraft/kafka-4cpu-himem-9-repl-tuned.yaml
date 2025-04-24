@@ -24,7 +24,7 @@ metadata:
     app: kafka-app
 spec:
   serviceName: kafka-svc
-  replicas: 3
+  replicas: 9
   selector:
     matchLabels:
       app: kafka-app
@@ -69,7 +69,7 @@ spec:
             - containerPort: 9093
           env:
             - name: REPLICAS
-              value: '3'
+              value: '9'
             - name: SERVICE
               value: kafka-svc
             - name: NAMESPACE
@@ -87,11 +87,11 @@ spec:
               mountPath: /mnt/kafka
           resources:
             requests:
-              memory: 10Gi
-              cpu: "1"
+              memory: 20Gi
+              cpu: "3"
             limits:
-              memory: 15Gi
-              cpu: "2"
+              memory: 28Gi
+              cpu: "4"
   volumeClaimTemplates:
     - metadata:
         name: data

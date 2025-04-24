@@ -1,0 +1,21 @@
+# create private subnet
+module "network" {
+  source         = "../modules/network"
+  project_id     = var.project_id
+  region         = var.region
+  cluster_prefix = "${var.cluster_prefix}"
+}
+
+resource "google_compute_firewall" "allow_ssh" {
+  name    = "allow-ssh-v2"
+  project = var.project_id
+
+  network = module.network.network_name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["35.235.240.0/20"]
+}

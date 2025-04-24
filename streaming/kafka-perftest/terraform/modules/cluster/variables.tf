@@ -60,3 +60,8 @@ variable "node_pools_cgroup_mode" {
   type        = map(string)
   description = "Map of strings containing cgroup node config by node-pool name"
 }
+
+variable "datapath_provider" {
+  description = "Datplane version, LEGACY_DATAPATH for v1, ADVANCED_DATAPATH for v2"
+  default = "LEGACY_DATAPATH"
+}

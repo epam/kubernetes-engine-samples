@@ -49,3 +49,8 @@ variable "kafka_ami_type" {
   description = "The AMI type for kafka node pool"
   default = "AL2_x86_64"
 }
+
+variable "azs" {
+  description = "Zones to use for EKS"
+  default = ["us-east-1a", "us-east-1b", "us-east-1c"]
+}

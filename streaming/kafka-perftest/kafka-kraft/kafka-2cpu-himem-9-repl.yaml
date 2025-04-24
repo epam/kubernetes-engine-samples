@@ -4,8 +4,6 @@ metadata:
   name: kafka-svc
   labels:
     app: kafka-app
-  annotations:
-    service.kubernetes.io/topology-mode: "auto"
 spec:
   clusterIP: None
   ports:
@@ -24,7 +22,7 @@ metadata:
     app: kafka-app
 spec:
   serviceName: kafka-svc
-  replicas: 3
+  replicas: 9
   selector:
     matchLabels:
       app: kafka-app
@@ -69,7 +67,7 @@ spec:
             - containerPort: 9093
           env:
             - name: REPLICAS
-              value: '3'
+              value: '9'
             - name: SERVICE
               value: kafka-svc
             - name: NAMESPACE
@@ -87,11 +85,11 @@ spec:
               mountPath: /mnt/kafka
           resources:
             requests:
-              memory: 10Gi
+              memory: 8Gi
               cpu: "1"
             limits:
-              memory: 15Gi
-              cpu: "2"
+              memory: 10Gi
+              cpu: "1.5"
   volumeClaimTemplates:
     - metadata:
         name: data

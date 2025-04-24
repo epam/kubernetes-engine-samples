@@ -40,7 +40,7 @@ module "kafka_cluster" {
   deletion_protection = false
   initial_node_count = 1
   remove_default_node_pool = true
-  datapath_provider = "ADVANCED_DATAPATH"
+  datapath_provider = var.datapath_provider
   # dns_cache      = true
   master_authorized_networks = [
     { 

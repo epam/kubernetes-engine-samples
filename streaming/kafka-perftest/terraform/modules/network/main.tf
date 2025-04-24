@@ -15,7 +15,7 @@
 # [START gke_streaming_kafka_vpc_multi_region_network]
 module "gcp-network" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 8.0"
+  version = "~> 10.0"
 
   project_id   = var.project_id
   network_name = "${var.cluster_prefix}-vpc"
@@ -28,13 +28,6 @@ module "gcp-network" {
       subnet_private_access = true
       subnet_flow_logs      = "true"
     },
-    {
-      subnet_name           = "${var.cluster_prefix}-eu-private-subnet"
-      subnet_ip             = "10.12.0.0/24"
-      subnet_region         = "europe-west4"
-      subnet_private_access = true
-      subnet_flow_logs      = "true"
-    }
   ]
 
   secondary_ranges = {
@@ -46,16 +39,6 @@ module "gcp-network" {
       {
         range_name    = "k8s-service-range"
         ip_cidr_range = "10.52.0.0/20"
-      },
-    ],
-    ("${var.cluster_prefix}-eu-private-subnet") = [
-      {
-        range_name    = "k8s-pod-range"
-        ip_cidr_range = "10.54.0.0/20"
-      },
-      {
-        range_name    = "k8s-service-range"
-        ip_cidr_range = "10.56.0.0/20"
       },
     ]
   }
@@ -73,7 +56,7 @@ output "subnet_name" {
 # [START gke_streaming_kafka_cloudnat_simple_create]
 module "cloud_router" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "~> 6.0"
+  version = "~> 6.3"
   project = var.project_id 
   name    = "${var.cluster_prefix}-nat-router"
   network = module.gcp-network.network_name

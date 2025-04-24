@@ -1,0 +1,82 @@
+#/bin/sh
+
+[ "$#" -ne 4 ] && echo "USAGE $0 <BOOTSTRAP_SERVERS> <TOPIC> <NUMRECORDS> <REPL_FACTOR>" && exit
+# First argument 
+BOOTSTRAP_SERVERS=$1
+
+# Topic name
+TOPIC_NAME=$2
+
+NUMRECORDS=$3
+REPL_FACTOR=$4
+
+
+echo
+
+# Step 1: Create the topic
+echo "=== Creating topic: $TOPIC_NAME ==="
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server=$BOOTSTRAP_SERVERS \
+    --topic $TOPIC_NAME \
+    --create \
+    --partitions=3 \
+    --replication-factor=$REPL_FACTOR
+
+sleep 10
+
+# Step 2: End-to-end test
+echo "=== End-to-End test ==="
+/opt/kafka/bin/kafka-run-class.sh \
+    org.apache.kafka.tools.EndToEndLatency \
+    $BOOTSTRAP_SERVERS \
+     $TOPIC_NAME 10000 1 1000
+echo "=== End-to-End test complete ==="
+
+# Step 3: non-batched Producer Performance Test
+echo "=== Starting non-batched Producer Performance Test ==="
+    /opt/kafka/bin/kafka-producer-perf-test.sh \
+    --topic  $TOPIC_NAME \
+    --num-records 1000000 \
+    --record-size 1000 \
+    --throughput -1 \
+    --print-metrics \
+    --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
+    acks=1 \
+    batch.size=1 \
+    linger.ms=100 \
+    compression.type=snappy 
+echo "=== Non-batched Producer Performance Test ==="
+
+
+# Step 4: Throttled Producer Performance Test
+echo "=== Starting Throttled Producer Performance Test ==="
+
+/opt/kafka/bin/kafka-producer-perf-test.sh \
+    --topic  $TOPIC_NAME \
+    --num-records 1500000 \
+    --record-size 1000 \
+    --throughput 50000 \
+    --print-metrics \
+    --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
+    acks=1 \
+    batch.size=10000 \
+    linger.ms=100 \
+    compression.type=snappy
+
+echo "=== Throttled Producer Run Complete ==="
+
+# Step 5: Batched Producer Performance Test
+echo "=== Starting batched Producer Performance Test ==="
+/opt/kafka/bin/kafka-producer-perf-test.sh \
+    --topic  $TOPIC_NAME \
+    --num-records $NUMRECORDS \
+    --record-size 1000 \
+    --throughput -1 \
+    --print-metrics \
+    --producer-props bootstrap.servers=$BOOTSTRAP_SERVERS \
+    acks=1 \
+    batch.size=10000 \
+    linger.ms=100 \
+    compression.type=snappy 
+echo "=== Batched Producer Performance Test Complete ==="
+
+

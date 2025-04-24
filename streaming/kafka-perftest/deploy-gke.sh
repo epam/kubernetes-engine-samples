@@ -7,12 +7,12 @@ DEPLOY_ZONES="us-central1-a us-central1-b us-central1-c"
 PERF_MACHINE_TYPE=c4-standard-8
 KAFKA_BOOT_DISK_TYPE="hyperdisk-balanced"
 NODE_NUMBER=3
-NODE_IMAGE_TYPE="UBUNTU_CONTAINERD"
+NODE_IMAGE_TYPE="COS_CONTAINERD"
 PERFTEST_MANIFEST_FILE="kafka-kraft/perftest.yaml"
 PERFTEST_REPLICAS=1
 TOPIC_REPLICATION_FACTOR=3
 TEST_TYPE="1Ldr3Br"
-OS_TYPE=ubuntu
+OS_TYPE=cos
 PS3='Please enter your choice: '
 options=(
          "c4-standard-48" \
@@ -104,7 +104,7 @@ do
             echo "you chose ${opt}"
             MACHINE_TYPE="c4-highmem-2"
             TEST_FILE_EXT=$opt
-            MANIFEST_FILE="kafka-kraft/kafka-2cpu-himem-singlebrocker-zonal.yaml"
+            MANIFEST_FILE="kafka-kraft/kafka-2cpu-himem-singlebroker-zonal.yaml"
             PERFTEST_MANIFEST_FILE="kafka-kraft/perftest-zonal.yaml"
             NODE_NUMBER=1
             TOPIC_REPLICATION_FACTOR=1
@@ -115,7 +115,7 @@ do
             echo "you chose ${opt}"
             MACHINE_TYPE="c4a-highmem-2"
             TEST_FILE_EXT=$opt
-            MANIFEST_FILE="kafka-kraft/kafka-2cpu-himem-arm-singlebrocker-zonal.yaml"
+            MANIFEST_FILE="kafka-kraft/kafka-2cpu-himem-arm-singlebroker-zonal.yaml"
             PERFTEST_MANIFEST_FILE="kafka-kraft/perftest-zonal.yaml"
             NODE_NUMBER=1
             TOPIC_REPLICATION_FACTOR=1
@@ -126,7 +126,7 @@ do
             echo "you chose ${opt}"
             MACHINE_TYPE="c3d-standard-4"
             TEST_FILE_EXT=$opt
-            MANIFEST_FILE="kafka-kraft/kafka-2cpu-himem-singlebrocker-zonal.yaml"
+            MANIFEST_FILE="kafka-kraft/kafka-2cpu-himem-singlebroker-zonal.yaml"
             PERFTEST_MANIFEST_FILE="kafka-kraft/perftest-zonal.yaml"
             NODE_NUMBER=1
             TOPIC_REPLICATION_FACTOR=1
@@ -325,7 +325,8 @@ case $TEST_TYPE in
             echo "Ruunin test in zone $zone"
             cat $PERFTEST_MANIFEST_FILE | sed "s/{{ZONE}}/$zone/g" | kubectl apply -n $NAMESPACE -f -
             cat $MANIFEST_FILE | sed "s/{{ZONE}}/$zone/g" | kubectl apply -n $NAMESPACE -f -
-            for (( pod=0; pod<$NODE_NUMBER; pod++ ))
+            pod_number=$(kubectl get statefulset kafka -n kafka -o=jsonpath='{.spec.replicas}')
+            for (( pod=0; pod<pod_number; pod++ ))
             do
                 kubectl wait --for=condition=Ready pod/kafka-$pod -n $NAMESPACE --timeout=1200s
             done
@@ -337,7 +338,7 @@ case $TEST_TYPE in
             kubectl exec -it kafka-perftest -n $NAMESPACE -- bash -c "/opt/kafka/test.sh kafka-svc.kafka.svc.cluster.local:9092 test-topic-0 $NUMRECORDS $TOPIC_REPLICATION_FACTOR" |tee -a $zone-$TEST_RESULTS
             
             echo >>$TEST_RESULTS_CSV
-            echo "Zone: $zone" >>$TEST_RESULTS_CSV
+            echo "Zone, $zone" >>$TEST_RESULTS_CSV
             echo >>$TEST_RESULTS_CSV
 
             echo >>$TEST_RESULTS
@@ -349,7 +350,8 @@ case $TEST_TYPE in
             rm $zone-$TEST_RESULTS
             cat $PERFTEST_MANIFEST_FILE | sed "s/{{ZONE}}/$zone/g" | kubectl delete -n $NAMESPACE -f -
             cat $MANIFEST_FILE | sed "s/{{ZONE}}/$zone/g" | kubectl delete -n $NAMESPACE -f -
-            sleep 30
+            kubectl wait --for=delete statefulset/kafka -n $NAMESPACE
+            kubectl wait --for=delete pod/kafka-perftest -n $NAMESPACE
         done
 
         kubectl delete -f kafka-kraft/hd-balanced-$PD_FILE_SYSTEM.yaml

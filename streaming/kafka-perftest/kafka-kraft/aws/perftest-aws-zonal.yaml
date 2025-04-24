@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-perftest
+  namespace: kafka
+spec:
+  serviceName: kafka-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-perftest
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
+  template:
+    metadata:
+      labels:
+        app: kafka-perftest
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - {{ZONE}}
+      nodeSelector:
+        app: perftest
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: "topology.kubernetes.io/zone"
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: kafka-perftest
+      containers:
+        - name: kafka-container
+          image: 559050221754.dkr.ecr.us-east-1.amazonaws.com/kafka/x64:3.9.0-debian
+          imagePullPolicy: Always
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do sleep 10;done"]

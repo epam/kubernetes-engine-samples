@@ -4,8 +4,6 @@ metadata:
   name: kafka-svc
   labels:
     app: kafka-app
-  annotations:
-    service.kubernetes.io/topology-mode: "auto"
 spec:
   clusterIP: None
   ports:
@@ -24,7 +22,7 @@ metadata:
     app: kafka-app
 spec:
   serviceName: kafka-svc
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: kafka-app
@@ -51,8 +49,15 @@ spec:
                 operator: In
                 values:
                 - "kafka-broker"
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - {{ZONE}}
       nodeSelector:
-        cloud.google.com/gke-nodepool: pool-kafka
+        app: kafka
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: "topology.kubernetes.io/zone"
@@ -62,14 +67,14 @@ spec:
             app.kubernetes.io/name: kafka-app
       containers:
         - name: kafka-container
-          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/kafka-repo/kafka:3.9.0-debian
+          image: 559050221754.dkr.ecr.us-east-1.amazonaws.com/kafka/x64:3.9.0-debian
           imagePullPolicy: Always
           ports:
             - containerPort: 9092
             - containerPort: 9093
           env:
             - name: REPLICAS
-              value: '3'
+              value: '1'
             - name: SERVICE
               value: kafka-svc
             - name: NAMESPACE
@@ -79,9 +84,9 @@ spec:
             - name: CLUSTER_ID
               value: hTo9UNhMX9pjNTbHeFeA
             - name: DEFAULT_REPLICATION_FACTOR
-              value: '3'
+              value: '1'
             - name: DEFAULT_MIN_INSYNC_REPLICAS
-              value: '2'
+              value: '0'
           volumeMounts:
             - name: data
               mountPath: /mnt/kafka
@@ -98,8 +103,7 @@ spec:
       spec:
         accessModes:
           - "ReadWriteOnce"
-        storageClassName: balanced-storage
+        storageClassName: gp2
         resources:
           requests:
             storage: "300Gi"
-            
