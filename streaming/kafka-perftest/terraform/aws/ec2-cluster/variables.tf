@@ -9,3 +9,9 @@ variable "ami_id" {
   type        = string
   default     = ""
 }
+
+variable "subnet_id" {
+  description = "Subnet ID for single zone testing"
+  type        = string
+  default     = ""
+}

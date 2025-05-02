@@ -32,10 +32,10 @@ resource "random_uuid" "kafka_cluster_id" {}
  
 # Create Kafka Broker Instances
 resource "aws_instance" "kafka_brokers" {
-  for_each               = toset(data.aws_subnets.kafka_private.ids)
+  # for_each               = toset(data.aws_subnets.kafka_private.ids)
   ami                    = var.ami_id                   
   instance_type          = var.machine_type                               
-  subnet_id              = each.value                                  # Assign each broker to a different private subnet
+  subnet_id              = var.subnet_id                                # Assign each broker to a different private subnet
   vpc_security_group_ids = [data.aws_security_group.brokers_sg.id]     # Use the same security group for all brokers
 
   # Root Volume Configuration
@@ -61,11 +61,13 @@ resource "aws_instance" "kafka_brokers" {
 
   user_data = templatefile("./init.sh", {
     CLUSTER_ID = random_uuid.kafka_cluster_id.result,
-    BROKER_ID  = "broker-${index(tolist(data.aws_subnets.kafka_private.ids), each.value)}.kafka-perf.test"
+    # BROKER_ID  = "broker-${index(tolist(data.aws_subnets.kafka_private.ids), each.value)}.kafka-perf.test"
+    BROKER_ID = "broker-0.kafka-perf.test"
   })
 
   tags = {
-    Name = "broker-${index(tolist(data.aws_subnets.kafka_private.ids), each.value)}"
+    # Name = "broker-${index(tolist(data.aws_subnets.kafka_private.ids), each.value)}"
+    Name = "broker-0"
   }
 }
 
@@ -77,11 +79,11 @@ resource "aws_route53_zone" "private_dns" {
 }
 
 resource "aws_route53_record" "kafka_records" {
-  for_each = aws_instance.kafka_brokers # Reference the instances created earlier
+  # for_each = aws_instance.kafka_brokers # Reference the instances created earlier
 
   zone_id = aws_route53_zone.private_dns.zone_id
-  name    = "${aws_instance.kafka_brokers[each.key].tags.Name}.kafka-perf.test" # Example: broker-0.kafka-perf.test
+  name    = "${aws_instance.kafka_brokers.tags.Name}.kafka-perf.test" # Example: broker-0.kafka-perf.test
   type    = "A"
   ttl     = 60
-  records = [each.value.private_ip] # Use the private IP of the corresponding instance
+  records = [aws_instance.kafka_brokers.private_ip] # Use the private IP of the corresponding instance
 }

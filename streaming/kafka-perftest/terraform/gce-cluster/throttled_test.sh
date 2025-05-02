@@ -7,8 +7,15 @@ if [ -z "$1" ]; then
 fi
 
 NUMRECORDS=5000000
-BOOTSTRAP_SERVERS="gce-kafka-broker-0:9092"    
-# gce-kafka-broker-1:9092,gce-kafka-broker-2:9092"
+# Run for 3 brokers
+# BOOTSTRAP_SERVERS="gce-kafka-broker-0:9092,gce-kafka-broker-1:9092,gce-kafka-broker-2:9092"
+
+# Run for single broker
+BOOTSTRAP_SERVERS="gce-kafka-broker-0:9092"
+
+# Run for optimized settings
+# BOOTSTRAP_SERVERS="gce-kafka-broker-opt-0:9092,gce-kafka-broker-opt-1:9092,gce-kafka-broker-opt-2:9092"
+# BOOTSTRAP_SINGLE="gce-kafka-broker-opt-0:9092"
 
 BOOTSTRAP_SINGLE="gce-kafka-broker-0:9092"
 PROJECT_ID="hl2-gogl-wopt-t1iylu"
@@ -37,9 +44,15 @@ echo >>$TEST_RESULTS_CSV
 # Define brokers and their respective zones
 BROKER_INSTANCES=(
   "gce-kafka-broker-0:us-central1-a"
-#   "gce-kafka-broker-1:us-central1-b"
-#   "gce-kafka-broker-2:us-central1-c"
+#   "gce-kafka-broker-1:us-central1-a"
+#   "gce-kafka-broker-2:us-central1-a"
 )
+
+# BROKER_INSTANCES=(
+#   "gce-kafka-broker-opt-0:us-central1-a"
+#   "gce-kafka-broker-opt-1:us-central1-a"
+#   "gce-kafka-broker-opt-2:us-central1-a"
+# )
 
 gcloud config set user_output_enabled False
 

@@ -58,6 +58,8 @@ else
   echo "$(date) Installing OpenJDK 17."
   sudo apt update
   sudo apt install -y openjdk-17-jdk xfsprogs sysstat
+  # sudo dnf upgrade -y
+  # sudo dnf install -y java-17-amazon-corretto-devel xfsprogs sysstat
 
   # Format and mount the Kafka data disk
   echo "$(date) Preparing Kafka disk..."
@@ -107,7 +109,6 @@ log.dirs=$LOG_DIR
 listeners=PLAINTEXT://$BROKER_IP:9092,CONTROLLER://$BROKER_IP:9093
 advertised.listeners=PLAINTEXT://$BROKER_HOSTNAME:9092
 node.id=$BROKER_INDEX
-controller.quorum.voters=0@broker-0.kafka-perf.test:9093,1@broker-1.kafka-perf.test:9093,2@broker-2.kafka-perf.test:9093
 controller.listener.names=CONTROLLER
 process.roles=broker,controller
 num.network.threads=3
@@ -117,8 +118,16 @@ log.retention.hours=168
 log.segment.bytes=1073741824
 log.retention.check.interval.ms=300000
 
-default.replication.factor=3
-min.insync.replicas=2
+# 3 Brokers config
+# controller.quorum.voters=0@broker-0.kafka-perf.test:9093,1@broker-1.kafka-perf.test:9093,2@broker-2.kafka-perf.test:9093
+# default.replication.factor=3
+# min.insync.replicas=2
+
+# 1 Broker config
+controller.quorum.voters=0@broker-0.kafka-perf.test:9093
+default.replication.factor=1
+offsets.topic.replication.factor=1
+min.insync.replicas=1
 EOF
 
   echo "$(date) Formatting Kafka metadata directory..."

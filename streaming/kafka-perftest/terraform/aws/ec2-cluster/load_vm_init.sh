@@ -40,6 +40,9 @@ else
   sudo apt update
   sudo snap install aws-cli --classic
   sudo apt install -y openjdk-17-jdk sysstat
+  # sudo dnf upgrade -y
+  # sudo dnf install -y java-17-amazon-corretto-devel xfsprogs sysstat
+
 
 # Download and install Kafka tools
   echo "$(date) Downloading Kafka tools."

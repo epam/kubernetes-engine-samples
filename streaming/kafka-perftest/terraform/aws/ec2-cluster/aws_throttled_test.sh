@@ -6,8 +6,9 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-NUMRECORDS=60000000
-BOOTSTRAP_SERVERS="broker-0.kafka-perf.test:9092,broker-1.kafka-perf.test:9092,broker-2.kafka-perf.test:9092"
+NUMRECORDS=5000000
+# BOOTSTRAP_SERVERS="broker-0.kafka-perf.test:9092,broker-1.kafka-perf.test:9092,broker-2.kafka-perf.test:9092"
+BOOTSTRAP_SERVERS="broker-0.kafka-perf.test:9092"
 BOOTSTRAP_SINGLE="broker-0.kafka-perf.test:9092"
 
 TEST_RESULTS=testresults.txt
@@ -40,7 +41,7 @@ echo "=== Creating topic: $TOPIC_NAME ==="
     --topic $TOPIC_NAME \
     --create \
     --partitions=3 \
-    --replication-factor=3
+    --replication-factor=1
 
 sleep 10
 
