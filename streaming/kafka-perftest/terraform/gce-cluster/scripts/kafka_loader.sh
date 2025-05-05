@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 LOG_FILE="/var/log/startup-script.log"
-    KAFKA_DONE_FILE="/opt/kafka/setup-done"
+KAFKA_DONE_FILE="/opt/kafka/setup-done"
 
-    exec > >(tee -a "$${LOG_FILE}") 2>&1
+exec > >(tee -a "${LOG_FILE}") 2>&1
 
-  # Check if Kafka is already configured
-  if [ -f "$${KAFKA_DONE_FILE}" ]; then
+# Check if Kafka is already configured
+if [ -f "${KAFKA_DONE_FILE}" ]; then
     echo "$(date) Kafka is already configured. Skipping setup."
-  else
+else
     echo "$(date) Kafka is not configured. Beginning setup."
 
     echo "$(date) Starting Kafka load generator setup."
@@ -60,7 +60,7 @@ LOG_FILE="/var/log/startup-script.log"
     echo "$(date) Kafka setup completed."
 
     # Mark setup as complete
-    sudo touch "$${KAFKA_DONE_FILE}"
-    echo "$(date) Setup marker file created at $${KAFKA_DONE_FILE}."
-  fi
-  echo "$(date) Metadata script execution completed."
+    sudo touch "${KAFKA_DONE_FILE}"
+    echo "$(date) Setup marker file created at ${KAFKA_DONE_FILE}."
+fi
+echo "$(date) Metadata script execution completed."
