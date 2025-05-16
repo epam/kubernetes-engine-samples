@@ -1,14 +1,9 @@
-provider "google" {
-  project = var.project_id
-  region  = var.region
-}
-
 data "google_compute_network" "target_vpc" {
   name = var.vpc_name
 }
 
 resource "google_compute_firewall" "service_firewall" {
-  count   = var.firewall_name != null ? 1 : 0
+  count   = var.create_firewall && var.firewall_name != null ? 1 : 0
   name    = var.firewall_name
   network = data.google_compute_network.target_vpc.self_link
 
@@ -24,7 +19,7 @@ resource "google_compute_firewall" "service_firewall" {
 
 resource "google_compute_disk" "persistent_disks" {
   count                  = var.use_data_disk ? var.instance_count : 0
-  name                   = "${var.name_prefix}-disk-${count.index}"
+  name                   = var.instance_count > 1 ? "${var.name_prefix}-${count.index}-disk" : "${var.name_prefix}-disk"
   type                   = var.data_disk_type
   provisioned_iops       = var.data_disk_iops
   provisioned_throughput = var.data_disk_throughput
@@ -38,7 +33,7 @@ resource "random_uuid" "cluster_id" {
 
 resource "google_compute_instance" "instance" {
   count        = var.instance_count
-  name         = "${var.name_prefix}-${count.index}"
+  name         = var.instance_count > 1 ? "${var.name_prefix}-${count.index}" : var.name_prefix
   machine_type = var.machine_type
   zone         = var.zones[count.index % length(var.zones)]
 
@@ -62,7 +57,7 @@ resource "google_compute_instance" "instance" {
     for_each = var.use_data_disk ? [1] : []
     content {
       source      = google_compute_disk.persistent_disks[count.index].id
-      device_name = "${var.name_prefix}-data-disk-${count.index}"
+      device_name = var.instance_count > 1 ? "${var.name_prefix}-${count.index}-data-disk" : "${var.name_prefix}-data-disk"
     }
   }
 

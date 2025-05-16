@@ -1,11 +1,3 @@
-variable "project_id" {
-  type = string
-}
-
-variable "region" {
-  type = string
-}
-
 variable "zones" {
   type = list(string)
 }
@@ -33,6 +25,12 @@ variable "instance_tags" {
 variable "firewall_name" {
   type    = string
   default = null
+}
+
+variable "create_firewall" {
+  type        = bool
+  default     = false
+  description = "Whether to create the firewall rule or not"
 }
 
 variable "allowed_ports" {
