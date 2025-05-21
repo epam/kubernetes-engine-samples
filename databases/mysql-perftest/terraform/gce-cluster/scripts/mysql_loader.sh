@@ -15,9 +15,17 @@ else
   # Waiting for 90 seconds for system setup to release all the locks
   sleep 90
 
-  echo "[INFO] Installing Sysbench and dependencies"
+  echo "[INFO] Installing dependencies"
   apt update
-  apt install -y sysbench mysql-client 
+  apt install -y mysql-client make automake libtool pkg-config libaio-dev libmysqlclient-dev libssl-dev
+  echo "[INFO] Downloading and installing Sysbench"
+  git clone https://github.com/akopytov/sysbench /opt/tmp/sysbench
+  cd /opt/tmp/sysbench/ && ./autogen.sh && ./configure && make -j
+  make install
+  echo "[INFO] Add Sysbench to the global PATH for all users"
+  echo 'export PATH=$PATH:/usr/local/bin' | tee /etc/profile.d/sysbench.sh
+  chmod +x /etc/profile.d/sysbench.sh
+  cd /tmp
 
   # Ops Agent installation
   echo "[INFO] Installing Cloud Ops Agent"
@@ -53,8 +61,8 @@ EOF
   ulimit -n 200000
 
   # Mark setup as complete
-  sudo mkdir /opt/mysql
-  sudo touch "${MYSQL_DONE_FILE}"
+  mkdir /opt/mysql
+  touch "${MYSQL_DONE_FILE}"
   echo "$(date) Setup marker file created at ${MYSQL_DONE_FILE}."
 fi
 
@@ -75,7 +83,7 @@ MYSQL_MACHINE_TYPE=$(curl -s -H "Metadata-Flavor: Google" \
 
 GCS_BUCKET="benchmark-results-hl2-gogl-wopt-t1iylu"
 GCS_SUBDIR="mysql/gce"
-BENCH_LOG="/opt/sysbench-results-${THREADS}.txt"
+BENCH_LOG="/opt/${MYSQL_MACHINE_TYPE}-sysbench-results-${THREADS}.txt"
 BENCH_DB="test"
 BENCH_USER="bench_user"
 BENCH_PASS="Bench123_StrongPass"
@@ -101,6 +109,7 @@ sysbench oltp_read_write \
   --mysql-db=$BENCH_DB \
   --mysql-user=$BENCH_USER \
   --mysql-password=$BENCH_PASS \
+  --mysql-ssl=REQUIRED \
   --threads=8 \
   prepare >> "$BENCH_LOG" 2>&1
 
@@ -116,6 +125,7 @@ for i in $(seq 1 $RUNS); do
     --mysql-db=$BENCH_DB \
     --mysql-user=$BENCH_USER \
     --mysql-password=$BENCH_PASS \
+    --mysql-ssl=REQUIRED \
     --threads=$THREADS \
     --time=$DURATION \
     run >> "$BENCH_LOG" 2>&1
@@ -133,6 +143,7 @@ sysbench oltp_read_write \
   --mysql-db=$BENCH_DB \
   --mysql-user=$BENCH_USER \
   --mysql-password=$BENCH_PASS \
+  --mysql-ssl=REQUIRED \
   --threads=8 \
   cleanup >> "$BENCH_LOG" 2>&1
 
