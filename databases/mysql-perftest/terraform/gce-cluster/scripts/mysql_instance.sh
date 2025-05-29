@@ -21,11 +21,22 @@ else
   echo "[INFO] Preparing and mounting disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
   if ! mount | grep -q "${MYSQL_ROOT}"; then
     mkdir -p "${MYSQL_ROOT}"
-    # mkfs.ext4 -F /dev/disk/by-id/${MYSQL_DISK_ID} || true
+    # Format data disk differently depending on instance index
+    # if [ "$INSTANCE_INDEX" -eq 0 ]; then
+    #   echo "[INFO] Formatting disk as XFS (instance-index=$INSTANCE_INDEX)"
+    #   mkfs.xfs -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
+    #   FS_TYPE="xfs"
+    # else
+    #   echo "[INFO] Formatting disk as EXT2 (instance-index=$INSTANCE_INDEX)"
+    #   mkfs.ext2 -F /dev/disk/by-id/${MYSQL_DISK_ID} || true
+    #   FS_TYPE="ext2"
+    # fi
+    echo "[INFO] Formatting disk as XFS (instance-index=$INSTANCE_INDEX)"
     mkfs.xfs -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
-    mount -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_ROOT}"
-    # echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_ROOT} ext4 defaults,nofail 0 2" >> /etc/fstab
-    echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_ROOT} xfs defaults,nofail 0 2" >> /etc/fstab
+    FS_TYPE="xfs"
+    # Mount and persist
+    mount -t "$FS_TYPE" -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_ROOT}"
+    echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_ROOT} ${FS_TYPE} defaults,nofail 0 2" >> /etc/fstab
   else
     echo "[INFO] Disk already mounted on ${MYSQL_ROOT}, skipping format."
   fi
@@ -102,6 +113,12 @@ else
   max_connections = 3000
   max_prepared_stmt_count = 1048576
 EOF
+
+  # Possible Kernel optimization section
+  if [ "$INSTANCE_INDEX" -eq 1 ]; then
+    echo "[INFO] Setting kernel to perform the minimum amount of swapping "
+    sysctl -w vm.swappiness=1
+  fi
 
 #   mkdir -p /etc/systemd/system/mysql.service.d
 

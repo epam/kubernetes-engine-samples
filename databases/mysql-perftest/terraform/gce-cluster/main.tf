@@ -25,15 +25,16 @@ data "local_file" "client_key" {
 }
 
 module "mysql_instance" {
-  count                   = 7
+  for_each = toset(["0", "1"])
+
   source                  = "../modules/gce_instance"
   zones                   = ["us-central1-a"]
   machine_type            = var.machine_type
   os_image                = var.os_image
   instance_count          = 1
-  name_prefix             = "mysql-server-${count.index}"
+  name_prefix             = "mysql-server-${each.key}"
   instance_tags           = ["gce-mysql"]
-  create_firewall         = count.index == 0 ? true : false
+  create_firewall         = each.key == "0" ? true : false
   firewall_name           = "mysql-fw"
   allowed_ports           = ["3306"]
   vpc_name                = "mysql-vpc"
@@ -49,20 +50,20 @@ module "mysql_instance" {
     "ca-pem"          = data.local_file.ca.content
     "server-cert-pem" = data.local_file.server_cert.content
     "server-key-pem"  = data.local_file.server_key.content
-    "instance-index"  = tostring(count.index)
+    "instance-index"  = each.key
   }
 
 }
 
 locals {
   loader_thread_map = {
-    0 = 1
-    1 = 64
-    2 = 128
-    3 = 256
-    4 = 512
-    5 = 1024
-    6 = 2048
+    0 = 512
+    1 = 512
+    # 2 = 128
+    # 3 = 256
+    # 4 = 512
+    # 5 = 1024
+    # 6 = 2048
   }
 }
 

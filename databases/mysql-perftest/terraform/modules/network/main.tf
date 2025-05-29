@@ -34,11 +34,11 @@ module "gcp-network" {
     ("${var.cluster_prefix}-private-subnet") = [
       {
         range_name    = "k8s-pod-range"
-        ip_cidr_range = "10.54.0.0/20"
+        ip_cidr_range = "10.54.0.0/18"
       },
       {
         range_name    = "k8s-service-range"
-        ip_cidr_range = "10.58.0.0/20"
+        ip_cidr_range = "10.58.0.0/18"
       },
     ]
   }

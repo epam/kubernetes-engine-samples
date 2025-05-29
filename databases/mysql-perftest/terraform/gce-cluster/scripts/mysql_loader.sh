@@ -81,9 +81,23 @@ THREADS=$(curl -s -H "Metadata-Flavor: Google" \
 MYSQL_MACHINE_TYPE=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/attributes/target-machine-type)
 
+case "$MYSQL_HOST" in
+  mysql-server-0)
+    OPTIMIZATION="none"  # raw server
+    ;;
+  mysql-server-1)
+    OPTIMIZATION="swap"  # optimized server
+    ;;
+  *)
+    OPTIMIZATION="unknown"
+    ;;
+esac
+
+echo "[INFO] Optimization strategy set to: $OPTIMIZATION for target $MYSQL_HOST"
+ 
 GCS_BUCKET="benchmark-results-hl2-gogl-wopt-t1iylu"
 GCS_SUBDIR="mysql/gce"
-BENCH_LOG="/opt/${MYSQL_MACHINE_TYPE}-sysbench-results-${THREADS}.txt"
+BENCH_LOG="/opt/${OPTIMIZATION}-${MYSQL_MACHINE_TYPE}-sysbench-results-${THREADS}.txt"
 BENCH_DB="test"
 BENCH_USER="bench_user"
 BENCH_PASS="Bench123_StrongPass"
@@ -98,6 +112,7 @@ echo "Sysbench Benchmark Results - $(date)" > "$BENCH_LOG"
 echo "Benchmark target MySQL server: $MYSQL_HOST" >> "$BENCH_LOG"
 echo "Benchmark thread count: $THREADS" >> "$BENCH_LOG"
 echo "Benchmark target MySQL server machine type: $MYSQL_MACHINE_TYPE" >> "$BENCH_LOG"
+echo "Optimization attempt: $OPTIMIZATION" >> "$BENCH_LOG"
 echo "" >> "$BENCH_LOG"
 
 # === Prepare phase ===
