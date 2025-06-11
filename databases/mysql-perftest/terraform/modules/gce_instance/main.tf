@@ -18,8 +18,16 @@ resource "google_compute_firewall" "service_firewall" {
 
 
 resource "google_compute_disk" "persistent_disks" {
-  count                  = var.use_data_disk ? var.instance_count : 0
-  name                   = var.instance_count > 1 ? "${var.name_prefix}-${count.index}-disk" : "${var.name_prefix}-disk"
+  # count                  = var.use_data_disk ? var.instance_count : 0
+  # name                   = var.instance_count > 1 ? "${var.name_prefix}-${count.index}-disk" : "${var.name_prefix}-disk"
+  
+  # 10 disks when this module is called for server-1 (name_prefix ends in “-1”),
+  # otherwise exactly 1.
+  count = var.use_data_disk ? (startswith(var.name_prefix, "mysql-server-1") ? 10 : 1) : 0
+
+  # names:  mysql-server-1-data-disk-0 … -9  OR  mysql-server-0-data-disk
+  name = startswith(var.name_prefix, "mysql-server-1") ? format("mysql-server-1-data-disk-%d", count.index) : format("%s-data-disk", var.name_prefix)
+  
   type                   = var.data_disk_type
   provisioned_iops       = var.data_disk_iops
   provisioned_throughput = var.data_disk_throughput
@@ -54,10 +62,18 @@ resource "google_compute_instance" "instance" {
   enable_display            = false
 
   dynamic "attached_disk" {
-    for_each = var.use_data_disk ? [1] : []
+    # when use_data_disk = true:
+    #   – server-1 gets 10 pre-created disks
+    #   – every other VM gets 1
+    for_each = var.use_data_disk ? {
+      for d in google_compute_disk.persistent_disks : d.name => d
+    } : {}
+
+    iterator = disk
+
     content {
-      source      = google_compute_disk.persistent_disks[count.index].id
-      device_name = var.instance_count > 1 ? "${var.name_prefix}-${count.index}-data-disk" : "${var.name_prefix}-data-disk"
+      source      = disk.value.id
+      device_name = disk.value.name
     }
   }
 
