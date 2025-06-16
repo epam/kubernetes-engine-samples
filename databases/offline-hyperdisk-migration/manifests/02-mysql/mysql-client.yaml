@@ -31,8 +31,5 @@ spec:
         cpu: "1"
     env:
     - name: MYSQL_ROOT_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: mysql-database
-          key: mysql-root-password
+      value: migration
 # [END gke_databases_offline_hyperdisk_02_mysql_client]
