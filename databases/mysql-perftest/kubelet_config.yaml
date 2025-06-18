@@ -1,0 +1,3 @@
+kubeletConfig:
+  allowedUnsafeSysctls:
+    - "vm.swappiness"

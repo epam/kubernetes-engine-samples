@@ -1,0 +1,91 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sysbench-1024-tuned
+  namespace: mysql-tuned
+spec:
+  serviceName: mysql-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-sysbench
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
+  template:
+    metadata:
+      labels:
+        app: mysql-sysbench
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: pool-sysbench
+      tolerations:
+        - key: "app.stateful/component"
+          operator: "Equal"
+          value: "mysql-sysbench"
+          effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql-sysbench
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: sysbench-container
+          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/mysql/sysbench:ubuntu24
+          imagePullPolicy: Always
+          securityContext:
+            runAsUser: 0
+            privileged: true
+            allowPrivilegeEscalation: true
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - |
+              ulimit -n 100000 || echo "Could not set ulimit";
+              apt-get update && apt-get install -y ca-certificates mysql-client
+              # mysql -h mysql-5.mysql-svc-tuned.mysql-tuned.svc.cluster.local -u bench_user -pmysqlpass123 --ssl-mode=REQUIRED -e "status"
+                echo "-----------------------------------------Prepare Tables to Test with 1024 Threads-----------------------------------------"
+                sysbench \
+                  oltp_read_write \
+                  --table-size=50000000 \
+                  --tables=8 \
+                  --mysql-host=mysql-5.mysql-svc-tuned.mysql-tuned.svc.cluster.local \
+                  --mysql-db=test \
+                  --mysql-user=bench_user \
+                  --mysql-password=mysqlpass123 \
+                  --mysql-ssl=REQUIRED \
+                  --threads=8 \
+                  prepare
+
+              for i in 1 2 3; do
+                echo "-----------------------------------------Run Test With 1024 Threads. Run $i-----------------------------------------"
+                sysbench \
+                  oltp_read_write \
+                  --table-size=50000000 \
+                  --tables=8 \
+                  --mysql-host=mysql-5.mysql-svc-tuned.mysql-tuned.svc.cluster.local \
+                  --mysql-db=test \
+                  --mysql-user=bench_user \
+                  --mysql-password=mysqlpass123 \
+                  --mysql-ssl=REQUIRED \
+                  --threads=1024 \
+                  --time=300 \
+                  run
+                echo "-----------------------------------------Finished Test With 1024 Threads. Run $i-----------------------------------------"
+                sleep 60
+              done
+              while true; do sleep 10; done
+          volumeMounts:
+            - name: mysql-ssl-certs
+              mountPath: /etc/mysql/certs
+              readOnly: true
+      volumes:
+        - name: mysql-ssl-certs
+          secret:
+            secretName: mysql-ssl-certs

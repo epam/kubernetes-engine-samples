@@ -1,0 +1,272 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc-tuned
+  namespace: mysql-tuned
+  labels:
+    app: mysql-app-tuned
+spec:
+  clusterIP: None
+  ports:
+    - name: '3306'
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: mysql-app-tuned
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: mysql-tuned
+  labels:
+    app: mysql
+data:
+  default-auth.cnf: |
+    [mysqld]
+    ssl-ca=/etc/mysql/ssl/ca.pem
+    ssl-cert=/etc/mysql/ssl/server-cert.pem
+    ssl-key=/etc/mysql/ssl/server-key.pem
+    ssl
+    require_secure_transport = ON
+    default_authentication_plugin=mysql_native_password
+    innodb_buffer_pool_size = 100G
+    max_connections = 3000
+    max_prepared_stmt_count = 1048576
+    log_error_verbosity = 3
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-entrypoint-script
+  namespace: mysql-tuned
+data:
+  custom-entrypoint.sh: |
+    #!/bin/bash
+    set -eo pipefail # Exit on error, treat unset variables as an error, and propagate pipeline errors
+
+    MYSQL_DATA_DIR="/var/lib/mysql"
+    # This path must match devicePath in volumeDevices in the StatefulSet
+    BLOCK_DEVICE_PATH_IN_CONTAINER="/dev/mysql_data_disk"
+
+    # !!! IMPORTANT: REPLACE THESE WITH THE CORRECT PATH AND ARGUMENTS FOR YOUR BASE IMAGE !!!
+    # Find these by inspecting the Dockerfile or running the base image and checking ENTRYPOINT/CMD
+    ORIGINAL_DOCKER_ENTRYPOINT_SCRIPT="/usr/local/bin/docker-entrypoint.sh" # Example! Find the correct path.
+    ORIGINAL_DOCKER_ENTRYPOINT_ARGS="mysqld" # Example! These might be the CMD from the base image.
+
+    echo "INFO: Custom FS preparation script started."
+    echo "INFO: Target MySQL Data Directory: ${MYSQL_DATA_DIR}"
+    echo "INFO: Expected Block Device Path in Container: ${BLOCK_DEVICE_PATH_IN_CONTAINER}"
+
+    # 1. Check for necessary utilities (should be pre-installed in your custom image)
+    #    'gosu' might not be needed here if the ORIGINAL_DOCKER_ENTRYPOINT_SCRIPT handles user switching.
+    if ! command -v mkfs.ext2 &> /dev/null || ! command -v blkid &> /dev/null || ! command -v mount &> /dev/null ; then
+      echo "ERROR: Critical FS utilities (mkfs.ext2, blkid, mount) were NOT found in the Docker image!"
+      exit 1
+    else
+      echo "INFO: Required FS utilities (mkfs.ext2, blkid, mount) are present in the image."
+    fi
+
+    # 2. Check if the block device exists
+    if [ ! -b "${BLOCK_DEVICE_PATH_IN_CONTAINER}" ]; then
+      echo "ERROR: Block device ${BLOCK_DEVICE_PATH_IN_CONTAINER} not found!"
+      ls -l /dev/ # Helps to see available devices
+      exit 1
+    fi
+    echo "INFO: Block device ${BLOCK_DEVICE_PATH_IN_CONTAINER} found."
+
+    # 3. Force formatting the device to ext2 every time
+    echo "INFO: Forcing format of ${BLOCK_DEVICE_PATH_IN_CONTAINER} to ext2..."
+    echo "WARNING: THIS IS A DESTRUCTIVE OPERATION AND WILL WIPE ALL DATA ON THE DEVICE!"
+    mkfs.ext2 -F "${BLOCK_DEVICE_PATH_IN_CONTAINER}"
+    echo "INFO: Device ${BLOCK_DEVICE_PATH_IN_CONTAINER} successfully formatted as ext2."
+
+    # 4. Create mount point directory if it doesn't exist
+    if [ ! -d "${MYSQL_DATA_DIR}" ]; then
+      echo "INFO: Creating MySQL data directory ${MYSQL_DATA_DIR}..."
+      mkdir -p "${MYSQL_DATA_DIR}"
+    fi
+
+    # 5. Unmount if /var/lib/mysql is already a mount point for something else
+    #    and mount our target device.
+    echo "INFO: Checking current status of ${MYSQL_DATA_DIR}..."
+    microdnf install lsof
+    if mountpoint -q "${MYSQL_DATA_DIR}"; then
+        CURRENTLY_MOUNTED_DEVICE=$(findmnt -n -o SOURCE --target "${MYSQL_DATA_DIR}")
+        echo "INFO: ${MYSQL_DATA_DIR} is currently a mountpoint for ${CURRENTLY_MOUNTED_DEVICE}."
+        if [ "${CURRENTLY_MOUNTED_DEVICE}" != "${BLOCK_DEVICE_PATH_IN_CONTAINER}" ]; then
+            echo "INFO: Attempting to unmount ${CURRENTLY_MOUNTED_DEVICE} from ${MYSQL_DATA_DIR}..."
+            umount "${MYSQL_DATA_DIR}"
+            if [ $? -eq 0 ]; then
+                echo "INFO: Successfully unmounted ${MYSQL_DATA_DIR}."
+            else
+                echo "ERROR: Failed to unmount ${MYSQL_DATA_DIR}. It might be busy. Processes using it:"
+                lsof "${MYSQL_DATA_DIR}" || echo "INFO: lsof not available or nothing found."
+                exit 1 # Exit if unmount fails
+            fi
+        else
+            echo "INFO: Correct device ${BLOCK_DEVICE_PATH_IN_CONTAINER} is already mounted to ${MYSQL_DATA_DIR}. Nothing to do."
+            # Optional: Skip further mount attempt or just let it proceed (mount might fail harmlessly or re-affirm)
+            # For now, let's assume we want to ensure our mount options are applied if we proceed
+        fi
+    fi
+
+    # Re-check if it's a mountpoint *for our device* or try to mount if not mounted at all
+    # This structure ensures we try to mount if it's not mounted, or if it was unmounted from a different device
+    SHOULD_MOUNT=true
+    if mountpoint -q "${MYSQL_DATA_DIR}"; then
+        CURRENTLY_MOUNTED_DEVICE=$(findmnt -n -o SOURCE --target "${MYSQL_DATA_DIR}")
+        if [ "${CURRENTLY_MOUNTED_DEVICE}" == "${BLOCK_DEVICE_PATH_IN_CONTAINER}" ]; then
+            echo "INFO: Correct device ${BLOCK_DEVICE_PATH_IN_CONTAINER} is already mounted to ${MYSQL_DATA_DIR} as expected."
+            SHOULD_MOUNT=false
+        fi
+    fi
+
+    if [ "$SHOULD_MOUNT" = true ] ; then
+        echo "INFO: Mounting ${BLOCK_DEVICE_PATH_IN_CONTAINER} to ${MYSQL_DATA_DIR}..."
+        if mount "${BLOCK_DEVICE_PATH_IN_CONTAINER}" "${MYSQL_DATA_DIR}"; then
+            echo "INFO: Successfully mounted ${BLOCK_DEVICE_PATH_IN_CONTAINER} to ${MYSQL_DATA_DIR}."
+            # Double check
+            if mount | grep -q " ${MYSQL_DATA_DIR} " && mount | grep "${BLOCK_DEVICE_PATH_IN_CONTAINER}" | grep -q " ${MYSQL_DATA_DIR} "; then
+                echo "INFO: Mount verification successful for ${MYSQL_DATA_DIR}."
+            else
+                echo "ERROR: Mount verification FAILED for ${MYSQL_DATA_DIR} after mount command claimed success!"
+                mount | grep "${MYSQL_DATA_DIR}"
+                exit 1
+            fi
+        else
+            MOUNT_EXIT_CODE=$?
+            echo "ERROR: Failed to mount ${BLOCK_DEVICE_PATH_IN_CONTAINER} to ${MYSQL_DATA_DIR}! Exit code: ${MOUNT_EXIT_CODE}"
+            exit 1
+        fi
+    fi
+
+    # 6. CRITICAL: Set ownership of the MySQL data directory AFTER mounting
+    # The 'mysql' user and group should exist from the base official MySQL image.
+    # This ensures that the original entrypoint (and mysqld) can write to the data directory.
+    echo "INFO: Setting ownership of ${MYSQL_DATA_DIR} to mysql:mysql..."
+    chown -R mysql:mysql "${MYSQL_DATA_DIR}"
+    chmod -R 700 "${MYSQL_DATA_DIR}" # Or 750, ensure mysql user can read/write
+
+    # 7. Delegate to the original Docker entrypoint script from the base image
+    echo "INFO: Filesystem preparation complete. Delegating to original entrypoint: ${ORIGINAL_DOCKER_ENTRYPOINT_SCRIPT} ${ORIGINAL_DOCKER_ENTRYPOINT_ARGS}"
+    exec "${ORIGINAL_DOCKER_ENTRYPOINT_SCRIPT}" ${ORIGINAL_DOCKER_ENTRYPOINT_ARGS}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: mysql-tuned
+  labels:
+    app: mysql-app-tuned
+spec:
+  serviceName: mysql-svc-tuned
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-app-tuned
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
+  template:
+    metadata:
+      labels:
+        app: mysql-app-tuned
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: mysql-tuned
+      tolerations:
+        - key: "app.stateful/component"
+          operator: "Equal"
+          value: "mysql-tuned"
+          effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql-app-tuned
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: mysql-container
+          image: us-central1-docker.pkg.dev/hl2-gogl-wopt-t1iylu/mysql/mysql8:mod
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: root-password
+            - name: MYSQL_DATABASE
+              value: test
+            - name: MYSQL_USER
+              value: bench_user
+            - name: MYSQL_PASSWORD
+              value: mysqlpass123
+            - name: MYSQL_INITDB_SKIP_TZINFO
+              value: "1"
+          command: ["/opt/custom-entrypoint.sh"]
+          volumeMounts:
+            - name: mysql-config
+              mountPath: /etc/mysql/conf.d
+            - name: ssl-certs
+              mountPath: /etc/mysql/ssl/ca.pem
+              subPath: ca.pem
+            - name: ssl-certs
+              mountPath: /etc/mysql/ssl/server-cert.pem
+              subPath: server-cert.pem
+            - name: ssl-certs
+              mountPath: /etc/mysql/ssl/server-key.pem
+              subPath: server-key.pem
+            - name: entrypoint-script-volume
+              mountPath: /opt/custom-entrypoint.sh
+              subPath: custom-entrypoint.sh
+          volumeDevices:
+            - name: data
+              devicePath: /dev/mysql_data_disk
+          resources:
+            requests:
+              memory: 100Gi
+              cpu: "10"
+            limits:
+              memory: 116Gi
+              cpu: "15"
+      volumes:
+        - name: mysql-config
+          configMap:
+            name: mysql-config
+        - name: ssl-certs
+          secret:
+            secretName: mysql-ssl-certs
+        - name: entrypoint-script-volume
+          configMap:
+            name: mysql-entrypoint-script
+            defaultMode: 0755
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        volumeMode: Block
+        storageClassName: balanced-storage-tuned
+        resources:
+          requests:
+            storage: "300Gi"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: mysql-tuned
+type: Opaque
+data:
+  root-password: bXlzcWxwYXNzMTIz

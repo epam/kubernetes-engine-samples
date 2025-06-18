@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-kernel-setter
+  namespace: kube-system
+  labels:
+    app: node-kernel-setter
+spec:
+  selector:
+    matchLabels:
+      name: kernel-configurer
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: kernel-configurer
+    spec:
+      nodeSelector:
+        app.stateful/component: mysql-tuned
+      tolerations:
+      - key: "app.stateful/component"
+        operator: "Equal"
+        value: "mysql-tuned"
+        effect: "NoSchedule"
+      initContainers:
+        - name: sysctl-kernel-setter
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Applying new kernel parameters..."
+              if sysctl -w vm.dirty_background_ratio=2 && sysctl -w vm.dirty_ratio=6; then
+                echo "Successfully set kernel parameters. Current values:"
+                sysctl vm.dirty_background_ratio
+                sysctl vm.dirty_ratio
+              else
+                echo "ERROR: Failed to set kernel parameters." >&2
+                exit 1
+              fi
+          securityContext:
+            privileged: true
+
+      containers:
+        - name: sleeper
+          image: busybox:latest
+          command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]

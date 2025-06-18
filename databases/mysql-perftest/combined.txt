@@ -1,0 +1,22 @@
+Base Kafka performance test
+Machine type, c4d-highmem-16
+PD filesystem, ext4
+Node image type, COS_CONTAINERD
+Test date and time, 2025-05-13 08:07:52
+provisioned-throughput-on-create, default
+provisioned-iops-on-create, default
+
+##### END OF BASELINE TEST #####
+
+Tuned Kafka performance test
+Machine type, c4d-highmem-16
+PD filesystem, xfs
+Node image type, COS_CONTAINERD
+Test date and time, 2025-05-13 08:07:52
+Tuning steps:
+provisioned-throughput-on-create, 400Mi
+provisioned-iops-on-create, 3000
+
+
+Zone: us-central1-a
+

@@ -1,0 +1,49 @@
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-swappiness-setter
+  namespace: kube-system
+  labels:
+    app: node-swappiness-setter
+spec:
+  selector:
+    matchLabels:
+      name: swappiness-configurer
+  template:
+    metadata:
+      labels:
+        name: swappiness-configurer
+    spec:
+      nodeSelector:
+        app.stateful/component: mysql-tuned
+      tolerations:
+      - key: "app.stateful/component"
+        operator: "Equal"
+        value: "mysql-tuned"
+        effect: "NoSchedule"
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: NoSchedule
+      initContainers:
+        - name: sysctl-swappiness-setter
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Attempting to set vm.swappiness to 1..."
+              if sysctl -w vm.swappiness=1; then
+                echo "Successfully set vm.swappiness to 1. Current value:"
+                sysctl vm.swappiness
+              else
+                echo "ERROR: Failed to set vm.swappiness" >&2
+                exit 1
+              fi
+          securityContext:
+            privileged: true
+      containers:
+        - name: sleeper
+          image: busybox:latest
+          command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]
