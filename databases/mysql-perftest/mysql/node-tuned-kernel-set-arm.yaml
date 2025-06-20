@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-kernel-defaults-setter
+  namespace: kube-system
+  labels:
+    app: node-kernel-defaults
+spec:
+  selector:
+    matchLabels:
+      name: kernel-defaults-configurer
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: kernel-defaults-configurer
+    spec:
+      hostNetwork: true
+      tolerations:
+      - key: "app.stateful/component"
+        operator: "Equal"
+        value: "mysql-tuned"
+        effect: "NoSchedule"
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: NoSchedule
+      initContainers:
+        - name: sysctl-kernel-setter
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Applying custom kernel settings..."
+              set -x # English: Print each command before executing it.
+              sysctl -w net.ipv4.tcp_fin_timeout=5
+              sysctl -w net.ipv4.tcp_tw_reuse=1
+              sysctl -w net.ipv4.ip_local_port_range="4000 65000"
+              sysctl -w net.ipv4.tcp_max_syn_backlog=65535
+              # sysctl -w net.core.netdev_max_backlog=65535
+              sysctl -w net.core.somaxconn=65535
+              sysctl -w vm.swappiness=1
+              sysctl -w vm.dirty_background_ratio=5
+              sysctl -w vm.dirty_ratio=15
+              set +x
+              echo "Kernel settings applied successfully."
+          securityContext:
+            privileged: true
+
+      containers:
+        - name: sleeper
+          image: busybox:latest
+          command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]

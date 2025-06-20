@@ -59,8 +59,8 @@ spec:
     spec:
       securityContext:
         sysctls:
-        - name: net.ipv4.tcp_fin_timeout
-          value: "5"
+        # - name: net.ipv4.tcp_fin_timeout
+        #   value: "5"
         # - name: net.ipv4.tcp_tw_reuse
         #   value: "1"
         # - name: net.ipv4.tcp_max_syn_backlog

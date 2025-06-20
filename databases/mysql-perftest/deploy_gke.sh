@@ -70,7 +70,7 @@ do
             TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned.yaml"
-            KERNEL_TUNE_FILE="mysql/node-all-kernel-set.yaml"
+            KERNEL_TUNE_FILE="mysql/node-tuned-kernel-set.yaml"
             # NODE_NUMBER=7
             TEST_TYPE="1Ldr1Mysql"
             break
@@ -84,7 +84,7 @@ do
             TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned.yaml"
-            KERNEL_TUNE_FILE="mysql/node-all-kernel-set.yaml"
+            KERNEL_TUNE_FILE="mysql/node-tuned-kernel-set.yaml"
             # NODE_NUMBER=7
             TEST_TYPE="1Ldr1Mysql"
             break
@@ -99,7 +99,7 @@ do
             TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-arm-swap.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base-arm.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned-arm.yaml"
-            KERNEL_TUNE_FILE="mysql/node-all-kernel-set-arm.yaml"
+            KERNEL_TUNE_FILE="mysql/node-tuned-kernel-set-arm.yaml"
             # NODE_NUMBER=7
             TEST_TYPE="1Ldr1Mysql"
             break
