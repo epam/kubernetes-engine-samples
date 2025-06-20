@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllml3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllml3
+  template:
+    metadata:
+      labels:
+        app: vllml3
+    spec:
+      containers:
+      - command: [ "/bin/sh", "-c" ]
+        args: [ "vllm serve unsloth/Llama-3-8B-Instruct --tensor-parallel-size=4" ]
+        image: vllm/vllm-openai:v0.8.5
+        name: inference-server
+        resources:
+          limits:
+            cpu: '80'
+            memory: 800Gi
+            nvidia.com/gpu: '4'
+          requests:
+            cpu: '80'
+            memory: 800Gi
+            nvidia.com/gpu: '4'
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+      tolerations:
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        operator: Equal
+        value: present
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-h100-80gb
+        cloud.google.com/gke-spot: "true"
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-endpoint-l3
+spec:
+  selector:
+    app: vllml3
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+

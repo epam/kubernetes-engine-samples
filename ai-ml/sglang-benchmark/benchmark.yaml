@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmark
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: benchmark
+  template:
+    metadata:
+      labels:
+        app: benchmark
+    spec:
+      containers:
+      - command: [ "/bin/sh", "-c", "sleep 36000" ]
+        image: docker.io/lmsysorg/sglang:v0.4.7-cu124
+        name: benchmark
+        resources:
+          limits:
+            cpu: '2'
+            memory: 8Gi
+            ephemeral-storage: "10Gi"
+          requests:
+            cpu: '1'
+            memory: 8Gi
+            ephemeral-storage: "10Gi"
+
+
