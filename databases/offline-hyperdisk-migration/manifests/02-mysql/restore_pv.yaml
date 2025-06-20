@@ -28,7 +28,7 @@ spec:
     namespace: default
   csi:
     driver: pd.csi.storage.gke.io
-    volumeHandle: projects/PRJCTID/regions/us-central1/disks/mysql-recovery
+    volumeHandle: projects/PRJCTID/zones/us-central1-a/disks/mysql-recovery
     fsType: ext4
 ---
 apiVersion: v1
