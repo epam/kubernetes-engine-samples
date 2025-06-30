@@ -97,7 +97,7 @@ case "$MYSQL_HOST" in
     OPTIMIZATION="none"  # raw server
     ;;
   mysql-server-1)
-    OPTIMIZATION="innodbredolog-120"  # optimized server
+    OPTIMIZATION="p3rfconfig-optconfig-raid-2400"  # optimized server
     ;;
   *)
     OPTIMIZATION="unknown"

@@ -42,8 +42,8 @@ module "mysql_instance" {
   metadata_script_path    = "${path.module}/scripts/mysql_instance.sh"
   use_data_disk           = true
   data_disk_type          = "hyperdisk-balanced"
-  data_disk_iops          = 12000
-  data_disk_throughput    = 180
+  data_disk_iops          = 160000
+  data_disk_throughput    = 2400
   data_disk_size          = 500
 
   additional_metadata = {

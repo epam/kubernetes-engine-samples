@@ -26,8 +26,8 @@ resource "google_compute_disk" "persistent_disks" {
   count = var.use_data_disk ? (startswith(var.name_prefix, "mysql-server-1") ? 10 : 1) : 0
 
   # names:  mysql-server-1-data-disk-0 … -9  OR  mysql-server-0-data-disk
-  name = startswith(var.name_prefix, "mysql-server-1") ? format("mysql-server-1-data-disk-%d", count.index) : format("%s-data-disk", var.name_prefix)
-  
+  # name = startswith(var.name_prefix, "mysql-server-1") ? format("mysql-server-1-data-disk-%d", count.index) : format("%s-data-disk", var.name_prefix)
+  name                   = format("%s-data-disk-%d", var.name_prefix, count.index)
   type                   = var.data_disk_type
   provisioned_iops       = var.data_disk_iops
   provisioned_throughput = var.data_disk_throughput

@@ -6,7 +6,7 @@ http://metadata.google.internal/computeMetadata/v1/instance/attributes/instance-
  
 LOG_FILE="/var/log/mysql-setup.log"
 MYSQL_DONE_FILE="/opt/mysql/setup-done"
-MYSQL_DISK_ID="google-mysql-server-${INSTANCE_INDEX}-data-disk"
+MYSQL_DISK_ID="google-mysql-server-${INSTANCE_INDEX}-data-disk-0"
 # MYSQL_ROOT="/mnt/mysql-data"
 # MYSQL_DATADIR="${MYSQL_ROOT}/mysql"
 
@@ -18,6 +18,14 @@ if [ -f "${MYSQL_DONE_FILE}" ]; then
     echo "$(date) MySQL is already configured. Skipping setup."
 else
   echo "$(date) MySQL is not configured. Beginning setup."
+
+  # echo "[INFO] Preparing single data disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
+  # if ! mount | grep -q "${MYSQL_MOUNT}"; then
+  #   mkdir -p "${MYSQL_MOUNT}"
+  #   mkfs.xfs -i size=512 -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
+  #   mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
+  #   echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
+  # fi
 
   # === Disk Setup ===
   # echo "[INFO] Preparing and mounting disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
@@ -155,44 +163,148 @@ else
   # === Configure MySQL ===
   echo "[INFO] Configuring MySQL"
 
-  cat <<EOF > /etc/mysql/mysql.conf.d/mysqld.cnf
-  [mysqld]
-  bind-address = 0.0.0.0
-  ssl-ca = ca.pem
-  ssl-cert = server-cert.pem
-  ssl-key = server-key.pem
-  require_secure_transport = ON
-  log_error = /var/log/mysql/error.log
-  secure_file_priv = ""
-  innodb_buffer_pool_size = 100G
-  innodb_redo_log_capacity = 120G
-  max_connections = 3000
-  max_prepared_stmt_count = 1048576
-EOF
-
-  # Possible Kernel optimization section
   if [ "$INSTANCE_INDEX" -eq 1 ]; then
-    echo "[INFO] Setting kernel to the same parameters as in GCP P3rf team scenario "
-    sysctl -w net.ipv4.tcp_fin_timeout=5
-    sysctl -w net.ipv4.tcp_tw_reuse=1
-    sysctl -w net.ipv4.ip_local_port_range="4000 65000"
-    sysctl -w net.ipv4.tcp_max_syn_backlog=65535
-    sysctl -w net.core.netdev_max_backlog=65535
-    sysctl -w net.core.somaxconn=65535
-    sysctl -w vm.swappiness=1
-    sysctl -w vm.dirty_background_ratio=5
-    sysctl -w vm.dirty_ratio=15
+    cat <<EOF > /etc/mysql/mysql.conf.d/mysqld.cnf
+    [mysqld]
+    bind-address = 0.0.0.0
+    ssl-ca = ca.pem
+    ssl-cert = server-cert.pem
+    ssl-key = server-key.pem
+    require_secure_transport = ON
+    log_error = /var/log/mysql/error.log
+    secure_file_priv = ""
+    innodb_buffer_pool_size = 100G
+    innodb_redo_log_capacity = 120G
+    # max_prepared_stmt_count = 1048576
+
+    # Optimization 26.06
+    # general
+    max_connections=4000
+    table_open_cache=8000
+    table_open_cache_instances=16
+    max_prepared_stmt_count=512000
+    back_log=1500
+    # default_password_lifetime=0
+    # default_authentication_plugin=mysql_native_password
+    # character_set_server=latin1
+    # collation_server=latin1_swedish_ci
+    skip-character-set-client-handshake
+    performance_schema=OFF
+    skip_log_bin=1
+    transaction_isolation=REPEATABLE-READ
+
+    # files
+    innodb_file_per_table
+    innodb_log_file_size=1024M
+    innodb_log_files_in_group=32
+    innodb_open_files=4000
+
+    # buffers
+    innodb_buffer_pool_instances=16
+    innodb_log_buffer_size=64M
+
+    # tune
+    innodb_doublewrite=0
+    innodb_thread_concurrency=0
+    innodb_flush_log_at_trx_commit=1
+    innodb_max_dirty_pages_pct=90
+    innodb_max_dirty_pages_pct_lwm=10
+
+    join_buffer_size=32K
+    sort_buffer_size=32K
+    innodb_use_native_aio=1
+    innodb_stats_persistent=1
+    innodb_spin_wait_delay=6
+
+    innodb_max_purge_lag_delay=300000
+    innodb_max_purge_lag=0
+    innodb_flush_method=O_DIRECT
+    innodb_checksum_algorithm=none
+    innodb_io_capacity=10000
+    innodb_io_capacity_max=40000
+    innodb_lru_scan_depth=9000
+    innodb_change_buffering=none
+    innodb_read_only=0
+    innodb_page_cleaners=16
+    innodb_undo_log_truncate=off
+
+    # perf special
+    innodb_adaptive_flushing=1
+    innodb_flush_neighbors=0
+    innodb_read_io_threads=16
+    innodb_write_io_threads=16
+    innodb_purge_threads=4
+    innodb_adaptive_hash_index=0
+EOF
+  else 
+    cat <<EOF > /etc/mysql/mysql.conf.d/mysqld.cnf
+    [mysqld]
+    bind-address = 0.0.0.0
+    ssl-ca = ca.pem
+    ssl-cert = server-cert.pem
+    ssl-key = server-key.pem
+    require_secure_transport = ON
+    log_error = /var/log/mysql/error.log
+    secure_file_priv = ""
+    max_connections = 4100
+    back_log                = 1500
+    table_open_cache        = 200000
+    table_open_cache_instances = 32
+    max_prepared_stmt_count = 512000
+    skip-name-resolve
+    skip-character-set-client-handshake
+    performance_schema      = 1
+    binlog_row_image= MINIMAL
+    # InnoDB settings
+    innodb_buffer_pool_instances     = 16
+    innodb_buffer_pool_size = 100G
+    innodb_redo_log_capacity = 120G
+    innodb_io_capacity               = 80000
+    innodb_io_capacity_max           = 1600000
+    innodb_page_cleaners             = 16
+    innodb_purge_threads             = 4
+    innodb_lru_scan_depth            = 1024
+    innodb_adaptive_flushing_lwm     = 10
+    innodb_flushing_avg_loops        = 30
+    innodb_flush_method              = O_DIRECT_NO_FSYNC
+    innodb_numa_interleave           = 1
+    innodb_change_buffering          = none
+    innodb_adaptive_hash_index       = 0
+    # Durability settings
+    innodb_doublewrite               = 1
+    innodb_doublewrite_pages         = 64
+    innodb_doublewrite_files         = 2
+    innodb_flush_log_at_trx_commit   = 1
+    innodb_buffer_pool_load_at_startup = 0
+    innodb_buffer_pool_dump_at_shutdown = 0
+    # Logging
+    slow-query-log                               = 1
+    long_query_time                              = 10
+EOF
   fi
 
-#   mkdir -p /etc/systemd/system/mysql.service.d
+  # Baseline Kernel optimization section
+  echo "[INFO] Setting kernel to the same parameters as in GCP P3rf team scenario "
+  sysctl -w net.ipv4.tcp_fin_timeout=5
+  sysctl -w net.ipv4.tcp_tw_reuse=1
+  sysctl -w net.ipv4.ip_local_port_range="4000 65000"
+  sysctl -w net.ipv4.tcp_max_syn_backlog=65535
+  sysctl -w net.core.netdev_max_backlog=65535
+  sysctl -w net.core.somaxconn=65535
+  sysctl -w vm.swappiness=1
+  sysctl -w vm.dirty_background_ratio=5
+  sysctl -w vm.dirty_ratio=15
+  
+  mkdir -p /etc/systemd/system/mysql.service.d
 
-#   cat <<EOF > /etc/systemd/system/mysql.service.d/override.conf
-#   [Service]
-#   LimitNOFILE=200000
-# EOF
+  cat <<EOF > /etc/systemd/system/mysql.service.d/override.conf
+  [Service]
+  LimitNOFILE=200000
+EOF
 
-#   systemctl daemon-reexec
-#   systemctl daemon-reload
+  systemctl daemon-reexec
+  systemctl daemon-reload
+
   systemctl start mysql
   systemctl enable mysql
 
