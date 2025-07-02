@@ -49,7 +49,23 @@ module "mysql_cluster" {
       name               = "pool-sysbench"
       disk_size_gb       = 70
       disk_type          = var.sysbench_boot_disk_type
-      image_type         = "COS_CONTAINERD"
+      # image_type         = "COS_CONTAINERD"
+      image_type         = "UBUNTU_CONTAINERD"
+      autoscaling        = true
+      min_count          = var.sysbench_max_count
+      max_count          = var.sysbench_max_count
+      max_surge          = 1
+      max_unavailable    = 0
+      machine_type       = var.sysbench_node_pool_instance_type
+      auto_repair        = true
+      enable_secure_boot = true
+    },
+    {
+      name               = "pool-sysbench-tuned"
+      disk_size_gb       = 70
+      disk_type          = var.sysbench_boot_disk_type
+      # image_type         = "COS_CONTAINERD"
+      image_type         = "UBUNTU_CONTAINERD"
       autoscaling        = true
       min_count          = var.sysbench_max_count
       max_count          = var.sysbench_max_count
@@ -82,6 +98,9 @@ module "mysql_cluster" {
     },
     pool-sysbench = {
       "app.stateful/component" = "sysbench"
+    },
+    pool-sysbench-tuned = {
+      "app.stateful/component" = "sysbench-tuned"
     },
     mysql-tuned = {
       "app.stateful/component" = "mysql-tuned"

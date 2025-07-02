@@ -18,18 +18,7 @@ spec:
     spec:
       hostNetwork: true
       tolerations:
-      - key: "app.stateful/component"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
-      - key: "app.stateful/component"
-        operator: "Equal"
-        value: "mysql-tuned"
-        effect: "NoSchedule"
-      - key: "kubernetes.io/arch"
-        operator: "Equal"
-        value: "arm64"
-        effect: NoSchedule
+      - operator: "Exists"
       initContainers:
         - name: sysctl-kernel-setter
           image: busybox:latest

@@ -17,11 +17,30 @@ spec:
         name: kernel-defaults-configurer
     spec:
       hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app.stateful/component
+                operator: In
+                values:
+                - mysql-tuned
+                - sysbench
+                - sysbench-tuned
       tolerations:
       - key: "app.stateful/component"
         operator: "Equal"
         value: "mysql-tuned"
         effect: "NoSchedule"
+      - key: "app.stateful/component"
+        operator: "Equal"
+        value: "sysbench"
+        effect: NoSchedule
+      - key: "app.stateful/component"
+        operator: "Equal"
+        value: "sysbench-tuned"
+        effect: NoSchedule
       initContainers:
         - name: sysctl-kernel-setter
           image: busybox:latest

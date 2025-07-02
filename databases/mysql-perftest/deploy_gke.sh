@@ -29,7 +29,7 @@ NODE_NUMBER=1
 # Sysbench config
 SYSBENCH_MACHINE_TYPE=c4d-standard-32
 # SYSBENCH_MANIFEST_FILE="mysql/sysbench.yaml"
-SYSBENCH_NODES_NUMBER=2
+SYSBENCH_NODES_NUMBER=1
 MASTER_IPV4_CIDR_BLOCK="172.16.0.0/28"
 TEST_TYPE="1Ldr1Mysql"
 
@@ -37,7 +37,8 @@ TEST_TYPE="1Ldr1Mysql"
 NAMESPACE="mysql"
 BASE_OS_TYPE=cos
 BASE_PD_FILE_SYSTEM=xfs
-BASE_NODE_IMAGE_TYPE="COS_CONTAINERD"
+# BASE_NODE_IMAGE_TYPE="COS_CONTAINERD"
+TUNED_NODE_IMAGE_TYPE="UBUNTU_CONTAINERD"
 BASE_TEST_RESULTS=base-testresults.txt
 BASE_TEST_RESULTS_CSV=base-testresults.csv
 
@@ -45,7 +46,8 @@ BASE_TEST_RESULTS_CSV=base-testresults.csv
 TUNED_NAMESPACE="mysql-tuned"
 TUNED_OS_TYPE=cos
 TUNED_PD_FILE_SYSTEM=ext4
-TUNED_NODE_IMAGE_TYPE="COS_CONTAINERD"
+# TUNED_NODE_IMAGE_TYPE="COS_CONTAINERD"
+TUNED_NODE_IMAGE_TYPE="UBUNTU_CONTAINERD"
 # TUNED_HD_THROUGHPUT="400Mi"
 # TUNED_HD_IOPS="3000"
 TUNED_TEST_RESULTS=tuned-testresults.txt
@@ -66,11 +68,12 @@ do
             MACHINE_TYPE="c4-highmem-16"
             SYSBENCH_MACHINE_TYPE=c4-standard-32
             TEST_FILE_EXT=$opt
-            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base.yaml"
-            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap.yaml"
+            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-s.yaml"
+            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap-s.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned.yaml"
-            KERNEL_TUNE_FILE="mysql/node-tuned-kernel-set.yaml"
+            # TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
+            KERNEL_TUNE_FILE="mysql/node-all-kernel-set.yaml"
             # NODE_NUMBER=7
             TEST_TYPE="1Ldr1Mysql"
             break
@@ -80,11 +83,12 @@ do
             MACHINE_TYPE="c4d-highmem-16"
             SYSBENCH_MACHINE_TYPE=c4d-standard-32
             TEST_FILE_EXT=$opt
-            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base.yaml"
-            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap.yaml"
+            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-s.yaml"
+            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap-s.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned.yaml"
-            KERNEL_TUNE_FILE="mysql/node-tuned-kernel-set.yaml"
+            # TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
+            KERNEL_TUNE_FILE="mysql/node-all-kernel-set.yaml"
             # NODE_NUMBER=7
             TEST_TYPE="1Ldr1Mysql"
             break
@@ -95,11 +99,12 @@ do
             SYSBENCH_MACHINE_TYPE=c4a-standard-32
             SYSBENCH_BOOT_DISK_TYPE="hyperdisk-balanced"
             TEST_FILE_EXT=$opt
-            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-arm.yaml"
-            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-arm-swap.yaml"
+            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-arm-s.yaml"
+            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-arm-swap-s.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base-arm.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned-arm.yaml"
-            KERNEL_TUNE_FILE="mysql/node-tuned-kernel-set-arm.yaml"
+            # TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base-arm.yam"
+            KERNEL_TUNE_FILE="mysql/node-all-kernel-set-arm.yaml"
             # NODE_NUMBER=7
             TEST_TYPE="1Ldr1Mysql"
             break
@@ -137,7 +142,7 @@ kubectl create ns $NAMESPACE || true
 kubectl create ns $TUNED_NAMESPACE || true
 
 kubectl apply -f mysql/hd-balanced-base.yaml || true
-# kubectl apply -f mysql/hd-balanced-tuned.yaml || true
+kubectl apply -f mysql/hd-balanced-tuned.yaml || true
 
 # cat mysql/hd-balanced-tuned.yaml |\
 #     sed "s/{{FSTYPE}}/$TUNED_PD_FILE_SYSTEM/g" |\
@@ -274,6 +279,3 @@ case $TEST_TYPE in
         # gsutil cp $COMBINED_CSV  gs://$GCSBUCKET/mysql/gke/csv/$TEST_FILE_EXT-$(date +"%Y_%m_%d_%I_%M_%p").csv
         ;;
     esac
-
-
-

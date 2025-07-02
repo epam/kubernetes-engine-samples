@@ -8,5 +8,5 @@ allowVolumeExpansion: true
 parameters:
   type: hyperdisk-balanced
   csi.storage.k8s.io/fstype: xfs
-  provisioned-throughput-on-create: "1800Mi"
-  provisioned-iops-on-create: "100000"
+  provisioned-throughput-on-create: "2400Mi"
+  provisioned-iops-on-create: "160000"

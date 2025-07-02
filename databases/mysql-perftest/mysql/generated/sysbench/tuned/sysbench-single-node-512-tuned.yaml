@@ -9,14 +9,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql-sysbench
+      app: mysql-sysbench-tuned
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Delete
     whenScaled: Delete
   template:
     metadata:
       labels:
-        app: mysql-sysbench
+        app: mysql-sysbench-tuned
     spec:
       securityContext:
         sysctls:
@@ -29,11 +29,11 @@ spec:
         # - name: net.core.somaxconn
         #   value: "65535"
       nodeSelector:
-        cloud.google.com/gke-nodepool: pool-sysbench
+        cloud.google.com/gke-nodepool: pool-sysbench-tuned
       tolerations:
         - key: "app.stateful/component"
           operator: "Equal"
-          value: "mysql-sysbench"
+          value: "mysql-sysbench-tuned"
           effect: NoSchedule
       affinity:
         podAntiAffinity:
@@ -43,7 +43,7 @@ spec:
                   - key: app
                     operator: In
                     values:
-                      - mysql-sysbench
+                      - mysql-sysbench-tuned
               topologyKey: "kubernetes.io/hostname"
       containers:
         - name: sysbench-container

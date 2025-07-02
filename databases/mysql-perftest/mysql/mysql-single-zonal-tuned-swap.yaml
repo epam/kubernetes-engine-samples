@@ -32,6 +32,11 @@ data:
     ssl
     require_secure_transport = ON
     default_authentication_plugin=mysql_native_password
+    # Tune from base
+    innodb_buffer_pool_size = 100G
+    innodb_redo_log_capacity = 120G
+    max_connections = 3000
+    max_prepared_stmt_count = 1048576
 
   # Performance and operational tuning.
   performance.cnf: |
@@ -50,9 +55,7 @@ data:
     #####################
     # InnoDB settings
     #####################
-    innodb_buffer_pool_size         = 100G
     innodb_buffer_pool_instances    = 16
-    innodb_redo_log_capacity        = 120G
     innodb_io_capacity              = 80000
     innodb_io_capacity_max          = 1600000
     innodb_page_cleaners            = 16
@@ -181,7 +184,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: balanced-storage-base
+        storageClassName: balanced-storage-tuned
         resources:
           requests:
             storage: "500Gi"
