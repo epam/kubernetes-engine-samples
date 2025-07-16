@@ -32,7 +32,7 @@ data:
     default_authentication_plugin=mysql_native_password
     # Tune from base
     innodb_buffer_pool_size = 100G
-    innodb_redo_log_capacity = 120G
+    innodb_redo_log_capacity = 16G
     max_connections = 3000
     max_prepared_stmt_count = 1048576
 

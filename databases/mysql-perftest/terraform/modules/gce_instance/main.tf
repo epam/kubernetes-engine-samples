@@ -23,7 +23,7 @@ resource "google_compute_disk" "persistent_disks" {
   
   # 10 disks when this module is called for server-1 (name_prefix ends in “-1”),
   # otherwise exactly 1.
-  count = var.use_data_disk ? (startswith(var.name_prefix, "mysql-server-1") ? 10 : 1) : 0
+  count = var.use_data_disk ? (startswith(var.name_prefix, "mysql-server-1") ? 1 : 1) : 0
 
   # names:  mysql-server-1-data-disk-0 … -9  OR  mysql-server-0-data-disk
   # name = startswith(var.name_prefix, "mysql-server-1") ? format("mysql-server-1-data-disk-%d", count.index) : format("%s-data-disk", var.name_prefix)

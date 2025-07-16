@@ -19,13 +19,13 @@ if [ -f "${MYSQL_DONE_FILE}" ]; then
 else
   echo "$(date) MySQL is not configured. Beginning setup."
 
-  # echo "[INFO] Preparing single data disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
-  # if ! mount | grep -q "${MYSQL_MOUNT}"; then
-  #   mkdir -p "${MYSQL_MOUNT}"
-  #   mkfs.xfs -i size=512 -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
-  #   mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
-  #   echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
-  # fi
+  echo "[INFO] Preparing single data disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
+  if ! mount | grep -q "${MYSQL_MOUNT}"; then
+    mkdir -p "${MYSQL_MOUNT}"
+    mkfs.xfs -i size=512 -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
+    mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
+    echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
+  fi
 
   # === Disk Setup ===
   # echo "[INFO] Preparing and mounting disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
@@ -63,46 +63,46 @@ else
   #   echo "[INFO] Disk already mounted on ${MYSQL_ROOT}, skipping format."
   # fi
 
-  if [ "$INSTANCE_INDEX" -eq 1 ]; then
-    ########################################################################
-    #  server-1  →  build a 10-disk RAID-0 stripe and mount it on /mnt/mysql-data
-    ########################################################################
+  # if [ "$INSTANCE_INDEX" -eq 1 ]; then
+  #   ########################################################################
+  #   #  server-1  →  build a 10-disk RAID-0 stripe and mount it on /mnt/mysql-data
+  #   ########################################################################
 
-    apt update -qq
-    DEBIAN_FRONTEND=noninteractive apt install -y mdadm
+  #   apt update -qq
+  #   DEBIAN_FRONTEND=noninteractive apt install -y mdadm
 
-    echo "[INFO] server-1: assembling 10-disk RAID0 array for MySQL"
+  #   echo "[INFO] server-1: assembling 10-disk RAID0 array for MySQL"
 
-    # discover the ten Terraform-created disks
-    mapfile -t RAID_DISKS < <(ls /dev/disk/by-id/google-mysql-server-1-data-disk-* | sort)
-    echo "[INFO] RAID members: ${RAID_DISKS[*]}"
+  #   # discover the ten Terraform-created disks
+  #   mapfile -t RAID_DISKS < <(ls /dev/disk/by-id/google-mysql-server-1-data-disk-* | sort)
+  #   echo "[INFO] RAID members: ${RAID_DISKS[*]}"
 
-    if ! mount | grep -q "${MYSQL_MOUNT}"; then
-      mkdir -p "${MYSQL_MOUNT}"
+  #   if ! mount | grep -q "${MYSQL_MOUNT}"; then
+  #     mkdir -p "${MYSQL_MOUNT}"
 
-      # create the array once
-      if [ ! -e /dev/md0 ]; then
-        mdadm --create /dev/md0 --level=stripe --raid-devices=10 "${RAID_DISKS[@]}"
-      fi
+  #     # create the array once
+  #     if [ ! -e /dev/md0 ]; then
+  #       mdadm --create /dev/md0 --level=stripe --raid-devices=10 "${RAID_DISKS[@]}"
+  #     fi
 
-      # format & mount with larger XFS log stripe
-      mkfs.xfs -i size=512 -f /dev/md0
-      mount -t xfs -o defaults /dev/md0 "${MYSQL_MOUNT}"
-      echo '/dev/md0 '"${MYSQL_MOUNT}"' xfs defaults,nofail 0 2' >> /etc/fstab
-    fi
+  #     # format & mount with larger XFS log stripe
+  #     mkfs.xfs -i size=512 -f /dev/md0
+  #     mount -t xfs -o defaults /dev/md0 "${MYSQL_MOUNT}"
+  #     echo '/dev/md0 '"${MYSQL_MOUNT}"' xfs defaults,nofail 0 2' >> /etc/fstab
+  #   fi
 
-  else
-    ########################################################################
-    #  every other server  →  single data-disk path (unchanged logic)
-    ########################################################################
-    echo "[INFO] Preparing single data disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
-    if ! mount | grep -q "${MYSQL_MOUNT}"; then
-      mkdir -p "${MYSQL_MOUNT}"
-      mkfs.xfs -i size=512 -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
-      mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
-      echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
-    fi
-  fi
+  # else
+  #   ########################################################################
+  #   #  every other server  →  single data-disk path (unchanged logic)
+  #   ########################################################################
+  #   echo "[INFO] Preparing single data disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
+  #   if ! mount | grep -q "${MYSQL_MOUNT}"; then
+  #     mkdir -p "${MYSQL_MOUNT}"
+  #     mkfs.xfs -i size=512 -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
+  #     mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
+  #     echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
+  #   fi
+  # fi
  
   # Waiting for 90 seconds for system setup to release all locks
   sleep 90
@@ -258,7 +258,7 @@ EOF
     # InnoDB settings
     innodb_buffer_pool_instances     = 16
     innodb_buffer_pool_size = 100G
-    innodb_redo_log_capacity = 120G
+    innodb_redo_log_capacity = 16G
     innodb_io_capacity               = 80000
     innodb_io_capacity_max           = 1600000
     innodb_page_cleaners             = 16
@@ -267,7 +267,7 @@ EOF
     innodb_adaptive_flushing_lwm     = 10
     innodb_flushing_avg_loops        = 30
     innodb_flush_method              = O_DIRECT_NO_FSYNC
-    innodb_numa_interleave           = 1
+    #innodb_numa_interleave           = 1
     innodb_change_buffering          = none
     innodb_adaptive_hash_index       = 0
     # Durability settings
@@ -283,7 +283,7 @@ EOF
 EOF
   fi
 
-  # Baseline Kernel optimization section
+  # Kernel optimization section
   echo "[INFO] Setting kernel to the same parameters as in GCP P3rf team scenario "
   sysctl -w net.ipv4.tcp_fin_timeout=5
   sysctl -w net.ipv4.tcp_tw_reuse=1
