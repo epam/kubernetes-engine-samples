@@ -83,8 +83,8 @@ do
             MACHINE_TYPE="c4d-highmem-16"
             SYSBENCH_MACHINE_TYPE=c4d-standard-32
             TEST_FILE_EXT=$opt
-            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-s.yaml"
-            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap-s.yaml"
+            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base.yaml"
+            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-swap.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned.yaml"
             # TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base.yaml"

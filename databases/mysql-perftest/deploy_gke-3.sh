@@ -99,8 +99,8 @@ do
             SYSBENCH_MACHINE_TYPE=c4a-standard-32
             SYSBENCH_BOOT_DISK_TYPE="hyperdisk-balanced"
             TEST_FILE_EXT=$opt
-            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-arm-s.yaml"
-            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-arm-swap-s.yaml"
+            BASE_MANIFEST_FILE="mysql/mysql-single-zonal-base-arm.yaml"
+            TUNED_MANIFEST_FILE="mysql/mysql-single-zonal-tuned-arm-swap.yaml"
             BASE_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base-arm.yaml"
             TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/tuned/sysbench-single-node-512-tuned-arm.yaml"
             # TUNED_SYSBENCH_MANIFEST_FILE="mysql/generated/sysbench/base/sysbench-single-node-512-base-arm.yam"
