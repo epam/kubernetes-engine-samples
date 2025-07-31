@@ -140,7 +140,6 @@ module "mysql_cluster" {
     pool-mysql        = "CGROUP_MODE_UNSPECIFIED"
     pool-sysbench     = "CGROUP_MODE_UNSPECIFIED"
   }
-  
 }
 
 output "kubectl_connection_command" {
