@@ -48,9 +48,6 @@ data "aws_security_group" "mysql_sg" {
   }
 }
 
-# ─── AWS-specific extras (kept from original) ───────────────────
-resource "random_uuid" "mysql_cluster_id" {}   # may be used by init scripts
-
 resource "aws_route53_zone" "private_dns" {
   name = "mysql-perf.test."
   vpc  { 

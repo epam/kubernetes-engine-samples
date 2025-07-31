@@ -7,8 +7,6 @@ http://metadata.google.internal/computeMetadata/v1/instance/attributes/instance-
 LOG_FILE="/var/log/mysql-setup.log"
 MYSQL_DONE_FILE="/opt/mysql/setup-done"
 MYSQL_DISK_ID="google-mysql-server-${INSTANCE_INDEX}-data-disk-0"
-# MYSQL_ROOT="/mnt/mysql-data"
-# MYSQL_DATADIR="${MYSQL_ROOT}/mysql"
 
 MYSQL_MOUNT="/var/lib/mysql"
 
@@ -26,83 +24,6 @@ else
     mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
     echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
   fi
-
-  # === Disk Setup ===
-  # echo "[INFO] Preparing and mounting disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
-  # if ! mount | grep -q "${MYSQL_ROOT}"; then
-  #   mkdir -p "${MYSQL_ROOT}"
-  #   # Format data disk differently depending on instance index
-  #   # if [ "$INSTANCE_INDEX" -eq 0 ]; then
-  #   #   echo "[INFO] Formatting disk as XFS (instance-index=$INSTANCE_INDEX)"
-  #   #   mkfs.xfs -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
-  #   #   FS_TYPE="xfs"
-  #   # else
-  #   #   echo "[INFO] Formatting disk as EXT2 (instance-index=$INSTANCE_INDEX)"
-  #   #   mkfs.ext2 -F /dev/disk/by-id/${MYSQL_DISK_ID} || true
-  #   #   FS_TYPE="ext2"
-  #   # fi
-  #   echo "[INFO] Formatting disk as XFS (instance-index=$INSTANCE_INDEX)"
-  #   mkfs.xfs -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
-  #   FS_TYPE="xfs"
-  #   # Mount optimized storage depending on instance index
-  #   if [ "$INSTANCE_INDEX" -eq 1 ]; then
-  #     mount -t "$FS_TYPE" -o logbsize=256k,logbufs=8,inode64,defaults \
-  #           /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_ROOT}"
-  #     echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_ROOT} ${FS_TYPE} defaults,logbsize=256k,logbufs=8,inode64,nofail 0 2" \
-  #         >> /etc/fstab
-
-  #     # Optimizing scheduler options
-  #     BLK="/sys/block/$(basename "$(readlink -f "/dev/disk/by-id/${MYSQL_DISK_ID}")")"
-  #     echo mq-deadline > "${BLK}/queue/scheduler" 2>/dev/null || true
-  #     echo 1023        > "${BLK}/queue/nr_requests" 2>/dev/null || true
-  #   else
-  #     mount -t "$FS_TYPE" -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_ROOT}"
-  #     echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_ROOT} ${FS_TYPE} defaults,nofail 0 2" >> /etc/fstab
-  #   fi
-  # else
-  #   echo "[INFO] Disk already mounted on ${MYSQL_ROOT}, skipping format."
-  # fi
-
-  # if [ "$INSTANCE_INDEX" -eq 1 ]; then
-  #   ########################################################################
-  #   #  server-1  →  build a 10-disk RAID-0 stripe and mount it on /mnt/mysql-data
-  #   ########################################################################
-
-  #   apt update -qq
-  #   DEBIAN_FRONTEND=noninteractive apt install -y mdadm
-
-  #   echo "[INFO] server-1: assembling 10-disk RAID0 array for MySQL"
-
-  #   # discover the ten Terraform-created disks
-  #   mapfile -t RAID_DISKS < <(ls /dev/disk/by-id/google-mysql-server-1-data-disk-* | sort)
-  #   echo "[INFO] RAID members: ${RAID_DISKS[*]}"
-
-  #   if ! mount | grep -q "${MYSQL_MOUNT}"; then
-  #     mkdir -p "${MYSQL_MOUNT}"
-
-  #     # create the array once
-  #     if [ ! -e /dev/md0 ]; then
-  #       mdadm --create /dev/md0 --level=stripe --raid-devices=10 "${RAID_DISKS[@]}"
-  #     fi
-
-  #     # format & mount with larger XFS log stripe
-  #     mkfs.xfs -i size=512 -f /dev/md0
-  #     mount -t xfs -o defaults /dev/md0 "${MYSQL_MOUNT}"
-  #     echo '/dev/md0 '"${MYSQL_MOUNT}"' xfs defaults,nofail 0 2' >> /etc/fstab
-  #   fi
-
-  # else
-  #   ########################################################################
-  #   #  every other server  →  single data-disk path (unchanged logic)
-  #   ########################################################################
-  #   echo "[INFO] Preparing single data disk: /dev/disk/by-id/${MYSQL_DISK_ID}"
-  #   if ! mount | grep -q "${MYSQL_MOUNT}"; then
-  #     mkdir -p "${MYSQL_MOUNT}"
-  #     mkfs.xfs -i size=512 -f /dev/disk/by-id/${MYSQL_DISK_ID} || true
-  #     mount -t xfs -o defaults /dev/disk/by-id/${MYSQL_DISK_ID} "${MYSQL_MOUNT}"
-  #     echo "/dev/disk/by-id/${MYSQL_DISK_ID} ${MYSQL_MOUNT} xfs defaults,nofail 0 2" >> /etc/fstab
-  #   fi
-  # fi
  
   # Waiting for 90 seconds for system setup to release all locks
   sleep 90
@@ -127,23 +48,6 @@ else
   curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
   sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
-  # mkdir -p "${MYSQL_DATADIR}"
-  # chown -R mysql:mysql "${MYSQL_DATADIR}"
-  # chmod 750 "${MYSQL_DATADIR}"
-
-  #   # === Patch AppArmor ===
-  # echo "[INFO] Updating AppArmor rules for MySQL"
-  
-  # APPARMOR_FILE="/etc/apparmor.d/usr.sbin.mysqld"
-  
-  # sed -i \
-  #   -e 's|/var/lib/mysql/|/mnt/mysql-data/mysql/|g' \
-  #   -e 's|/var/lib/mysql/\*\*|/mnt/mysql-data/mysql/**|g' \
-  #   "$APPARMOR_FILE"
-  
-  # # Reload AppArmor profile
-  # apparmor_parser -r "$APPARMOR_FILE"
-
   echo "[INFO] Writing SSL certificates from metadata"
 
   mkdir -p "${MYSQL_MOUNT}"/ssl
@@ -157,8 +61,6 @@ else
   chmod 600 "${MYSQL_MOUNT}"/ssl/server-key.pem
   chmod 644 "${MYSQL_MOUNT}"/ssl/server-cert.pem "${MYSQL_MOUNT}"/ssl/ca.pem
 
-
-  # mysqld --initialize-insecure --user=mysql
 
   # === Configure MySQL ===
   echo "[INFO] Configuring MySQL"
